@@ -10,7 +10,14 @@ export function parseCountriesFromSvg(svgText: string): CountryInfo[] {
     .map((path) => {
       const code = path.getAttribute('id') ?? '';
       const title = path.querySelector('title')?.textContent?.trim();
-      return { code, name: title && title.length > 0 ? title : code };
+      const dataName = path.getAttribute('data-name')?.trim();
+      const name =
+        title && title.length > 0
+          ? title
+          : dataName && dataName.length > 0
+            ? dataName
+            : code;
+      return { code, name };
     })
     .filter((c) => /^[A-Za-z]{2}$/.test(c.code))
     .sort((a, b) => a.name.localeCompare(b.name));

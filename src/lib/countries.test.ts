@@ -19,4 +19,9 @@ describe('parseCountriesFromSvg', () => {
     const svg = `<svg><path id="background"></path><path id="US"><title>United States</title></path></svg>`;
     expect(parseCountriesFromSvg(svg)).toEqual([{ code: 'US', name: 'United States' }]);
   });
+
+  it('falls back to data-name attribute when title is absent', () => {
+    const svg = `<svg><path id="US" data-name="United States"></path></svg>`;
+    expect(parseCountriesFromSvg(svg)).toEqual([{ code: 'US', name: 'United States' }]);
+  });
 });
