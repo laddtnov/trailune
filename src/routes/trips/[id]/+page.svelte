@@ -1,7 +1,8 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import { getTrip, listJournalEntries, addJournalEntry } from '$lib/storage/storage';
+  import { getTrip, listJournalEntries, addJournalEntry, deleteTripCascade } from '$lib/storage/storage';
   import { getPhoto } from '$lib/storage/photos';
   import type { Trip, JournalEntry } from '$lib/types';
   import PackingChecklist from '$lib/components/PackingChecklist.svelte';
@@ -59,13 +60,26 @@
     if (fileInput) fileInput.value = '';
     await loadEntries();
   }
+
+  async function handleDeleteTrip() {
+    if (!trip) return;
+    const confirmed = confirm(
+      `Delete "${trip.name}" and all of its journal entries, photos, packing list, and do's & don'ts? This cannot be undone.`
+    );
+    if (!confirmed) return;
+    await deleteTripCascade(tripId);
+    goto('/');
+  }
 </script>
 
 {#if trip}
   <a href="/">&larr; All trips</a>
   <header class="trip-header">
-    <h1>{trip.name}</h1>
-    <p>{trip.startDate} &ndash; {trip.endDate}</p>
+    <div>
+      <h1>{trip.name}</h1>
+      <p>{trip.startDate} &ndash; {trip.endDate}</p>
+    </div>
+    <button class="delete-trip" onclick={handleDeleteTrip}>Delete Trip</button>
   </header>
 
   <nav class="tabs">
@@ -111,6 +125,27 @@
 {/if}
 
 <style>
+  .trip-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .delete-trip {
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid var(--color-accent-terracotta);
+    color: var(--color-accent-terracotta);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  .delete-trip:hover {
+    background: var(--color-accent-terracotta);
+    color: var(--color-paper);
+  }
   .tabs {
     display: flex;
     gap: 8px;
