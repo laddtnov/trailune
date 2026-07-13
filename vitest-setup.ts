@@ -1,6 +1,12 @@
 import 'fake-indexeddb/auto';
 
-// Polyfill localStorage if not available or if it throws
+// CRITICAL: Node 25's native localStorage throws SecurityError when accessed under jsdom
+// in this vitest config (even with standard environmentOptions.url). This polyfill
+// provides a working in-memory implementation instead.
+// NOTE: The module-scoped `store` object relies on Vitest's default `isolate: true`
+// (fresh module graph per test file) to avoid leaking state between test files.
+// If `test.isolate` is ever set to false or a shared worker pool is introduced,
+// this assumption would break and tests may see stale data across files.
 const store: Record<string, string> = {};
 try {
   // Try to access localStorage - it might throw in jsdom without proper setup
@@ -24,8 +30,7 @@ try {
       key: (index: number) => {
         const keys = Object.keys(store);
         return keys[index] || null;
-      },
-      length: 0
+      }
     } as Storage,
     writable: true,
     configurable: true
