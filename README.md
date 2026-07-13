@@ -1,7 +1,6 @@
 # Trailune
 
-[![CI](https://github.com/laddtnov/trailune/actions/workflows/ci.yml/badge.svg)](https://github.com/laddtnov/trailune/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/laddtnov/trailune?include_prereleases&label=release)](https://github.com/laddtnov/trailune/releases)
+
 [![SvelteKit](https://img.shields.io/badge/SvelteKit-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/docs/kit)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
