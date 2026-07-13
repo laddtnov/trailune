@@ -1,5 +1,10 @@
 # Trailune
 
+[![CI](https://github.com/laddtnov/trailune/actions/workflows/ci.yml/badge.svg)](https://github.com/laddtnov/trailune/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/laddtnov/trailune?include_prereleases&label=release)](https://github.com/laddtnov/trailune/releases)
+[![SvelteKit](https://img.shields.io/badge/SvelteKit-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/docs/kit)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+
 **Track every journey.**
 
 Trailune is a personal travel tracker: log trips with photo journal entries and notes, keep a packing checklist so nothing gets forgotten, track a per-trip Do's & Don'ts list, and see visited countries on a world map.
