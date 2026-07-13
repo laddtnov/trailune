@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+	<title>Trailune</title>
+	<circle cx="16" cy="16" r="15" fill="#f6efe0" stroke="#b5532c" stroke-width="2"/>
+	<circle cx="16" cy="16" r="11" fill="none" stroke="#b5532c" stroke-width="1" stroke-dasharray="2 2"/>
+	<text x="16" y="22" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="17" fill="#3a2e1f">T</text>
+</svg>
