@@ -2,7 +2,7 @@
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import { getJournalEntry, saveJournalEntry, deleteJournalEntry } from '$lib/storage/storage';
+  import { getJournalEntry, saveJournalEntry, deleteJournalEntryWithPhotos } from '$lib/storage/storage';
   import { getPhoto } from '$lib/storage/photos';
   import type { JournalEntry } from '$lib/types';
 
@@ -34,9 +34,9 @@
     goto(`/trips/${tripId}`);
   }
 
-  function remove() {
+  async function remove() {
     if (!entry) return;
-    deleteJournalEntry(entry.id);
+    await deleteJournalEntryWithPhotos(entry.id);
     goto(`/trips/${tripId}`);
   }
 </script>

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createTrip, deleteTripCascade, addJournalEntry } from './storage';
+import { createTrip, deleteTripCascade, addJournalEntry, deleteJournalEntryWithPhotos } from './storage';
 import { savePackingItem, listPackingItems, saveDoDontItem, listDoDontItems } from './checklist';
 import { listJournalEntries } from './local';
 import { getPhoto } from './photos';
@@ -33,11 +33,47 @@ describe('deleteTripCascade', () => {
     await addJournalEntry(trip.id, { date: '2026-03-05', note: 'Shibuya', photoFiles: [] });
     saveDoDontItem({ id: generateId(), tripId: trip.id, type: 'do', text: 'Learn phrases', checked: false });
 
-    deleteTripCascade(trip.id);
+    await deleteTripCascade(trip.id);
 
     expect(listJournalEntries(trip.id)).toEqual([]);
     expect(listPackingItems(trip.id)).toEqual([]);
     expect(listDoDontItems(trip.id)).toEqual([]);
+  });
+
+  it('deletes photo blobs belonging to the trip journal entries', async () => {
+    const trip = createTrip({ name: 'Peru', startDate: '2026-07-10', endDate: '2026-07-20', countries: ['PE'] });
+    const file = new File([new Blob(['fake'], { type: 'image/jpeg' })], 'photo.jpg', { type: 'image/jpeg' });
+    const entry = await addJournalEntry(trip.id, { date: '2026-07-11', note: 'Cusco', photoFiles: [file] });
+    const photoId = entry.photoIds[0];
+    expect(await getPhoto(photoId)).toBeDefined();
+
+    await deleteTripCascade(trip.id);
+
+    expect(await getPhoto(photoId)).toBeUndefined();
+  });
+});
+
+describe('deleteJournalEntryWithPhotos', () => {
+  it('deletes the entry and its photo blobs', async () => {
+    const trip = createTrip({ name: 'Japan', startDate: '2026-03-03', endDate: '2026-03-15', countries: ['JP'] });
+    const file = new File([new Blob(['fake'], { type: 'image/jpeg' })], 'photo.jpg', { type: 'image/jpeg' });
+    const entry = await addJournalEntry(trip.id, { date: '2026-03-05', note: 'Shibuya', photoFiles: [file] });
+    const photoId = entry.photoIds[0];
+    expect(await getPhoto(photoId)).toBeDefined();
+
+    await deleteJournalEntryWithPhotos(entry.id);
+
+    expect(await getPhoto(photoId)).toBeUndefined();
+    expect(listJournalEntries(trip.id)).toEqual([]);
+  });
+
+  it('handles an entry with no photos gracefully', async () => {
+    const trip = createTrip({ name: 'Japan', startDate: '2026-03-03', endDate: '2026-03-15', countries: ['JP'] });
+    const entry = await addJournalEntry(trip.id, { date: '2026-03-05', note: 'No photos', photoFiles: [] });
+
+    await deleteJournalEntryWithPhotos(entry.id);
+
+    expect(listJournalEntries(trip.id)).toEqual([]);
   });
 });
 

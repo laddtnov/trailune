@@ -28,7 +28,23 @@ export function createTrip(input: { name: string; startDate: string; endDate: st
   return trip;
 }
 
-export function deleteTripCascade(tripId: string): void {
+export async function deleteJournalEntryWithPhotos(id: string): Promise<void> {
+  const entry = trips.getJournalEntry(id);
+  if (entry) {
+    for (const photoId of entry.photoIds) {
+      await photoStore.deletePhoto(photoId);
+    }
+  }
+  trips.deleteJournalEntry(id);
+}
+
+export async function deleteTripCascade(tripId: string): Promise<void> {
+  const entries = trips.listJournalEntries(tripId);
+  for (const entry of entries) {
+    for (const photoId of entry.photoIds) {
+      await photoStore.deletePhoto(photoId);
+    }
+  }
   trips.deleteJournalEntriesForTrip(tripId);
   checklist.deletePackingItemsForTrip(tripId);
   checklist.deleteDoDontItemsForTrip(tripId);

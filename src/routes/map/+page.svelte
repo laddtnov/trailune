@@ -2,21 +2,24 @@
   import { onMount } from 'svelte';
   import WorldMap from '$lib/components/WorldMap.svelte';
   import { listTrips } from '$lib/storage/storage';
-  import { loadWorldCountries } from '$lib/countries';
+  import { loadWorldCountries, type CountryInfo } from '$lib/countries';
   import type { Trip } from '$lib/types';
 
   let trips: Trip[] = $state([]);
-  let totalCountries = $state(0);
+  let countries: CountryInfo[] = $state([]);
   let selectedCode: string | null = $state(null);
 
   let visitedCodes = $derived(new Set(trips.flatMap((t) => t.countries)));
   let tripsForSelected = $derived(
     selectedCode ? trips.filter((t) => t.countries.includes(selectedCode as string)) : []
   );
+  let selectedName = $derived(
+    selectedCode ? (countries.find((c) => c.code === selectedCode)?.name ?? selectedCode) : ''
+  );
 
   onMount(async () => {
     trips = listTrips();
-    totalCountries = (await loadWorldCountries()).length;
+    countries = await loadWorldCountries();
   });
 
   function handleClick(code: string) {
@@ -25,13 +28,13 @@
 </script>
 
 <h1>World Map</h1>
-<p>{visitedCodes.size} / {totalCountries} countries visited</p>
+<p>{visitedCodes.size} / {countries.length} countries visited</p>
 
 <WorldMap {visitedCodes} oncountryclick={handleClick} />
 
 {#if selectedCode}
   <div class="selected-panel">
-    <h2>{selectedCode}</h2>
+    <h2>{selectedName}</h2>
     {#if tripsForSelected.length > 0}
       <ul>
         {#each tripsForSelected as trip (trip.id)}
