@@ -1,0 +1,34 @@
+:root {
+  --color-paper: #f6efe0;
+  --color-paper-dark: #ead9b3;
+  --color-ink: #3a2e1f;
+  --color-ink-soft: #5a4b38;
+  --color-border: #d8c9a3;
+  --color-accent-terracotta: #b5532c;
+  --color-accent-teal: #4a8b7c;
+  --font-heading: Georgia, 'Times New Roman', serif;
+  --font-mono: 'Courier New', monospace;
+  --font-body: Arial, sans-serif;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+}
+
+a {
+  color: var(--color-accent-terracotta);
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
