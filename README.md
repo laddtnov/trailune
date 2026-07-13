@@ -9,6 +9,8 @@
 
 
 **Track every journey.**
+
+
 [🌐 Live Demo](https://trailune.laddtnov.xyz/)
 
 Trailune is a personal travel tracker: log trips with photo journal entries and notes, keep a packing checklist so nothing gets forgotten, track a per-trip Do's & Don'ts list, and see visited countries on a world map.
