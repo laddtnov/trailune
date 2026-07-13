@@ -1,42 +1,57 @@
-# sv
+# Trailune
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+**Track every journey.**
 
-## Creating a project
+Trailune is a personal travel tracker: log trips with photo journal entries and notes, keep a packing checklist so nothing gets forgotten, track a per-trip Do's & Don'ts list, and see visited countries on a world map.
 
-If you're seeing this, you've probably already done this step. Congrats!
+This is a **v1, local-only build** — everything runs in the browser with no backend. Trip/journal/packing data lives in `localStorage`, and photos are stored in `IndexedDB`. A backend is a planned future addition, not part of this build.
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## Features
 
-To recreate this project with the same configuration:
+- **Trips** — create a trip with a name, date range, and the countries you visited.
+- **Journal** — add dated entries with a note and photos per trip; edit or delete entries later.
+- **Packing checklist** — maintain one reusable packing template (grouped by category: Documents, Electronics, Clothing, Toiletries, Other) that's copied into every new trip automatically, so recurring items never need re-typing. Each trip's checklist can then be customized independently.
+- **Do's & Don'ts** — a simple two-column checklist per trip for tips and warnings.
+- **World map** — a clickable SVG world map highlighting every country you've visited, derived automatically from your trips (no separate manual toggle).
 
-```sh
-# recreate this project
-npx sv@0.16.3 create --template minimal --types ts --install npm .
-```
+## Tech stack
+
+- [SvelteKit](https://svelte.dev/docs/kit) (Svelte 5, TypeScript)
+- No backend — `localStorage` + `IndexedDB` (via [`idb`](https://github.com/jakearchibald/idb)) for all persistence
+- [Vitest](https://vitest.dev/) for the storage layer's test suite
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Install dependencies and start the dev server:
 
 ```sh
+npm install
 npm run dev
+```
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+Open the printed `localhost` URL in your browser.
+
+## Testing
+
+```sh
+npm run test
 ```
 
 ## Building
-
-To create a production version of your app:
 
 ```sh
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+## Deferred to v2
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+The following are intentionally out of scope for this build:
+
+- Currency exchange tips
+- "Getting to city center" local transit guidance
+- A user ranking/badge system
+- A backend and real database (enabling multi-device sync)
+
+## Project docs
+
+The full design spec and implementation plan live in [`docs/superpowers/`](docs/superpowers/).
