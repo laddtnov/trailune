@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { listTrips, createTrip } from '$lib/storage/storage';
   import { loadWorldCountries, type CountryInfo } from '$lib/countries';
-  import type { Trip } from '$lib/types';
+  import type { Trip, TransportMode } from '$lib/types';
   import TripCard from '$lib/components/TripCard.svelte';
 
   let trips: Trip[] = $state([]);
@@ -13,6 +13,15 @@
   let endDate = $state('');
   let selectedCountries: Set<string> = $state(new Set());
   let countryFilter = $state('');
+  let transportMode: TransportMode = $state('flight');
+
+  const transportModes: Array<{ value: TransportMode; label: string }> = [
+    { value: 'flight', label: 'Flight' },
+    { value: 'train', label: 'Train' },
+    { value: 'road', label: 'Road' },
+    { value: 'boat', label: 'Boat' },
+    { value: 'other', label: 'Other' }
+  ];
 
   const filteredCountries = $derived(
     countryFilter.trim()
@@ -42,11 +51,12 @@
     endDate = '';
     selectedCountries = new Set();
     countryFilter = '';
+    transportMode = 'flight';
   }
 
   function submit(event: SubmitEvent) {
     event.preventDefault();
-    createTrip({ name, startDate, endDate, countries: Array.from(selectedCountries) });
+    createTrip({ name, startDate, endDate, countries: Array.from(selectedCountries), transportMode });
     trips = listTrips();
     resetForm();
     dialogEl?.close();
@@ -168,6 +178,25 @@
           />
         </label>
       </div>
+
+      <fieldset>
+        <legend class="mb-1.5 text-sm font-medium text-[var(--color-ink-soft)]">How are you getting there?</legend>
+        <div class="flex flex-wrap gap-2">
+          {#each transportModes as option (option.value)}
+            <button
+              type="button"
+              aria-pressed={transportMode === option.value}
+              onclick={() => (transportMode = option.value)}
+              class="rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all duration-150 ease-out {transportMode ===
+              option.value
+                ? 'border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-accent-ink)]'
+                : 'border-[var(--color-card-border)] bg-[var(--color-card)] text-[var(--color-ink)] hover:border-[var(--color-accent)]/50 hover:bg-[var(--color-accent-soft)]'}"
+            >
+              {option.label}
+            </button>
+          {/each}
+        </div>
+      </fieldset>
 
       <fieldset>
         <legend class="mb-1.5 text-sm font-medium text-[var(--color-ink-soft)]">
