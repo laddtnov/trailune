@@ -1,6 +1,6 @@
 import { generateId } from '$lib/utils/id';
 import { createThumbnail } from '$lib/utils/image';
-import type { Trip, JournalEntry } from '$lib/types';
+import type { Trip, JournalEntry, TransportMode } from '$lib/types';
 import * as trips from './local';
 import * as checklist from './checklist';
 import * as photoStore from './photos';
@@ -9,13 +9,20 @@ export * from './local';
 export * from './checklist';
 export { getPhoto, deletePhoto } from './photos';
 
-export function createTrip(input: { name: string; startDate: string; endDate: string; countries: string[] }): Trip {
+export function createTrip(input: {
+  name: string;
+  startDate: string;
+  endDate: string;
+  countries: string[];
+  transportMode?: TransportMode;
+}): Trip {
   const trip: Trip = {
     id: generateId(),
     name: input.name,
     startDate: input.startDate,
     endDate: input.endDate,
     countries: input.countries,
+    transportMode: input.transportMode ?? 'flight',
     createdAt: new Date().toISOString()
   };
   trips.saveTrip(trip);

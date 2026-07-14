@@ -13,7 +13,7 @@ function writeAll<T>(key: string, items: T[]): void {
 }
 
 export function listTrips(): Trip[] {
-  return readAll<Trip>(TRIPS_KEY);
+  return readAll<Trip>(TRIPS_KEY).map((trip) => ({ transportMode: 'flight', ...trip }));
 }
 
 export function getTrip(id: string): Trip | undefined {
