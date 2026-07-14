@@ -37,16 +37,37 @@
     height: auto;
   }
   .world-map :global(path) {
-    fill: var(--color-paper-dark, #e4d4ab);
-    stroke: var(--color-ink, #3a2e1f);
-    stroke-width: 0.5;
+    fill: var(--color-ink-band-soft);
+    stroke: var(--color-ink-band);
+    stroke-width: 0.4;
     cursor: pointer;
-    transition: fill 0.15s ease;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      fill 0.2s var(--ease-out-quart),
+      transform 0.2s var(--ease-out-quart),
+      filter 0.2s var(--ease-out-quart);
   }
   .world-map :global(path:hover) {
-    fill: var(--color-accent-teal, #4a8b7c);
+    fill: var(--color-teal);
+    transform: scale(1.015);
   }
   .world-map :global(path.visited) {
-    fill: var(--color-accent-terracotta, #b5532c);
+    fill: var(--color-accent);
+    filter: drop-shadow(0 0 6px color-mix(in oklch, var(--color-accent) 55%, transparent));
+  }
+  .world-map :global(path.visited:hover) {
+    fill: var(--color-accent-hover);
+    transform: scale(1.02);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .world-map :global(path) {
+      transition: fill 0.2s ease;
+    }
+    .world-map :global(path:hover),
+    .world-map :global(path.visited:hover) {
+      transform: none;
+    }
   }
 </style>
