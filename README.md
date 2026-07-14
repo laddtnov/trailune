@@ -1,13 +1,6 @@
 # Trailune
 
 <p>
-  <a href="https://github.com/laddtnov/trailune/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/laddtnov/trailune/ci.yml?branch=main&style=for-the-badge&label=CI" /></a>
-  <a href="https://github.com/laddtnov/trailune/actions/workflows/deploy.yml"><img alt="Deploy" src="https://img.shields.io/github/actions/workflow/status/laddtnov/trailune/deploy.yml?branch=main&style=for-the-badge&label=Deploy" /></a>
-  <a href="https://github.com/laddtnov/trailune/releases"><img alt="Release" src="https://img.shields.io/github/v/release/laddtnov/trailune?include_prereleases&style=for-the-badge&label=release" /></a>
-  <a href="https://github.com/laddtnov/trailune/commits/main"><img alt="Last commit" src="https://img.shields.io/github/last-commit/laddtnov/trailune?style=for-the-badge" /></a>
-</p>
-
-<p>
   <img alt="SvelteKit" src="https://img.shields.io/badge/SvelteKit-FF3E00?style=for-the-badge&logo=svelte&logoColor=white" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
   <img alt="HTML5" src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" />
