@@ -29,6 +29,21 @@
       : countries
   );
 
+  let activeTab: 'all' | TransportMode = $state('all');
+
+  const tabs: Array<{ value: 'all' | TransportMode; label: string }> = [
+    { value: 'all', label: 'All' },
+    { value: 'flight', label: 'Flight' },
+    { value: 'train', label: 'Train' },
+    { value: 'road', label: 'Road' },
+    { value: 'boat', label: 'Boat' },
+    { value: 'other', label: 'Other' }
+  ];
+
+  const filteredTrips = $derived(
+    activeTab === 'all' ? trips : trips.filter((t) => t.transportMode === activeTab)
+  );
+
   onMount(async () => {
     trips = listTrips();
     countries = await loadWorldCountries();
@@ -88,6 +103,23 @@
   </button>
 </div>
 
+{#if trips.length > 0}
+  <div class="mt-6 flex flex-wrap gap-1.5">
+    {#each tabs as tab (tab.value)}
+      <button
+        type="button"
+        onclick={() => (activeTab = tab.value)}
+        class="rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors duration-150 ease-out {activeTab ===
+        tab.value
+          ? 'border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-accent-ink)]'
+          : 'border-[var(--color-card-border)] bg-[var(--color-card)] text-[var(--color-ink-soft)] hover:border-[var(--color-accent)]/50 hover:text-[var(--color-ink)]'}"
+      >
+        {tab.label}
+      </button>
+    {/each}
+  </div>
+{/if}
+
 {#if trips.length === 0}
   <div
     class="mt-10 flex flex-col items-center rounded-[var(--radius-xl)] border border-dashed border-[var(--color-card-border)] bg-[var(--color-card)]/60 px-6 py-16 text-center"
@@ -117,9 +149,15 @@
       Start your first trip
     </button>
   </div>
+{:else if filteredTrips.length === 0}
+  <div
+    class="mt-10 rounded-[var(--radius-xl)] border border-dashed border-[var(--color-card-border)] bg-[var(--color-card)]/60 px-6 py-16 text-center text-[var(--color-ink-soft)]"
+  >
+    No trips match this filter yet.
+  </div>
 {:else}
   <div class="mt-8 grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-5">
-    {#each trips as trip (trip.id)}
+    {#each filteredTrips as trip (trip.id)}
       <TripCard {trip} />
     {/each}
   </div>
