@@ -18,6 +18,7 @@ const trip: Trip = {
   startDate: '2026-03-03',
   endDate: '2026-03-15',
   countries: ['JP'],
+  transportMode: 'flight',
   createdAt: '2026-01-01T00:00:00.000Z'
 };
 
@@ -47,6 +48,21 @@ describe('trips repository', () => {
     saveTrip(trip);
     deleteTrip('t1');
     expect(listTrips()).toEqual([]);
+  });
+
+  it('defaults transportMode to flight for legacy trips missing the field', () => {
+    const legacyTrip = {
+      id: 't2',
+      name: 'Peru',
+      startDate: '2026-07-10',
+      endDate: '2026-07-20',
+      countries: ['PE'],
+      createdAt: '2026-01-01T00:00:00.000Z'
+    };
+    localStorage.setItem('trailune:trips', JSON.stringify([legacyTrip]));
+
+    expect(listTrips()[0].transportMode).toBe('flight');
+    expect(getTrip('t2')?.transportMode).toBe('flight');
   });
 });
 

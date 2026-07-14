@@ -25,6 +25,22 @@ describe('createTrip', () => {
     createTrip({ name: 'Peru', startDate: '2026-07-10', endDate: '2026-07-20', countries: ['PE'] });
     expect(listPackingItems(null)).toHaveLength(1);
   });
+
+  it('defaults transportMode to flight when not provided', () => {
+    const trip = createTrip({ name: 'Japan', startDate: '2026-03-03', endDate: '2026-03-15', countries: ['JP'] });
+    expect(trip.transportMode).toBe('flight');
+  });
+
+  it('honors an explicit transportMode', () => {
+    const trip = createTrip({
+      name: 'Alps hike',
+      startDate: '2026-08-05',
+      endDate: '2026-08-12',
+      countries: ['AT'],
+      transportMode: 'other'
+    });
+    expect(trip.transportMode).toBe('other');
+  });
 });
 
 describe('deleteTripCascade', () => {

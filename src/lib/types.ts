@@ -1,9 +1,12 @@
+export type TransportMode = 'flight' | 'train' | 'road' | 'boat' | 'other';
+
 export interface Trip {
   id: string;
   name: string;
   startDate: string;
   endDate: string;
   countries: string[];
+  transportMode: TransportMode;
   createdAt: string;
 }
 
