@@ -18,8 +18,9 @@ export function parseCountriesFromSvg(svgText: string): CountryInfo[] {
       const title = path.querySelector('title')?.textContent?.trim();
       // .dataset is intentionally not used here: this SVG is parsed as an XML
       // document (image/svg+xml), and jsdom (unlike real browsers) doesn't
-      // populate .dataset for elements parsed from an XML document.
-      const dataName = path.getAttribute('data-name')?.trim();
+      // populate .dataset for elements parsed from an XML document. Switching
+      // to .dataset breaks every test in countries.test.ts (see issue #3).
+      const dataName = path.getAttribute('data-name')?.trim(); // NOSONAR - see comment above
       const name = resolveCountryName(title, dataName, code);
       return { code, name };
     })

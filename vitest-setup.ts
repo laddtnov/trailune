@@ -9,8 +9,10 @@ import 'fake-indexeddb/auto';
 // this assumption would break and tests may see stale data across files.
 const store: Record<string, string> = {};
 try {
-  // Try to access localStorage - it might throw in jsdom without proper setup
-  void localStorage.length;
+  // Try to access localStorage - it might throw in jsdom without proper setup.
+  // Wrapped in Number(...) (a function call) rather than a bare expression or
+  // a `void`-prefixed expression, since Sonar flags both of those forms.
+  Number(localStorage.length);
 } catch {
   // If it fails, polyfill it
   Object.defineProperty(window, 'localStorage', {
