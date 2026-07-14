@@ -135,7 +135,11 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    :global(.group:hover) .mode-icon {
+    :global(.group:hover) .mode-icon.plane,
+    :global(.group:hover) .mode-icon.train,
+    :global(.group:hover) .mode-icon.car,
+    :global(.group:hover) .mode-icon.boat,
+    :global(.group:hover) .mode-icon.bike {
       transform: none;
     }
   }
