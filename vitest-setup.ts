@@ -10,7 +10,7 @@ import 'fake-indexeddb/auto';
 const store: Record<string, string> = {};
 try {
   // Try to access localStorage - it might throw in jsdom without proper setup
-  localStorage.length;
+  void localStorage.length;
 } catch {
   // If it fails, polyfill it
   Object.defineProperty(window, 'localStorage', {
