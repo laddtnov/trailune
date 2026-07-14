@@ -17,8 +17,15 @@ Trailune is a personal travel tracker: log trips with photo journal entries and 
 
 This is a **v1, local-only build**. There's no backend and no account system — everything runs entirely in your browser. Trip, journal, and packing data live in `localStorage`; photos live in `IndexedDB`. A backend (and the multi-device sync it would enable) is a deliberate v2 addition, not a missing piece of v1.
 
+## Screenshots
+
+| Trips | World map | Trip hub |
+|---|---|---|
+| ![Trips list](docs/screenshots/trips.png) | ![World map](docs/screenshots/map.png) | ![Trip hub](docs/screenshots/trip-hub.png) |
+
 ## Table of contents
 
+- [Screenshots](#screenshots)
 - [Features](#features)
 - [How it's built](#how-its-built)
 - [Routes](#routes)
