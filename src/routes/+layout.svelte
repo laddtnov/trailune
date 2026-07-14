@@ -22,11 +22,18 @@
   class="sticky top-0 z-40 border-b border-black/10 bg-[var(--color-ink-band)] text-[var(--color-accent-ink)]"
 >
   <div class="mx-auto flex max-w-5xl items-center justify-between px-5 py-3 sm:px-8">
-    <a href="/" class="group flex items-center gap-2.5" onclick={() => (mobileNavOpen = false)}>
+    <a
+      href="/"
+      class="group flex items-center gap-2.5"
+      style="perspective: 240px"
+      onclick={() => (mobileNavOpen = false)}
+    >
       <span
-        class="grid size-9 shrink-0 place-items-center rounded-full border-2 border-[var(--color-accent)] font-display text-base font-bold text-[var(--color-accent)] transition-transform duration-200 ease-out group-hover:-rotate-6"
+        class="globe-badge relative grid size-9 shrink-0 place-items-center rounded-full border-2 border-[var(--color-accent)] font-display text-base font-bold text-[var(--color-accent)]"
       >
         T
+        <span class="globe-meridian pointer-events-none absolute inset-0 rounded-full border border-[var(--color-accent)]/50"
+        ></span>
       </span>
       <span class="font-display text-xl font-bold tracking-tight">Trailune</span>
     </a>
@@ -88,3 +95,33 @@
 <main class="mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-12">
   {@render children()}
 </main>
+
+<style>
+  .globe-badge {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+  }
+
+  .globe-meridian {
+    transform: scaleX(0.35);
+  }
+
+  :global(.group:hover) .globe-badge {
+    animation: globe-spin 1.4s linear infinite;
+  }
+
+  @keyframes globe-spin {
+    from {
+      transform: rotateY(0deg);
+    }
+    to {
+      transform: rotateY(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.group:hover) .globe-badge {
+      animation: none;
+    }
+  }
+</style>
