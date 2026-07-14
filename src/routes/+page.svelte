@@ -15,13 +15,25 @@
   let countryFilter = $state('');
   let transportMode: TransportMode = $state('flight');
 
-  const transportModes: Array<{ value: TransportMode; label: string }> = [
-    { value: 'flight', label: 'Flight' },
-    { value: 'train', label: 'Train' },
-    { value: 'road', label: 'Road' },
-    { value: 'boat', label: 'Boat' },
-    { value: 'other', label: 'Other' }
-  ];
+  const MODE_LABELS: Record<TransportMode, string> = {
+    flight: 'Flight',
+    train: 'Train',
+    road: 'Road',
+    boat: 'Boat',
+    other: 'Other'
+  };
+
+  const MODE_ICONS: Record<TransportMode, 'plane' | 'train' | 'car' | 'boat' | 'bike'> = {
+    flight: 'plane',
+    train: 'train',
+    road: 'car',
+    boat: 'boat',
+    other: 'bike'
+  };
+
+  const transportModes: Array<{ value: TransportMode; label: string }> = (
+    Object.keys(MODE_LABELS) as TransportMode[]
+  ).map((value) => ({ value, label: MODE_LABELS[value] }));
 
   const filteredCountries = $derived(
     countryFilter.trim()
@@ -33,11 +45,7 @@
 
   const tabs: Array<{ value: 'all' | TransportMode; label: string }> = [
     { value: 'all', label: 'All' },
-    { value: 'flight', label: 'Flight' },
-    { value: 'train', label: 'Train' },
-    { value: 'road', label: 'Road' },
-    { value: 'boat', label: 'Boat' },
-    { value: 'other', label: 'Other' }
+    ...transportModes
   ];
 
   const filteredTrips = $derived(
@@ -73,6 +81,7 @@
     event.preventDefault();
     createTrip({ name, startDate, endDate, countries: Array.from(selectedCountries), transportMode });
     trips = listTrips();
+    activeTab = 'all';
     resetForm();
     dialogEl?.close();
   }
@@ -108,6 +117,7 @@
     {#each tabs as tab (tab.value)}
       <button
         type="button"
+        aria-pressed={activeTab === tab.value}
         onclick={() => (activeTab = tab.value)}
         class="rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors duration-150 ease-out {activeTab ===
         tab.value
@@ -221,15 +231,48 @@
         <legend class="mb-1.5 text-sm font-medium text-[var(--color-ink-soft)]">How are you getting there?</legend>
         <div class="flex flex-wrap gap-2">
           {#each transportModes as option (option.value)}
+            {@const icon = MODE_ICONS[option.value]}
             <button
               type="button"
               aria-pressed={transportMode === option.value}
               onclick={() => (transportMode = option.value)}
-              class="rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all duration-150 ease-out {transportMode ===
+              class="inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all duration-150 ease-out {transportMode ===
               option.value
                 ? 'border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-accent-ink)]'
                 : 'border-[var(--color-card-border)] bg-[var(--color-card)] text-[var(--color-ink)] hover:border-[var(--color-accent)]/50 hover:bg-[var(--color-accent-soft)]'}"
             >
+              {#if icon === 'plane'}
+                <svg class="size-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M21.7 3.3a1 1 0 0 0-1-.24L3.35 8.94a1 1 0 0 0-.06 1.88l7.15 2.74 2.74 7.15a1 1 0 0 0 1.88-.06l5.88-17.35a1 1 0 0 0-.24-1Z"
+                  />
+                </svg>
+              {:else if icon === 'train'}
+                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <rect x="5" y="3" width="14" height="14" rx="4" />
+                  <path d="M5 12h14M8 17l-2 3M16 17l2 3" />
+                  <circle cx="9" cy="15" r="0.8" fill="currentColor" />
+                  <circle cx="15" cy="15" r="0.8" fill="currentColor" />
+                </svg>
+              {:else if icon === 'car'}
+                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <path d="M4 16l1.5-5A2 2 0 0 1 7.4 9.5h9.2A2 2 0 0 1 18.5 11l1.5 5" />
+                  <rect x="3" y="16" width="18" height="4" rx="1.5" />
+                  <circle cx="7.5" cy="20" r="1.3" fill="currentColor" />
+                  <circle cx="16.5" cy="20" r="1.3" fill="currentColor" />
+                </svg>
+              {:else if icon === 'boat'}
+                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <path d="M4 14h16l-2 5H6l-2-5Z" />
+                  <path d="M8 14V6l7 4-3 1.6M12 3v3" />
+                </svg>
+              {:else}
+                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <circle cx="6" cy="17" r="3" />
+                  <circle cx="18" cy="17" r="3" />
+                  <path d="M6 17l4-8h4l4 8M10 9h4M10 9L8 5h3" />
+                </svg>
+              {/if}
               {option.label}
             </button>
           {/each}
