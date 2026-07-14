@@ -11,6 +11,7 @@
   ];
 
   let mobileNavOpen = $state(false);
+  const brandLetters = 'Trailune'.split('');
 
   function isActive(href: string): boolean {
     if (href === '/') return page.url.pathname === '/';
@@ -35,7 +36,11 @@
         <span class="globe-meridian pointer-events-none absolute inset-0 rounded-full border border-[var(--color-accent)]/50"
         ></span>
       </span>
-      <span class="font-display text-xl font-bold tracking-tight">Trailune</span>
+      <span class="brand-name font-display text-xl font-bold tracking-tight">
+        {#each brandLetters as letter, i (i)}
+          <span class="brand-letter inline-block" style="animation-delay: {i * 0.05}s">{letter}</span>
+        {/each}
+      </span>
     </a>
 
     <nav class="hidden items-center gap-1 sm:flex">
@@ -122,6 +127,38 @@
   @media (prefers-reduced-motion: reduce) {
     :global(.group:hover) .globe-badge {
       animation: none;
+    }
+  }
+
+  .brand-letter {
+    animation-name: none;
+  }
+
+  :global(.group:hover) .brand-letter {
+    animation-name: letter-hop;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+  }
+
+  @keyframes letter-hop {
+    0% {
+      transform: translateY(0);
+    }
+    35% {
+      transform: translateY(-5px);
+    }
+    60% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.group:hover) .brand-letter {
+      animation-name: none;
     }
   }
 </style>
