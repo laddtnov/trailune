@@ -3,6 +3,12 @@ export interface CountryInfo {
   name: string;
 }
 
+function resolveCountryName(title: string | undefined, dataName: string | undefined, code: string): string {
+  if (title && title.length > 0) return title;
+  if (dataName && dataName.length > 0) return dataName;
+  return code;
+}
+
 export function parseCountriesFromSvg(svgText: string): CountryInfo[] {
   const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
   const paths = Array.from(doc.querySelectorAll('path[id]'));
@@ -10,13 +16,11 @@ export function parseCountriesFromSvg(svgText: string): CountryInfo[] {
     .map((path) => {
       const code = path.getAttribute('id') ?? '';
       const title = path.querySelector('title')?.textContent?.trim();
+      // .dataset is intentionally not used here: this SVG is parsed as an XML
+      // document (image/svg+xml), and jsdom (unlike real browsers) doesn't
+      // populate .dataset for elements parsed from an XML document.
       const dataName = path.getAttribute('data-name')?.trim();
-      const name =
-        title && title.length > 0
-          ? title
-          : dataName && dataName.length > 0
-            ? dataName
-            : code;
+      const name = resolveCountryName(title, dataName, code);
       return { code, name };
     })
     .filter((c) => /^[A-Za-z]{2}$/.test(c.code))
