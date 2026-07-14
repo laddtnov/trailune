@@ -1,34 +1,110 @@
-:root {
-  --color-paper: #f6efe0;
-  --color-paper-dark: #ead9b3;
-  --color-ink: #3a2e1f;
-  --color-ink-soft: #5a4b38;
-  --color-border: #d8c9a3;
-  --color-accent-terracotta: #b5532c;
-  --color-accent-teal: #4a8b7c;
-  --font-heading: Georgia, 'Times New Roman', serif;
-  --font-mono: 'Courier New', monospace;
-  --font-body: Arial, sans-serif;
+@import 'tailwindcss';
+
+@theme {
+  /* Canvas: near-white, chroma-flat. Warmth lives in accents and card
+     surfaces, never in the page background — keeps the app from reading
+     as generic cream-SaaS. */
+  --color-canvas: oklch(98% 0.003 60);
+  --color-canvas-dim: oklch(95.5% 0.004 60);
+
+  /* Ink: warm near-black brown, used for text and the dark "journal cover"
+     band (nav, hero moments). */
+  --color-ink: oklch(21% 0.025 40);
+  --color-ink-soft: oklch(42% 0.03 42);
+  --color-ink-band: oklch(24% 0.032 38);
+  --color-ink-band-soft: oklch(34% 0.03 40);
+
+  /* Card: warm cream, reserved for bounded "postcard" surfaces (cards,
+     panels) — never the page background itself. */
+  --color-card: oklch(97.5% 0.018 66);
+  --color-card-border: oklch(87% 0.035 55);
+
+  /* Terracotta: the one bold, confident accent. Used for primary actions,
+     current selection, and state indicators. */
+  --color-accent: oklch(57% 0.17 35);
+  --color-accent-hover: oklch(51% 0.17 34);
+  --color-accent-active: oklch(46% 0.16 34);
+  --color-accent-soft: oklch(93% 0.045 40);
+  --color-accent-ink: oklch(98% 0.01 60);
+
+  /* Teal: secondary accent for the map / visited state, kept distinct
+     from terracotta so "visited" and "primary action" never collide. */
+  --color-teal: oklch(53% 0.09 195);
+  --color-teal-hover: oklch(47% 0.09 195);
+  --color-teal-soft: oklch(92% 0.035 195);
+
+  /* Semantic */
+  --color-danger: oklch(48% 0.19 25);
+  --color-danger-hover: oklch(42% 0.19 25);
+  --color-danger-soft: oklch(93% 0.045 25);
+  --color-success: oklch(58% 0.13 150);
+  --color-success-soft: oklch(93% 0.04 150);
+
+  /* Type: one display serif for headings (journal/passport character),
+     one sans for UI/body, one mono for stamp-style labels and dates. */
+  --font-display: ui-serif, Georgia, 'Times New Roman', serif;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  /* Radius: confident, rounded — Airbnb-adjacent, not sharp SaaS corners. */
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.75rem;
+
+  /* Shadows: warm-tinted, never pure black, so cards feel lifted off the
+     canvas rather than dropped on top of it. */
+  --shadow-card: 0 1px 2px oklch(30% 0.03 40 / 0.06), 0 8px 24px oklch(30% 0.03 40 / 0.08);
+  --shadow-card-hover: 0 2px 4px oklch(30% 0.03 40 / 0.08), 0 16px 36px oklch(30% 0.03 40 / 0.14);
+  --shadow-pop: 0 12px 40px oklch(30% 0.03 40 / 0.18);
+
+  /* Motion: exponential ease-out, no bounce. */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-body {
-  background: var(--color-paper);
-  color: var(--color-ink);
-  font-family: var(--font-body);
-  margin: 0;
-}
+@layer base {
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    margin: 0;
+  }
 
-h1,
-h2,
-h3 {
-  font-family: var(--font-heading);
-}
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
 
-a {
-  color: var(--color-accent-terracotta);
-}
+  p {
+    text-wrap: pretty;
+  }
 
-button {
-  font-family: var(--font-body);
-  cursor: pointer;
+  a {
+    color: var(--color-accent);
+  }
+
+  button {
+    font-family: var(--font-sans);
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
