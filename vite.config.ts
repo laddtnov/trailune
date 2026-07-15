@@ -14,12 +14,24 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 
+			paths: {
+				// Force root-absolute asset paths everywhere. Without this, SvelteKit's
+				// default relative paths break the SPA-fallback shell (200.html) when it's
+				// reused for nested dynamic routes like /trips/[id] — the browser resolves
+				// "./_app/..." against the route's URL depth instead of the site root.
+				relative: false
+			},
+
 			adapter: adapter({
 				fallback: '200.html'
 			})
 		}),
 		SvelteKitPWA({
 			registerType: 'autoUpdate',
+			kit: {
+				adapterFallback: '200.html',
+				spa: true
+			},
 			workbox: {
 				navigateFallback: '200.html'
 			},
