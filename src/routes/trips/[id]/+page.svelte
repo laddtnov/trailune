@@ -7,12 +7,13 @@
   import type { Trip, JournalEntry } from '$lib/types';
   import PackingChecklist from '$lib/components/PackingChecklist.svelte';
   import DoDontList from '$lib/components/DoDontList.svelte';
+  import TipsList from '$lib/components/TipsList.svelte';
 
   let tripId = $derived(page.params.id);
   let trip: Trip | undefined = $state();
   let entries: JournalEntry[] = $state([]);
   let thumbnails: Record<string, string> = $state({});
-  let activeTab: 'journal' | 'packing' | 'dodont' = $state('journal');
+  let activeTab: 'journal' | 'packing' | 'tips' | 'dodont' = $state('journal');
 
   let note = $state('');
   let date = $state('');
@@ -25,6 +26,7 @@
   const tabs = [
     { id: 'journal' as const, label: 'Journal' },
     { id: 'packing' as const, label: 'Packing' },
+    { id: 'tips' as const, label: 'Tips' },
     { id: 'dodont' as const, label: "Do's & Don'ts" }
   ];
 
@@ -80,7 +82,7 @@
   async function handleDeleteTrip() {
     if (!trip) return;
     const confirmed = confirm(
-      `Delete "${trip.name}" and all of its journal entries, photos, packing list, and do's & don'ts? This cannot be undone.`
+      `Delete "${trip.name}" and all of its journal entries, photos, packing list, tips, and do's & don'ts? This cannot be undone.`
     );
     if (!confirmed) return;
     await deleteTripCascade(tripId);
@@ -240,6 +242,8 @@
       </section>
     {:else if activeTab === 'packing'}
       <PackingChecklist tripId={tripId} />
+    {:else if activeTab === 'tips'}
+      <TipsList {tripId} />
     {:else}
       <DoDontList {tripId} />
     {/if}

@@ -1,12 +1,14 @@
 import { generateId } from '$lib/utils/id';
 import { createThumbnail } from '$lib/utils/image';
-import type { Trip, JournalEntry, TransportMode } from '$lib/types';
+import type { Trip, JournalEntry, TransportMode, TipEntry, TipCategory } from '$lib/types';
 import * as trips from './local';
 import * as checklist from './checklist';
 import * as photoStore from './photos';
+import * as tipsRepo from './tips';
 
 export * from './local';
 export * from './checklist';
+export * from './tips';
 export { getPhoto, deletePhoto } from './photos';
 
 export function createTrip(input: {
@@ -55,6 +57,15 @@ export async function deleteTripCascade(tripId: string): Promise<void> {
   trips.deleteJournalEntriesForTrip(tripId);
   checklist.deletePackingItemsForTrip(tripId);
   checklist.deleteDoDontItemsForTrip(tripId);
+
+  const tripTips = tipsRepo.listTips(tripId);
+  for (const tip of tripTips) {
+    if (tip.photoId) {
+      await photoStore.deletePhoto(tip.photoId);
+    }
+  }
+  tipsRepo.deleteTipsForTrip(tripId);
+
   trips.deleteTrip(tripId);
 }
 
@@ -84,4 +95,45 @@ export async function addJournalEntry(
   };
   trips.saveJournalEntry(entry);
   return entry;
+}
+
+export async function addTipEntry(
+  tripId: string,
+  input: { category: TipCategory; note: string; photoFile: File | null }
+): Promise<TipEntry> {
+  let photoId: string | null = null;
+  if (input.photoFile) {
+    photoId = generateId();
+    let thumbnailBlob: Blob;
+    try {
+      thumbnailBlob = await createThumbnail(input.photoFile);
+    } catch {
+      thumbnailBlob = input.photoFile;
+    }
+    await photoStore.savePhoto({
+      id: photoId,
+      blob: input.photoFile,
+      thumbnailBlob,
+      createdAt: new Date().toISOString()
+    });
+  }
+
+  const tip: TipEntry = {
+    id: generateId(),
+    tripId,
+    category: input.category,
+    note: input.note,
+    photoId,
+    createdAt: new Date().toISOString()
+  };
+  tipsRepo.saveTip(tip);
+  return tip;
+}
+
+export async function deleteTipEntryWithPhoto(id: string): Promise<void> {
+  const tip = tipsRepo.getTip(id);
+  if (tip?.photoId) {
+    await photoStore.deletePhoto(tip.photoId);
+  }
+  tipsRepo.deleteTip(id);
 }
