@@ -64,7 +64,13 @@
   }
 
   async function remove(id: string) {
+    const tip = tips.find((t) => t.id === id);
     await deleteTipEntryWithPhoto(id);
+    if (tip?.photoId && thumbnails[tip.photoId]) {
+      URL.revokeObjectURL(thumbnails[tip.photoId]);
+      const { [tip.photoId]: _removed, ...rest } = thumbnails;
+      thumbnails = rest;
+    }
     await load();
   }
 </script>
