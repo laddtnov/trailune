@@ -2,6 +2,7 @@ import adapter from '@sveltejs/adapter-static';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
+import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 
 export default defineConfig({
 	plugins: [
@@ -16,6 +17,21 @@ export default defineConfig({
 			adapter: adapter({
 				fallback: '200.html'
 			})
+		}),
+		SvelteKitPWA({
+			registerType: 'autoUpdate',
+			manifest: {
+				name: 'Trailune',
+				short_name: 'Trailune',
+				description: 'Track every journey.',
+				display: 'standalone',
+				theme_color: '#2c1a14',
+				background_color: '#faf8f6',
+				icons: [
+					{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
+					{ src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+				]
+			}
 		})
 	],
 	test: {

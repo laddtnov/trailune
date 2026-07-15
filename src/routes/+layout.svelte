@@ -1,8 +1,11 @@
 <script lang="ts">
   import '../app.css';
   import { page } from '$app/state';
+  import { pwaInfo } from 'virtual:pwa-info';
 
   let { children } = $props();
+
+  let webManifestLink = $derived(pwaInfo ? pwaInfo.webManifest.linkTag : '');
 
   const navItems = [
     { href: '/', label: 'Trips' },
@@ -18,6 +21,10 @@
     return page.url.pathname.startsWith(href);
   }
 </script>
+
+<svelte:head>
+  {@html webManifestLink}
+</svelte:head>
 
 <header
   class="sticky top-0 z-40 border-b border-black/10 bg-[var(--color-ink-band)] text-[var(--color-accent-ink)]"
