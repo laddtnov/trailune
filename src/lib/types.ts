@@ -42,3 +42,14 @@ export interface DoDontItem {
   text: string;
   checked: boolean;
 }
+
+export type TipCategory = 'currency' | 'avoid' | 'transit' | 'sightseeing';
+
+export interface TipEntry {
+  id: string;
+  tripId: string;
+  category: TipCategory;
+  note: string;
+  photoId: string | null;
+  createdAt: string;
+}
