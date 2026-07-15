@@ -110,7 +110,7 @@
   {@render children()}
 </main>
 
-<footer class="border-t border-black/10 bg-[var(--color-ink-band)] py-6 text-center text-sm text-[var(--color-accent-ink)]/70">
+<footer class="border-t border-[var(--color-card-border)] bg-[var(--color-ink-band)] py-6 text-center text-sm text-[var(--color-accent-ink)]/70">
   <button
     type="button"
     onclick={() => feedbackDialog?.open()}

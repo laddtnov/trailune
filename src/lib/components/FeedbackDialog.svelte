@@ -94,7 +94,7 @@
       </button>
       <button
         type="submit"
-        disabled={submitting}
+        disabled={submitting || status === 'success'}
         class="rounded-full bg-[var(--color-accent)] px-5 py-2 text-sm font-semibold text-[var(--color-accent-ink)] transition-colors hover:bg-[var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {submitting ? 'Sending…' : 'Send'}
