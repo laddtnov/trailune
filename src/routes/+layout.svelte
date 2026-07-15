@@ -2,6 +2,7 @@
   import '../app.css';
   import { page } from '$app/state';
   import { pwaInfo } from 'virtual:pwa-info';
+  import FeedbackDialog from '$lib/components/FeedbackDialog.svelte';
 
   let { children } = $props();
 
@@ -14,6 +15,7 @@
   ];
 
   let mobileNavOpen = $state(false);
+  let feedbackDialog: FeedbackDialog | undefined = $state();
   const brandLetters = 'Trailune'.split('');
 
   function isActive(href: string): boolean {
@@ -107,6 +109,18 @@
 <main class="mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-12">
   {@render children()}
 </main>
+
+<footer class="border-t border-[var(--color-card-border)] bg-[var(--color-ink-band)] py-6 text-center text-sm text-[var(--color-accent-ink)]/70">
+  <button
+    type="button"
+    onclick={() => feedbackDialog?.open()}
+    class="underline decoration-[var(--color-accent-ink)]/40 underline-offset-4 transition-colors hover:text-[var(--color-accent-ink)]"
+  >
+    Feedback
+  </button>
+</footer>
+
+<FeedbackDialog bind:this={feedbackDialog} />
 
 {#await import('$lib/PwaRegister.svelte') then { default: PwaRegister }}
   <PwaRegister />
