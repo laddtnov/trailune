@@ -20,6 +20,9 @@ export default defineConfig({
 		}),
 		SvelteKitPWA({
 			registerType: 'autoUpdate',
+			workbox: {
+				navigateFallback: '200.html'
+			},
 			manifest: {
 				name: 'Trailune',
 				short_name: 'Trailune',
