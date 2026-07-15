@@ -82,7 +82,7 @@
   async function handleDeleteTrip() {
     if (!trip) return;
     const confirmed = confirm(
-      `Delete "${trip.name}" and all of its journal entries, photos, packing list, and do's & don'ts? This cannot be undone.`
+      `Delete "${trip.name}" and all of its journal entries, photos, packing list, tips, and do's & don'ts? This cannot be undone.`
     );
     if (!confirmed) return;
     await deleteTripCascade(tripId);
