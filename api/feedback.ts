@@ -4,11 +4,11 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 function escapeHtml(value: string): string {
   return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }
 
 function jsonResponse(body: unknown, status: number): Response {
@@ -35,7 +35,7 @@ export async function POST(request: Request): Promise<Response> {
     from: 'Trailune Feedback <feedback@trailune.laddtnov.xyz>',
     to: ['novytskiyvladislav@proton.me'],
     subject: 'New Trailune feedback',
-    html: `<p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>`
+    html: `<p>${escapeHtml(message).replaceAll('\n', '<br>')}</p>`
   });
 
   if (error) {
