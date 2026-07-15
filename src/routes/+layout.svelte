@@ -108,6 +108,10 @@
   {@render children()}
 </main>
 
+{#await import('$lib/PwaRegister.svelte') then { default: PwaRegister }}
+  <PwaRegister />
+{/await}
+
 <style>
   .globe-badge {
     transform-style: preserve-3d;
