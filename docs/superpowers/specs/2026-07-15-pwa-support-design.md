@@ -20,6 +20,19 @@ Make Trailune installable and fully offline-capable. Since the app already has z
 - No push notifications, background sync, or any other service-worker capability beyond offline asset caching.
 - No changes to the existing favicon (`static/favicon.svg` stays as-is for the browser tab icon; new PNGs are generated alongside it for the install icon).
 
+## Adapter change (required for true offline cold-start)
+
+Trailune currently server-renders each page per-request via `@sveltejs/adapter-auto` → Vercel (no prerendering, no SPA mode). Client-side navigation between already-visited routes would work offline under a service worker either way, but launching the installed app icon while fully offline (a cold start) needs the start page's HTML available from the cache — which per-request SSR doesn't guarantee.
+
+Since every route already loads its data entirely client-side (`localStorage`/IndexedDB via `onMount`, no server `load` functions), this app is a natural fit for SvelteKit's static/SPA-fallback mode:
+
+- Swap `@sveltejs/adapter-auto` for `@sveltejs/adapter-static`, configured with a `fallback` HTML page.
+- Add a root `src/routes/+layout.ts` with `export const prerender = true;`, making prerendering the default for every route.
+- The two dynamic routes — `src/routes/trips/[id]/+page.svelte` and `src/routes/trips/[id]/entry/[entryId]/+page.svelte` — get a sibling `+page.ts` with `export const prerender = false;`, since their `[id]`/`[entryId]` params are runtime-generated UUIDs with no fixed set of values to prerender. These routes are instead served through the adapter's SPA fallback page at runtime, and the existing client-side `onMount` lookup (already how these pages load trip/entry data from storage) takes over exactly as it does today — no component logic changes.
+- This turns the whole site into static HTML/JS/CSS, which the service worker can then fully precache, guaranteeing offline cold-start works for every route.
+
+Vercel serves static-adapter output natively, so the existing GitHub Actions deploy workflow (`vercel deploy`) needs no changes.
+
 ## Tooling
 
 **`@vite-pwa/sveltekit`** (new dev dependency), added to `vite.config.ts` alongside the existing `tailwindcss()` and `sveltekit()` plugins. It generates the web app manifest and a Workbox-based service worker automatically, configured to precache all built assets (the SvelteKit app shell) — the standard "auto-update precache" pattern, not a hand-rolled service worker.
@@ -53,4 +66,4 @@ icons: [
 ## Testing
 
 - No new Vitest coverage — this is build/config-level tooling with no application logic to unit test, consistent with how the project already treats build-tool changes (e.g. no tests were added for the Tailwind v4 setup itself).
-- Verification is manual: `npm run build && npm run preview`, then in a browser — confirm the manifest is served, confirm the install prompt/icon appears, install the app, then go offline (devtools "Offline" throttling) and confirm the app still loads and all routes still navigate.
+- Verification is manual: `npm run build && npm run preview`, then in a browser — confirm the manifest is served, confirm the install prompt/icon appears, install the app, then go offline (devtools "Offline" throttling) and confirm the app still loads and all routes still navigate, including a hard reload on a dynamic `/trips/[id]` route while offline.
