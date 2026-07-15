@@ -1,7 +1,15 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createTrip, deleteTripCascade, addJournalEntry, deleteJournalEntryWithPhotos } from './storage';
+import {
+	createTrip,
+	deleteTripCascade,
+	addJournalEntry,
+	deleteJournalEntryWithPhotos,
+	addTipEntry,
+	deleteTipEntryWithPhoto
+} from './storage';
 import { savePackingItem, listPackingItems, saveDoDontItem, listDoDontItems } from './checklist';
 import { listJournalEntries } from './local';
+import { listTips } from './tips';
 import { getPhoto } from './photos';
 import { generateId } from '$lib/utils/id';
 
@@ -67,6 +75,17 @@ describe('deleteTripCascade', () => {
 
     expect(await getPhoto(photoId)).toBeUndefined();
   });
+
+  it('removes the trip tips along with their photos', async () => {
+    const trip = createTrip({ name: 'Japan', startDate: '2026-03-03', endDate: '2026-03-15', countries: ['JP'] });
+    const file = new File([new Blob(['fake'], { type: 'image/jpeg' })], 'photo.jpg', { type: 'image/jpeg' });
+    const tip = await addTipEntry(trip.id, { category: 'currency', note: 'Good rate downtown', photoFile: file });
+
+    await deleteTripCascade(trip.id);
+
+    expect(listTips(trip.id)).toEqual([]);
+    expect(await getPhoto(tip.photoId!)).toBeUndefined();
+  });
 });
 
 describe('deleteJournalEntryWithPhotos', () => {
@@ -109,5 +128,49 @@ describe('addJournalEntry', () => {
     const trip = createTrip({ name: 'Japan', startDate: '2026-03-03', endDate: '2026-03-15', countries: ['JP'] });
     const entry = await addJournalEntry(trip.id, { date: '2026-03-05', note: 'No photos today', photoFiles: [] });
     expect(entry.photoIds).toEqual([]);
+  });
+});
+
+describe('addTipEntry', () => {
+  it('creates a tip with no photo when none is provided', async () => {
+    const trip = createTrip({ name: 'Japan', startDate: '2026-03-03', endDate: '2026-03-15', countries: ['JP'] });
+    const tip = await addTipEntry(trip.id, { category: 'currency', note: 'Best rate near the station', photoFile: null });
+    expect(tip.photoId).toBeNull();
+    expect(tip.category).toBe('currency');
+    expect(tip.note).toBe('Best rate near the station');
+  });
+
+  it('stores an uploaded photo and links its id on the tip', async () => {
+    const trip = createTrip({ name: 'Japan', startDate: '2026-03-03', endDate: '2026-03-15', countries: ['JP'] });
+    const file = new File([new Blob(['fake'], { type: 'image/jpeg' })], 'photo.jpg', { type: 'image/jpeg' });
+
+    const tip = await addTipEntry(trip.id, { category: 'sightseeing', note: 'Great view at dusk', photoFile: file });
+
+    expect(tip.photoId).not.toBeNull();
+    const stored = await getPhoto(tip.photoId!);
+    expect(stored?.id).toBe(tip.photoId);
+  });
+});
+
+describe('deleteTipEntryWithPhoto', () => {
+  it('deletes the tip and its photo blob', async () => {
+    const trip = createTrip({ name: 'Japan', startDate: '2026-03-03', endDate: '2026-03-15', countries: ['JP'] });
+    const file = new File([new Blob(['fake'], { type: 'image/jpeg' })], 'photo.jpg', { type: 'image/jpeg' });
+    const tip = await addTipEntry(trip.id, { category: 'avoid', note: 'Skip this street at night', photoFile: file });
+    expect(await getPhoto(tip.photoId!)).toBeDefined();
+
+    await deleteTipEntryWithPhoto(tip.id);
+
+    expect(await getPhoto(tip.photoId!)).toBeUndefined();
+    expect(listTips(trip.id)).toEqual([]);
+  });
+
+  it('handles a tip with no photo gracefully', async () => {
+    const trip = createTrip({ name: 'Japan', startDate: '2026-03-03', endDate: '2026-03-15', countries: ['JP'] });
+    const tip = await addTipEntry(trip.id, { category: 'transit', note: 'Airport train is cheapest', photoFile: null });
+
+    await deleteTipEntryWithPhoto(tip.id);
+
+    expect(listTips(trip.id)).toEqual([]);
   });
 });
