@@ -92,7 +92,18 @@
     hoveredStats = null;
     hoverPosition = null;
   }
+
+  function handleWindowPointerDown(event: PointerEvent) {
+    if (!hoveredCode) return;
+    const target = event.target as Element;
+    if (target.closest('.country-popover') || target.closest('path[id]')) return;
+    hoveredCode = null;
+    hoveredStats = null;
+    hoverPosition = null;
+  }
 </script>
+
+<svelte:window onpointerdown={handleWindowPointerDown} />
 
 <div class="flex flex-wrap items-end justify-between gap-4">
   <div>
