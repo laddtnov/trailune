@@ -16,10 +16,16 @@
   let svgContainer: HTMLDivElement | undefined = $state();
   let lastPointerType = 'mouse';
 
+  let revealIndex = 0;
+
   function applyRevealClass(path: Element, code: string) {
     if (!newlyVisitedCodes.has(code)) return;
-    path.classList.add('revealing');
-    setTimeout(() => path.classList.remove('revealing'), 600);
+    const delay = revealIndex * 80;
+    revealIndex += 1;
+    setTimeout(() => {
+      path.classList.add('revealing');
+      setTimeout(() => path.classList.remove('revealing'), 600);
+    }, delay);
   }
 
   onMount(async () => {
@@ -29,6 +35,7 @@
     svgContainer.innerHTML = svgText;
     const svg = svgContainer.querySelector('svg');
     svg?.setAttribute('class', 'world-map-svg');
+    revealIndex = 0;
     svgContainer.querySelectorAll('path[id]').forEach((path) => {
       const code = path.id;
       path.addEventListener('pointerdown', (e) => {
@@ -59,6 +66,7 @@
 
   $effect(() => {
     if (!svgContainer) return;
+    revealIndex = 0;
     svgContainer.querySelectorAll('path[id]').forEach((path) => {
       const code = path.id;
       path.classList.toggle('visited', visitedCodes.has(code));
