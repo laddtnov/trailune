@@ -14,6 +14,7 @@
   } = $props();
 
   let svgContainer: HTMLDivElement | undefined = $state();
+  let lastPointerType = 'mouse';
 
   function applyRevealClass(path: Element, code: string) {
     if (!newlyVisitedCodes.has(code)) return;
@@ -30,11 +31,27 @@
     svg?.setAttribute('class', 'world-map-svg');
     svgContainer.querySelectorAll('path[id]').forEach((path) => {
       const code = path.id;
-      path.addEventListener('click', () => oncountryclick?.(code));
-      path.addEventListener('pointerenter', (e) => {
-        oncountryhover?.(code, { x: (e as PointerEvent).clientX, y: (e as PointerEvent).clientY });
+      path.addEventListener('pointerdown', (e) => {
+        const pe = e as PointerEvent;
+        lastPointerType = pe.pointerType;
+        if (pe.pointerType === 'touch' || pe.pointerType === 'pen') {
+          oncountryhover?.(code, { x: pe.clientX, y: pe.clientY });
+        }
       });
-      path.addEventListener('pointerleave', () => oncountryhover?.(null, null));
+      path.addEventListener('click', () => {
+        if (lastPointerType === 'touch' || lastPointerType === 'pen') return;
+        oncountryclick?.(code);
+      });
+      path.addEventListener('pointerenter', (e) => {
+        const pe = e as PointerEvent;
+        if (pe.pointerType !== 'mouse') return;
+        oncountryhover?.(code, { x: pe.clientX, y: pe.clientY });
+      });
+      path.addEventListener('pointerleave', (e) => {
+        const pe = e as PointerEvent;
+        if (pe.pointerType !== 'mouse') return;
+        oncountryhover?.(null, null);
+      });
       path.classList.toggle('visited', visitedCodes.has(code));
       applyRevealClass(path, code);
     });
