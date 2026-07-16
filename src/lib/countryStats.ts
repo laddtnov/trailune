@@ -17,10 +17,8 @@ export function getCountryStats(code: string, trips: Trip[]): CountryStats | nul
   if (matching.length === 0) return null;
 
   const totalDays = matching.reduce((sum, trip) => sum + daysInTrip(trip), 0);
-  const lastVisitDate = matching.reduce(
-    (latest, trip) => (trip.endDate > latest ? trip.endDate : latest),
-    matching[0].endDate
-  );
+  const lastVisitTimestamp = Math.max(...matching.map((trip) => new Date(trip.endDate).getTime()));
+  const lastVisitDate = new Date(lastVisitTimestamp).toISOString().slice(0, 10);
 
   return { visitCount: matching.length, totalDays, lastVisitDate };
 }
