@@ -1,13 +1,23 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { tweened } from 'svelte/motion';
+  import { cubicOut } from 'svelte/easing';
   import WorldMap from '$lib/components/WorldMap.svelte';
+  import CountryPopover from '$lib/components/CountryPopover.svelte';
   import { listTrips } from '$lib/storage/storage';
   import { loadWorldCountries, type CountryInfo } from '$lib/countries';
+  import { getCountryStats, type CountryStats } from '$lib/countryStats';
+  import { getLastSeenVisitedCodes, setLastSeenVisitedCodes } from '$lib/storage/mapViewState';
   import type { Trip } from '$lib/types';
 
   let trips: Trip[] = $state([]);
   let countries: CountryInfo[] = $state([]);
   let selectedCode: string | null = $state(null);
+  let newlyVisitedCodes: Set<string> = $state(new Set());
+
+  let hoveredCode: string | null = $state(null);
+  let hoveredStats: CountryStats | null = $state(null);
+  let hoverPosition: { x: number; y: number } | null = $state(null);
 
   let visitedCodes = $derived(new Set(trips.flatMap((t) => t.countries)));
   let tripsForSelected = $derived(
@@ -16,33 +26,116 @@
   let selectedName = $derived(
     selectedCode ? (countries.find((c) => c.code === selectedCode)?.name ?? selectedCode) : ''
   );
+  let hoveredName = $derived(
+    hoveredCode ? (countries.find((c) => c.code === hoveredCode)?.name ?? hoveredCode) : ''
+  );
+
+  const visitedCount = tweened(0, { duration: 600, easing: cubicOut });
   let percentVisited = $derived(
-    countries.length > 0 ? Math.round((visitedCodes.size / countries.length) * 100) : 0
+    countries.length > 0 ? Math.round(($visitedCount / countries.length) * 100) : 0
   );
 
   onMount(async () => {
     trips = listTrips();
     countries = await loadWorldCountries();
+
+    const currentVisited = new Set(trips.flatMap((t) => t.countries));
+    const lastSeen = getLastSeenVisitedCodes();
+    const diff = new Set([...currentVisited].filter((code) => !lastSeen.has(code)));
+
+    setLastSeenVisitedCodes(currentVisited);
+
+    if (diff.size > 0) {
+      newlyVisitedCodes = diff;
+      visitedCount.set(currentVisited.size - diff.size, { duration: 0 });
+      visitedCount.set(currentVisited.size);
+    } else {
+      visitedCount.set(currentVisited.size, { duration: 0 });
+    }
   });
 
   function handleClick(code: string) {
     selectedCode = code;
   }
+
+  function handleHover(code: string | null, position: { x: number; y: number } | null) {
+    if (!code || !position) {
+      hoveredCode = null;
+      hoveredStats = null;
+      hoverPosition = null;
+      return;
+    }
+    const stats = getCountryStats(code, trips);
+    if (!stats) {
+      hoveredCode = null;
+      hoveredStats = null;
+      hoverPosition = null;
+      return;
+    }
+    if (hoveredCode === code) {
+      // Second activation on the same country (touch double-tap) opens the full panel.
+      selectedCode = code;
+      hoveredCode = null;
+      hoveredStats = null;
+      hoverPosition = null;
+      return;
+    }
+    hoveredCode = code;
+    hoveredStats = stats;
+    hoverPosition = position;
+  }
+
+  function handleViewTrips() {
+    if (!hoveredCode) return;
+    selectedCode = hoveredCode;
+    hoveredCode = null;
+    hoveredStats = null;
+    hoverPosition = null;
+  }
+
+  function handleWindowPointerDown(event: PointerEvent) {
+    if (!hoveredCode) return;
+    const target = event.target as Element;
+    if (target.closest('.country-popover') || target.closest('path[id]')) return;
+    hoveredCode = null;
+    hoveredStats = null;
+    hoverPosition = null;
+  }
 </script>
+
+<svelte:window onpointerdown={handleWindowPointerDown} />
 
 <div class="flex flex-wrap items-end justify-between gap-4">
   <div>
     <h1 class="font-display text-3xl font-bold sm:text-4xl">Your world</h1>
     <p class="mt-1 text-[var(--color-ink-soft)]">Every highlighted country is a place you've been.</p>
   </div>
-  <div class="flex items-baseline gap-2 rounded-[var(--radius-lg)] bg-[var(--color-card)] px-5 py-3 shadow-[var(--shadow-card)]">
-    <span class="font-display text-3xl font-bold text-[var(--color-accent)]">{visitedCodes.size}</span>
-    <span class="text-sm text-[var(--color-ink-soft)]">/ {countries.length} countries &middot; {percentVisited}%</span>
+  <div class="flex flex-col gap-1.5 rounded-[var(--radius-lg)] bg-[var(--color-card)] px-5 py-3 shadow-[var(--shadow-card)]">
+    <div class="flex items-baseline gap-2">
+      <span class="font-display text-3xl font-bold text-[var(--color-accent)]">{Math.round($visitedCount)}</span>
+      <span class="text-sm text-[var(--color-ink-soft)]">/ {countries.length} countries &middot; {percentVisited}%</span>
+    </div>
+    <div class="h-1.5 w-40 overflow-hidden rounded-full bg-[var(--color-ink-band-soft)]">
+      <div
+        class="h-full rounded-full bg-[var(--color-accent)] transition-[width] duration-300"
+        style={`width: ${percentVisited}%;`}
+      ></div>
+    </div>
   </div>
 </div>
 
 <div class="relative mt-8 overflow-hidden rounded-[var(--radius-xl)] bg-[var(--color-ink-band)] p-4 shadow-[var(--shadow-pop)] sm:p-8">
-  <WorldMap {visitedCodes} oncountryclick={handleClick} />
+  <WorldMap {visitedCodes} {newlyVisitedCodes} oncountryclick={handleClick} oncountryhover={handleHover} />
+
+  {#if hoveredCode && hoveredStats && hoverPosition}
+    <CountryPopover
+      countryName={hoveredName}
+      stats={hoveredStats}
+      x={hoverPosition.x}
+      y={hoverPosition.y}
+      onviewtrips={handleViewTrips}
+    />
+  {/if}
 
   {#if selectedCode}
     <div
