@@ -1,8 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { tweened } from 'svelte/motion';
+  import { cubicOut } from 'svelte/easing';
   import { listTrips, createTrip } from '$lib/storage/storage';
   import { loadWorldCountries, type CountryInfo } from '$lib/countries';
   import { computeTripStats } from '$lib/tripStats';
+  import { getLevelProgress, LEVELS, type Level } from '$lib/levels';
+  import { getLastSeenLevelId, setLastSeenLevelId } from '$lib/storage/levelViewState';
   import type { Trip, TransportMode } from '$lib/types';
   import TripCard from '$lib/components/TripCard.svelte';
 
@@ -53,19 +57,69 @@
     activeTab === 'all' ? trips : trips.filter((t) => t.transportMode === activeTab)
   );
 
+  type HeroPhase = 'steady' | 'levelup-stage1' | 'levelup-stage2';
+  let heroPhase: HeroPhase = $state('steady');
+  let previousLevel: Level | null = $state(null);
+  const barPercent = tweened(0, { duration: 500, easing: cubicOut });
+
+  const stats = $derived(computeTripStats(trips, countries));
+  const levelProgress = $derived(getLevelProgress(stats.totalCountries));
+
+  function prefersReducedMotion(): boolean {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
   onMount(async () => {
     trips = listTrips();
     countries = await loadWorldCountries();
+
+    if (trips.length === 0) return;
+
+    const currentTotalCountries = computeTripStats(trips, countries).totalCountries;
+    const currentProgress = getLevelProgress(currentTotalCountries);
+    const lastSeenLevelId = getLastSeenLevelId();
+    setLastSeenLevelId(currentProgress.level.id);
+
+    const reduced = prefersReducedMotion();
+
+    if (lastSeenLevelId === null || lastSeenLevelId === currentProgress.level.id) {
+      barPercent.set(currentProgress.percentToNext, { duration: 0 });
+      return;
+    }
+
+    const currentIndex = LEVELS.findIndex((l) => l.id === currentProgress.level.id);
+    const lastSeenIndex = LEVELS.findIndex((l) => l.id === lastSeenLevelId);
+
+    if (currentIndex <= lastSeenIndex) {
+      barPercent.set(currentProgress.percentToNext, { duration: 0 });
+      return;
+    }
+
+    const prevLevel = currentIndex > 0 ? LEVELS[currentIndex - 1] : null;
+
+    if (!prevLevel) {
+      barPercent.set(currentProgress.percentToNext, { duration: 0 });
+      return;
+    }
+
+    previousLevel = prevLevel;
+
+    if (reduced) {
+      heroPhase = 'levelup-stage2';
+      barPercent.set(currentProgress.percentToNext, { duration: 0 });
+      return;
+    }
+
+    heroPhase = 'levelup-stage1';
+    barPercent.set(0, { duration: 0 });
+    await barPercent.set(100);
+
+    heroPhase = 'levelup-stage2';
+    barPercent.set(0, { duration: 0 });
+    await barPercent.set(currentProgress.percentToNext);
+
+    heroPhase = 'steady';
   });
-
-  const stats = $derived(computeTripStats(trips, countries));
-
-  function greeting(): string {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  }
 
   function toggleCountry(code: string) {
     const next = new Set(selectedCountries);
@@ -106,10 +160,32 @@
     {#if trips.length === 0}
       <h1 class="font-display text-3xl font-bold sm:text-4xl">Your trips</h1>
       <p class="mt-1 text-[var(--color-ink-soft)]">Every journey starts with the first pin.</p>
+    {:else if heroPhase === 'levelup-stage1' && previousLevel}
+      <h1 class="font-display text-3xl font-bold sm:text-4xl">{previousLevel.emoji} {previousLevel.name}</h1>
+      <p class="mt-1 text-[var(--color-ink-soft)]">{previousLevel.subtitle}</p>
+      <div class="mt-3 h-2 w-64 max-w-full overflow-hidden rounded-full bg-[var(--color-ink-band-soft)]">
+        <div class="h-full rounded-full bg-[var(--color-accent)]" style={`width: ${$barPercent}%;`}></div>
+      </div>
+    {:else if heroPhase === 'levelup-stage2'}
+      <h1 class="font-display text-3xl font-bold sm:text-4xl">
+        &#127881; Level Up! You are now {levelProgress.level.emoji} {levelProgress.level.name}
+      </h1>
+      <p class="mt-1 text-[var(--color-ink-soft)]">{stats.totalCountries} countries visited</p>
+      <div class="mt-3 h-2 w-64 max-w-full overflow-hidden rounded-full bg-[var(--color-ink-band-soft)]">
+        <div class="h-full rounded-full bg-[var(--color-accent)]" style={`width: ${$barPercent}%;`}></div>
+      </div>
     {:else}
-      <h1 class="font-display text-3xl font-bold sm:text-4xl">{greeting()}.</h1>
-      <p class="mt-1 text-[var(--color-ink-soft)]">
-        {stats.totalCountries} countr{stats.totalCountries === 1 ? 'y' : 'ies'} explored, {trips.length} trip{trips.length === 1 ? '' : 's'} logged.
+      <h1 class="font-display text-3xl font-bold sm:text-4xl">{levelProgress.level.emoji} {levelProgress.level.name}</h1>
+      <p class="mt-1 text-[var(--color-ink-soft)]">{levelProgress.level.subtitle}</p>
+      <div class="mt-3 h-2 w-64 max-w-full overflow-hidden rounded-full bg-[var(--color-ink-band-soft)]">
+        <div class="h-full rounded-full bg-[var(--color-accent)]" style={`width: ${$barPercent}%;`}></div>
+      </div>
+      <p class="mt-1.5 text-sm text-[var(--color-ink-soft)]">
+        {#if levelProgress.nextLevel}
+          {levelProgress.countriesToNext} countr{levelProgress.countriesToNext === 1 ? 'y' : 'ies'} until {levelProgress.nextLevel.name}
+        {:else}
+          You've reached the top rank &mdash; few travelers get this far.
+        {/if}
       </p>
     {/if}
   </div>
