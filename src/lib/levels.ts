@@ -77,7 +77,7 @@ export interface LevelProgress {
 
 export function getLevelProgress(totalCountries: number): LevelProgress {
 	const levelIndex = LEVELS.findIndex((l) => totalCountries >= l.min && totalCountries <= l.max);
-	const level = levelIndex === -1 ? LEVELS[LEVELS.length - 1] : LEVELS[levelIndex];
+	const level = levelIndex === -1 ? LEVELS.at(-1)! : LEVELS[levelIndex];
 	const nextLevel =
 		levelIndex === -1 || levelIndex === LEVELS.length - 1 ? null : LEVELS[levelIndex + 1];
 
