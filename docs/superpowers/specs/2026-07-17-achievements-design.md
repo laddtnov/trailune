@@ -11,7 +11,7 @@ This is a scoped slice of the roadmap. **Out of scope for this cycle:** Year in 
 ## Goals
 
 - **Four achievements**, each a simple derived boolean:
-  - **Explorer** — at least 1 country visited.
+  - **Explorer** — at least 5 countries visited.
   - **Globetrotter** — at least 25 countries visited.
   - **Continental Traveller** — every country on at least one continent has been visited (a genuine "covered the whole continent" milestone, not just "visited all 7 continents").
   - **Photographer** — at least 100 total photos across all journal entries and tips, combined, across every trip.
@@ -74,6 +74,6 @@ New "Achievements" section on `/stats`, placed directly below the existing 7-car
 Following this project's established convention:
 
 - Vitest unit tests for `getContinentCountryCounts()`: spot-check exact totals for a couple of continents (verified against the actual table: Europe 42, Asia 49, North America 37, Africa 58, South America 14, Oceania 11), and confirm Antarctica (0 countries) is absent from the returned record.
-- Vitest unit tests for `getAchievements()`: each of the 4 achievements' true/false boundary (e.g. Globetrotter at 24 vs. 25 countries), Continental Traveller's true case (a set of trips covering every South American country, the smallest continent) and false case (a near-miss missing one country), and Photographer's boundary (99 vs. 100 combined photos, counting both journal-entry photos and tip photos).
+- Vitest unit tests for `getAchievements()`: each of the 4 achievements' true/false boundary (Explorer at 4 vs. 5 countries, Globetrotter at 24 vs. 25 countries), Continental Traveller's true case (a set of trips covering every South American country, the smallest continent) and false case (a near-miss missing one country), and Photographer's boundary (99 vs. 100 combined photos, counting both journal-entry photos and tip photos).
 - Vitest unit tests for `achievementViewState.ts`: get/set round-trip, empty-default — same shape as `mapViewState.test.ts`.
 - Manual browser verification: seed trips crossing an achievement threshold, reload `/stats`, confirm the newly-unlocked badge pulses once and doesn't replay on a second reload; confirm locked badges show description + lock icon; toggle `prefers-reduced-motion` to confirm the pulse is suppressed.
