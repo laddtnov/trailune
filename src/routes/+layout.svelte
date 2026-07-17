@@ -11,7 +11,8 @@
   const navItems = [
     { href: '/', label: 'Trips' },
     { href: '/map', label: 'Map' },
-    { href: '/packing-template', label: 'Packing' }
+    { href: '/packing-template', label: 'Packing' },
+    { href: '/stats', label: 'Stats' }
   ];
 
   let mobileNavOpen = $state(false);

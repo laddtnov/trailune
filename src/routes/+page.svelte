@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { listTrips, createTrip } from '$lib/storage/storage';
   import { loadWorldCountries, type CountryInfo } from '$lib/countries';
+  import { computeTripStats } from '$lib/tripStats';
   import type { Trip, TransportMode } from '$lib/types';
   import TripCard from '$lib/components/TripCard.svelte';
 
@@ -57,6 +58,15 @@
     countries = await loadWorldCountries();
   });
 
+  const stats = $derived(computeTripStats(trips, countries));
+
+  function greeting(): string {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  }
+
   function toggleCountry(code: string) {
     const next = new Set(selectedCountries);
     if (next.has(code)) next.delete(code);
@@ -93,12 +103,15 @@
 
 <div class="flex flex-wrap items-center justify-between gap-4">
   <div>
-    <h1 class="font-display text-3xl font-bold sm:text-4xl">Your trips</h1>
-    <p class="mt-1 text-[var(--color-ink-soft)]">
-      {trips.length === 0
-        ? 'Every journey starts with the first pin.'
-        : `${trips.length} trip${trips.length === 1 ? '' : 's'} logged so far.`}
-    </p>
+    {#if trips.length === 0}
+      <h1 class="font-display text-3xl font-bold sm:text-4xl">Your trips</h1>
+      <p class="mt-1 text-[var(--color-ink-soft)]">Every journey starts with the first pin.</p>
+    {:else}
+      <h1 class="font-display text-3xl font-bold sm:text-4xl">{greeting()}.</h1>
+      <p class="mt-1 text-[var(--color-ink-soft)]">
+        {stats.totalCountries} countr{stats.totalCountries === 1 ? 'y' : 'ies'} explored, {trips.length} trip{trips.length === 1 ? '' : 's'} logged.
+      </p>
+    {/if}
   </div>
   <button
     type="button"
@@ -111,6 +124,27 @@
     New trip
   </button>
 </div>
+
+{#if trips.length > 0 && countries.length > 0}
+  <div class="mt-6 grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-3">
+    <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] px-4 py-3 shadow-[var(--shadow-card)]">
+      <p class="text-xs text-[var(--color-ink-soft)]">Visited</p>
+      <p class="font-display text-xl font-bold text-[var(--color-accent)]">{stats.totalCountries}</p>
+    </div>
+    <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] px-4 py-3 shadow-[var(--shadow-card)]">
+      <p class="text-xs text-[var(--color-ink-soft)]">World explored</p>
+      <p class="font-display text-xl font-bold text-[var(--color-accent)]">{stats.percentWorld}%</p>
+    </div>
+    <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] px-4 py-3 shadow-[var(--shadow-card)]">
+      <p class="text-xs text-[var(--color-ink-soft)]">Trips</p>
+      <p class="font-display text-xl font-bold text-[var(--color-accent)]">{stats.totalTrips}</p>
+    </div>
+    <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] px-4 py-3 shadow-[var(--shadow-card)]">
+      <p class="text-xs text-[var(--color-ink-soft)]">Travel days</p>
+      <p class="font-display text-xl font-bold text-[var(--color-accent)]">{stats.totalDays}</p>
+    </div>
+  </div>
+{/if}
 
 {#if trips.length > 0}
   <div class="mt-6 flex flex-wrap gap-1.5">
