@@ -131,7 +131,7 @@
       filter: drop-shadow(0 0 0 transparent);
     }
     50% {
-      transform: scale(1.05);
+      transform: scale(1.08);
       filter: drop-shadow(0 0 10px color-mix(in oklch, var(--color-accent) 70%, transparent));
     }
     100% {
