@@ -6,7 +6,7 @@ export interface CountryStats {
   lastVisitDate: string;
 }
 
-function daysInTrip(trip: Trip): number {
+export function daysInTrip(trip: Trip): number {
   const start = new Date(trip.startDate).getTime();
   const end = new Date(trip.endDate).getTime();
   return Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
