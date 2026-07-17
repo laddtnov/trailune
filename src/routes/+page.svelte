@@ -125,7 +125,7 @@
   </button>
 </div>
 
-{#if trips.length > 0}
+{#if trips.length > 0 && countries.length > 0}
   <div class="mt-6 grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-3">
     <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] px-4 py-3 shadow-[var(--shadow-card)]">
       <p class="text-xs text-[var(--color-ink-soft)]">Visited</p>
