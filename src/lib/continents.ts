@@ -234,3 +234,11 @@ const COUNTRY_CONTINENT: Record<string, Continent> = {
 export function getContinent(countryCode: string): Continent | null {
   return COUNTRY_CONTINENT[countryCode] ?? null;
 }
+
+export function getContinentCountryCounts(): Record<Continent, number> {
+  const counts = {} as Record<Continent, number>;
+  for (const continent of Object.values(COUNTRY_CONTINENT)) {
+    counts[continent] = (counts[continent] ?? 0) + 1;
+  }
+  return counts;
+}
