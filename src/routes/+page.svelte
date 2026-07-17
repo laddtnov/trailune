@@ -88,6 +88,13 @@
     }
 
     const currentIndex = LEVELS.findIndex((l) => l.id === currentProgress.level.id);
+    const lastSeenIndex = LEVELS.findIndex((l) => l.id === lastSeenLevelId);
+
+    if (currentIndex <= lastSeenIndex) {
+      barPercent.set(currentProgress.percentToNext, { duration: 0 });
+      return;
+    }
+
     const prevLevel = currentIndex > 0 ? LEVELS[currentIndex - 1] : null;
 
     if (!prevLevel) {
