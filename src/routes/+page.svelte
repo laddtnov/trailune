@@ -100,7 +100,6 @@
     if (reduced) {
       heroPhase = 'levelup-stage2';
       barPercent.set(currentProgress.percentToNext, { duration: 0 });
-      heroPhase = 'steady';
       return;
     }
 
