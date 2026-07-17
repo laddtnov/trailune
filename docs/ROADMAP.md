@@ -63,6 +63,45 @@ The map should stop being a static "here's where you've been" page and become th
 
 **Feasibility**: this is the one idea here that needs a real backend decision, same shape as the feedback form's Resend integration — an LLM API key can't be called directly from the browser. Options: (a) a standalone Vercel Function (like `api/feedback.ts`) that calls an LLM API server-side with the trip data passed in the request body, or (b) skip the AI framing and just write a good deterministic summary template client-side (no API key, no cost, no backend) — worth deciding which before this one gets brainstormed, since it changes the scope from "one small function" to "ongoing API cost + prompt design."
 
+## 7. Polishing Ideas (from a user feedback pass, 2026-07-17)
+
+A batch of concrete refinements and bigger visual concepts, gathered after living with the shipped Living Map, stats, achievements, and rank system for a while. Grouped from smallest to largest.
+
+**Small copy/formatting fixes** (no new data, no new logic — just presentation):
+- **Average trip length**: `8.7 days` reads awkwardly. Round to a whole number and label it clearly — `9 days avg.` or `8 days (avg.)`.
+- **Longest trip**: `two weeks to Chile` next to `10 days` is self-contradictory (10 days isn't two weeks). Pick one representation and use it consistently — e.g. `10-day trip to Chile`, dropping the "two weeks" approximation entirely.
+
+**Richer country popover** (extends the Living Map's existing hover/tap popover — `CountryPopover.svelte`, already computing visit count/days/last-visit via `countryStats.ts`):
+- Go further than the current "Visited · N trips · N days · Last visit [date]" line: add a small progress-style visual, **longest stay** at that country, **first visit year** and **latest visit year**, and a "View history →" affordance leading into the country's trip list (the existing click-to-open side panel already has this data — this would surface more of it directly in the popover itself, closing the gap between "quick glance" and "full panel").
+- All of this is already computable from existing trip data; no schema changes, just extending `getCountryStats`'s return shape and the popover's markup.
+
+**Visual connections on the map** (the biggest visual idea here):
+- **Travel path arcs**: instead of isolated highlighted countries, draw animated lines connecting countries in the order they were visited (derived from trip `startDate` ordering) — "every trip becomes part of your travel story," the map gradually filling with route lines.
+- **Visit-intensity heatmap**: countries visited multiple times render with increasingly saturated color (visited once = light, twice = medium, 5+ = deep) instead of a flat "visited" color — still a pure CSS/derived-data change to `WorldMap.svelte`'s existing visited-state styling, using visit counts already available via `countryStats.ts`.
+- **Feasibility**: the heatmap intensity is a small, contained change (swap a boolean visited-class for a count-based intensity scale). The path arcs are a bigger visual feature — likely SVG line/curve elements computed from trip date ordering, animated similarly to the existing reveal-pulse pattern, but touching more of `WorldMap.svelte`'s rendering than prior Living Map work did.
+
+**Lean into the rank system's personality** (extends the shipped rank/level feature):
+- Where the app currently shows a raw number ("Countries visited: 3"), consider surfacing the tier framing instead — "🎒 Traveler · 3 countries visited · 2 until Adventurer" — in more places than just the home hero (e.g. the `/stats` page), so the leveling framing feels consistent app-wide rather than home-page-only.
+
+**Memory timeline** (extends the existing "Journey timeline" idea in §3, made concrete):
+- A year-grouped vertical timeline: `2024 → 🇩🇪 Germany, 7 days`, `2025 → 🇨🇱 Chile, 10 days`, `2026 → 🇦🇺 Australia, 8 days`, with a longer-term view collapsing to just the year list (2019–2026) when zoomed out. Pure re-presentation of existing trip data, grouped by year.
+
+**Trip card hero treatment** ("the single biggest UX improvement," per this feedback pass):
+- Replace the current gradient-background trip cards with a real hero image per trip — either a user-uploaded cover photo (fits the existing IndexedDB photo-storage pattern directly, no new infrastructure) or a stock photo pulled from an image API (Unsplash, etc. — this would need a new backend concern, since API keys can't be called from the browser, similar to the feedback form's Resend function).
+- **Feasibility**: user-uploaded covers are straightforward — reuse the existing photo pipeline, add a "cover photo" concept to `Trip` or reuse the first journal photo. Auto-fetched stock photos are a bigger lift (new API integration, image licensing/caching considerations) and should be scoped separately if pursued.
+
+**Journey path within a trip** (a new data concept, similar in shape to memory pins from §3):
+- For multi-stop trips, show the actual route between cities/waypoints (e.g. `Dublin → Doha → Sydney`), not just the countries visited. This needs a genuinely new data concept — an ordered list of waypoints per trip — beyond what §3's memory pins (unordered location pins) already cover.
+
+**Trip hub expansion**:
+- Grow the trip hub's tab set beyond Journal/Packing/Do's & Don'ts/Tips toward: Photos (as its own tab, not just embedded in journal entries), Expenses, Documents, Notes, Weather. Expenses and Documents are genuinely new features (budget tracking, file attachments) — each deserving its own brainstorm cycle, not a quick addition. Weather would need a live API (same backend-shape question as the AI Travel Summary idea in §6).
+
+**"On this day" memories**:
+- Surface a past trip on its anniversary — "One year ago today: 🇯🇵 Kyoto — you visited Fushimi Inari Shrine." Needs date-matching logic comparing today's date against past journal-entry/memory-pin dates, resurfaced on the home page or in a notification-style prompt. Depends on memory pins (§3) existing first, since a plain journal note doesn't currently carry a discrete "location visited" concept.
+
+**Globe mode** (long-term, aspirational):
+- An alternative 3D globe view of the map (via a library like Three.js or Cesium) that users can spin, as a premium-feeling alternative to the flat SVG map. Meaningfully larger scope than anything else in this list — a new rendering technology, not a CSS/data change — and should only be considered once the flat map's remaining ideas (path arcs, heatmap) are exhausted.
+
 ## Suggested order
 
 1. **The Living Map** — the strongest fit for the differentiator thesis and the most natural next step given the transport-mode/tips work already done.
