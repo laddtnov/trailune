@@ -235,8 +235,8 @@ export function getContinent(countryCode: string): Continent | null {
   return COUNTRY_CONTINENT[countryCode] ?? null;
 }
 
-export function getContinentCountryCounts(): Record<Continent, number> {
-  const counts = {} as Record<Continent, number>;
+export function getContinentCountryCounts(): Partial<Record<Continent, number>> {
+  const counts = {} as Partial<Record<Continent, number>>;
   for (const continent of Object.values(COUNTRY_CONTINENT)) {
     counts[continent] = (counts[continent] ?? 0) + 1;
   }

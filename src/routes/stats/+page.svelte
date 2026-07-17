@@ -95,12 +95,13 @@
             : 'bg-[var(--color-card)]/60'} {newlyUnlockedIds.has(achievement.id) ? 'achievement-revealing' : ''}"
         >
           <div class="flex items-center gap-2">
+            <span class="sr-only">{achievement.unlocked ? 'Unlocked: ' : 'Locked: '}</span>
             {#if achievement.unlocked}
-              <svg viewBox="0 0 24 24" class="size-5 shrink-0 text-[var(--color-accent)]" fill="none" stroke="currentColor" stroke-width="2">
+              <svg aria-hidden="true" viewBox="0 0 24 24" class="size-5 shrink-0 text-[var(--color-accent)]" fill="none" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             {:else}
-              <svg viewBox="0 0 24 24" class="size-5 shrink-0 text-[var(--color-ink-soft)]" fill="none" stroke="currentColor" stroke-width="1.6">
+              <svg aria-hidden="true" viewBox="0 0 24 24" class="size-5 shrink-0 text-[var(--color-ink-soft)]" fill="none" stroke="currentColor" stroke-width="1.6">
                 <rect x="5" y="11" width="14" height="9" rx="2" />
                 <path d="M8 11V7a4 4 0 0 1 8 0v4" />
               </svg>
