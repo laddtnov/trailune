@@ -44,8 +44,12 @@ This is a **v1, local-only build**. There's no backend and no account system —
 - **Packing checklist** — maintain one reusable packing *template*, grouped by category (Documents, Electronics, Clothing, Toiletries, Other). Every new trip copies that template into its own checklist automatically, so recurring items like "passport" or "charger" never need re-typing — and checking something off on one trip never touches the shared template or any other trip.
 - **Do's & Don'ts** — a simple two-column checklist per trip for reminders and warnings you want on hand while traveling.
 - **Tips** — local notes per trip, tagged by category (currency, places to avoid, transit, sightseeing), with an optional photo attached to each.
-- **The Living Map** — a clickable SVG world map that highlights every country you've visited. Visited state is *derived* from your trips' data, not a separate toggle, so the map and your trip list can never drift out of sync. Newly-visited countries play a one-time reveal animation (staggered if a trip added several at once), hovering or tapping a visited country shows a quick stats popover (visit count, days there, last visit date), and the visited-countries counter is an animated progress bar.
-- **Home dashboard & stats** — the home page greets you with a time-of-day-aware summary and a quick stats strip once you've logged a trip. A dedicated `/stats` page breaks it down further: countries and continents visited, trips logged, flights taken, total days travelled, longest trip, and average trip length — all derived from your trips, nothing to maintain separately.
+- **The Living Map** — a clickable SVG world map that highlights every country you've visited. Visited state is *derived* from your trips' data, not a separate toggle, so the map and your trip list can never drift out of sync. Newly-visited countries play a one-time reveal animation (staggered if a trip added several at once), hovering or tapping a visited country shows a quick stats popover (visit count, days there, last visit date), the visited-countries counter is an animated progress bar, and clicking a country smoothly zooms the map in on it (resetting on an outside click).
+- **Home dashboard & stats** — the home page greets you with a time-of-day-aware summary, a quick stats strip, and a rank/level progress bar (Beginner → Trailblazer, derived from your country count, with a level-up reveal animation) once you've logged a trip. A dedicated `/stats` page breaks it down further: countries and continents visited, trips logged, flights taken, total days travelled, longest trip, and average trip length — all derived from your trips, nothing to maintain separately.
+- **Achievements** — milestone badges (Explorer, Continental Traveller, Photographer, Globetrotter) on `/stats`, unlocked automatically as your trip history grows, with a one-time reveal animation the first time you see a newly-unlocked badge.
+- **Year in Review** — a `/stats/year` page with a year picker and an annual recap: countries visited, trips taken, flights taken, days abroad, most-visited country, longest trip, and most active month, all for a single selected year.
+- **Dynamic themes** — four selectable color themes (Travel Journal, Explorer Night, Golden Sunset, Polar Morning) on a `/settings` page. Switching themes re-colors the whole app instantly and persists across sessions.
+- **Ambient delight details** — skeleton loading placeholders instead of blank screens, a one-time passport-stamp animation when a trip is created, a subtle paper-grain background texture, and gentle fade transitions between pages.
 - **Installable & offline** — Trailune is a PWA: install it to your home screen or desktop, and it keeps working without a connection once it's been loaded.
 - **Feedback** — a footer link opens a quick feedback form that emails your message straight to the developer.
 
@@ -65,12 +69,14 @@ Trailune runs almost entirely client-side — no accounts, and the only server c
 
 | Route | Purpose |
 |---|---|
-| `/` | Trips list — hero + quick stats strip, filter by transport mode, create a new trip here |
-| `/map` | The Living Map — reveal animations, hover/tap stats popover, animated progress bar |
-| `/stats` | Full stats breakdown: countries, continents, trips, flights, days, longest trip, average length |
+| `/` | Trips list — hero + quick stats strip + rank progress bar, filter by transport mode, create a new trip here |
+| `/map` | The Living Map — reveal animations, hover/tap stats popover, animated progress bar, zoom-to-country on click |
+| `/stats` | Full stats breakdown: countries, continents, trips, flights, days, longest trip, average length, plus Achievements |
+| `/stats/year` | Year in Review — a year picker and an annual recap of that year's trips |
 | `/trips/[id]` | Trip hub — Journal / Packing / Do's & Don'ts / Tips tabs |
 | `/trips/[id]/entry/[entryId]` | View, edit, or delete a single journal entry |
 | `/packing-template` | Edit the reusable packing template |
+| `/settings` | Choose one of four color themes (Travel Journal, Explorer Night, Golden Sunset, Polar Morning) |
 
 ## Data model
 
@@ -112,11 +118,15 @@ src/
     storage/       # localStorage repositories (trips, tips, checklist, map view state),
                     # IndexedDB photo store, storage facade
     components/    # WorldMap, CountryPopover, TripCard, PackingChecklist, DoDontList,
-                    # TipsList, FeedbackDialog
+                    # TipsList, FeedbackDialog, Skeleton
     utils/         # id generation, thumbnail generation
     countries.ts   # parses the world map SVG into a { code, name } list
     continents.ts  # country-code -> continent lookup, covers every code in world-map.svg
-    countryStats.ts, tripStats.ts  # pure derived-metric functions consumed by /map, /, and /stats
+    countryStats.ts, tripStats.ts, yearInReview.ts  # pure derived-metric functions
+                    # consumed by /map, /, /stats, and /stats/year
+    achievements.ts, levels.ts  # derived milestone badges and the rank/level system
+    mapZoom.ts     # pure viewBox-padding math backing the map's zoom-to-country
+    theme.ts       # reading/writing/applying the selected color theme
     PwaRegister.svelte  # registers the service worker
   routes/          # SvelteKit pages (see Routes above)
 api/
@@ -132,9 +142,10 @@ docs/
 
 Intentionally out of scope for this build:
 
-- Achievements (milestone badges for countries/continents/photos)
-- Year in Review ("Wrapped") — an annual recap of trips, days, and countries
+- Ambient background motion (subtle moving gradients/parallax) — a smaller polish item beyond the dynamic themes and tiny-details work already shipped
 - A full backend and real database (enabling multi-device sync and accounts)
+
+See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the fuller idea backlog, including what's shipped so far.
 
 ## Credits
 

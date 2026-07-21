@@ -10,26 +10,32 @@ Trailune's edge isn't any single feature — it's that **everything is derived f
 
 ## 1. The Living Map (core differentiator — do this first)
 
+**Status: ✅ Mostly shipped.**
+
 The map should stop being a static "here's where you've been" page and become the app's centerpiece — the visual proof that the derived-data thesis works.
 
-- **Country animation on trip creation**: adding a trip with Japan → the country outline glows, the fill spreads in, the "visited countries" counter ticks up (11 → 12). Makes the derive-not-toggle mechanic *visible* and satisfying, rather than invisible plumbing.
-- **Hover effect**: hovering a country shows a small popover — visit count, total days there, last trip date — instead of nothing. All of this is already computable from existing trip data; no new fields needed.
-- **Click-to-open side panel**: clicking a visited country opens a panel listing every trip taken there, with quick links into photos/journal/packing for that country's trips.
-- **Scratch map**: countries reveal with a "scratching a physical map" animation instead of an instant fill — same underlying data, more tactile.
-- **Explorer progress bar**: replace the bare "18 / 211" with a visual progress bar and "193 countries left" framing.
-- **Dream map**: a *separate* wishlist map (not-yet-visited countries you want to go), explicitly distinct from the derived visited map so the two data sources never get confused — this one's user-entered, like a real wishlist.
+- ✅ **Country animation on trip creation**: adding a trip with Japan → the country outline glows, the fill spreads in, the "visited countries" counter ticks up. Shipped as the reveal-pulse animation on newly-visited countries.
+- ✅ **Hover effect**: hovering (or tapping, on touch) a visited country shows a small popover — visit count, total days there, last trip date.
+- **Click-to-open side panel** *(partially shipped)*: clicking a country opens a popover with its stats and a link into that country's trips — not yet the fuller panel with quick links into photos/journal/packing directly.
+- **Scratch map**: not built — the current reveal is a fill/glow animation, not a "scratching a physical map" texture effect.
+- ✅ **Explorer progress bar**: the bare count was replaced with an animated progress bar on `/map`.
+- ✅ **Zoom-to-country on click**: not originally listed here, but shipped as part of the Ambient Delight Details cycle (§5) — clicking a country smoothly zooms the map to it, resetting on an outside click.
+- **Dream map**: not built.
 
-**Feasibility**: entirely client-side. All of it operates on data already in `localStorage` (trips → countries). No backend needed. This is the natural next step after the transport-mode and tips work.
+**Feasibility**: entirely client-side. All of it operates on data already in `localStorage` (trips → countries). No backend needed.
 
 ## 2. Home Dashboard & Stats
 
-- **Home dashboard hero**: replace the current empty-state-first landing with "Good evening. 18 countries explored. 193 left. Your next adventure starts here." — a warmer first impression when trips already exist, not just for the empty state.
-- **Header stats strip**: "Visited: 12 countries · World explored: 5.7% · Trips: 18 · Travel days: 142" — all derived, all computable from existing trip data (date ranges + country lists).
-- **Statistics dashboard**: countries, continents, trips, flights (derived from `transportMode === 'flight'` count), total days travelled, longest trip, average trip length.
-- **Achievements**: "Explorer" (first country), "Continental Traveller" (a full continent), "Photographer" (100 photos), "Globetrotter" (25 countries) — derived milestones, not user-set goals. Needs a continent→country lookup table added to the existing country data.
-- **Year in Review ("Wrapped")**: an annual recap — countries, flights, days abroad, most-visited country, longest trip, most active month. Shareable, no account/backend needed since it's just a rendered summary of local data (image export would need a canvas/screenshot library if you want it downloadable as an image).
+**Status: ✅ Shipped**, including one addition beyond what was originally scoped here.
 
-**Feasibility**: entirely client-side, same reasoning as the map. The continent-lookup and "most active month" aggregation are the only new logic needed — everything else is a derived read over existing storage.
+- ✅ **Home dashboard hero**: the home page now greets you with a time-of-day-aware summary once trips exist.
+- ✅ **Header stats strip**: a quick "Visited / World explored / Trips / Travel days" strip, all derived from trip data.
+- ✅ **Statistics dashboard**: the `/stats` page — countries, continents, trips, flights, total days travelled, longest trip, average trip length.
+- ✅ **Achievements**: Explorer, Continental Traveller, Photographer, Globetrotter — derived milestone badges on `/stats`, with a continent→country lookup table added to back them.
+- ✅ **Year in Review ("Wrapped")**: a `/stats/year` page with a year picker and an annual recap (countries, trips, flights, days abroad, most-visited country, longest trip, most active month). Shipped as an in-app view only — no image export in this cycle.
+- ✅ **Rank/Level system** *(addition — not originally listed here)*: a 7-tier system (Beginner → Trailblazer) derived from country count, shown on the home hero with a progress bar and a level-up reveal animation. Complements the Achievements' one-off badges with an always-visible sense of overall progress.
+
+**Feasibility confirmed**: entirely client-side, same reasoning as the map. No backend needed for any of the above.
 
 ## 3. Journal, Memories & Timeline
 
@@ -51,11 +57,13 @@ The map should stop being a static "here's where you've been" page and become th
 
 ## 5. Ambient Design & Feel
 
-- **Ambient motion**: very subtle moving gradients, cloud drift, tiny parallax — "the app should breathe," explicitly not distracting.
-- **Dynamic themes**: beyond light/dark — "Travel Journal," "Explorer Night," "Golden Sunset," "Polar Morning" as named theme presets.
-- **Tiny details** (the ones users actually remember): compass rotates while loading, a passport-stamp animation when a trip is added, soft paper texture in the background, gentle page transitions, animated counters, smooth map zoom, skeleton loaders instead of spinners. Explicitly **no confetti** — keep the tone elegant, not playful.
+**Status: tiny details and dynamic themes ✅ shipped; ambient motion still open.**
 
-**Feasibility**: entirely client-side CSS/animation work, no data model changes. This is the same category of work as the existing globe-spin/letter-hop nav animations and the trip-card icon animations — a natural extension of a pattern already established in this codebase.
+- **Ambient motion**: still open — very subtle moving gradients, cloud drift, tiny parallax — "the app should breathe," explicitly not distracting. Deferred as its own cycle when the dynamic-themes work was scoped, since it's an independent visual layer.
+- ✅ **Dynamic themes**: four named presets — Travel Journal, Explorer Night, Golden Sunset, Polar Morning — selectable from a new `/settings` page, applied instantly via CSS custom-property overrides, persisted locally. No auto dark-mode detection — purely manual choice.
+- ✅ **Tiny details**: passport-stamp animation when a trip is added, soft paper texture in the background, gentle page transitions, animated counters (on `/stats` and `/stats/year`), smooth map zoom-to-country, skeleton loaders instead of spinners. The one item *not* built as originally framed is a **compass loading spinner** — superseded by skeleton loaders, which cover the same "blank while loading" gap more consistently across pages. Confetti was correctly never added.
+
+**Feasibility confirmed**: entirely client-side CSS/animation work (plus a small `data-theme` attribute + localStorage mechanism for themes), no data model changes.
 
 ## 6. AI Travel Summary
 
@@ -104,8 +112,8 @@ A batch of concrete refinements and bigger visual concepts, gathered after livin
 
 ## Suggested order
 
-1. **The Living Map** — the strongest fit for the differentiator thesis and the most natural next step given the transport-mode/tips work already done.
-2. **Home Dashboard & Stats** — reuses the same derived-data mechanics as the map; a good second wave.
-3. **Ambient Design & tiny details** — cheap, high perceived-quality wins, can be interleaved with anything else.
-4. **Journal/Memories/Timeline**, **Trip Experience polish** — bigger individually, worth their own brainstorm sessions when picked up.
-5. **AI Travel Summary** — needs a backend-shape decision first; lowest priority until that's resolved.
+1. ✅ **The Living Map** — shipped (mostly; scratch map and dream map still open).
+2. ✅ **Home Dashboard & Stats** — shipped, including Achievements, Year in Review, and the Rank/Level system addition.
+3. ✅ **Ambient Design & tiny details, Dynamic themes** — shipped. Ambient background motion is the one remaining piece of §5.
+4. **Journal/Memories/Timeline** (§3), **Trip Experience polish** (§4), **§7 Polishing Ideas** — bigger individually, worth their own brainstorm sessions when picked up. Nothing in these sections has been started yet.
+5. **AI Travel Summary** (§6) — needs a backend-shape decision first; lowest priority until that's resolved.
