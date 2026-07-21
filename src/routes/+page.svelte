@@ -158,7 +158,9 @@
     activeTab = 'all';
     justCreatedTripId = newTrip.id;
     setTimeout(() => {
-      justCreatedTripId = null;
+      if (justCreatedTripId === newTrip.id) {
+        justCreatedTripId = null;
+      }
     }, 400);
     resetForm();
     dialogEl?.close();
