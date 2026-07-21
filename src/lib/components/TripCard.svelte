@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Trip, TransportMode } from '$lib/types';
 
-  let { trip }: { trip: Trip } = $props();
+  let { trip, stamping = false }: { trip: Trip; stamping?: boolean } = $props();
 
   function formatDate(iso: string): string {
     const d = new Date(`${iso}T00:00:00`);
@@ -27,7 +27,7 @@
 
 <a
   href={`/trips/${trip.id}`}
-  class="group block overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-card-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease-out-quart)] hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]"
+  class="group block overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-card-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease-out-quart)] hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)] {stamping ? 'stamping' : ''}"
 >
   <div
     class="relative flex h-28 items-end overflow-hidden bg-gradient-to-br p-4 {mode.gradient}"
@@ -141,6 +141,25 @@
     :global(.group:hover) .mode-icon.boat,
     :global(.group:hover) .mode-icon.bike {
       transform: none;
+    }
+
+    .stamping {
+      animation: none;
+    }
+  }
+
+  .stamping {
+    animation: stamp-settle 0.4s var(--ease-out-quart);
+  }
+
+  @keyframes stamp-settle {
+    0% {
+      transform: scale(1.15) rotate(-6deg);
+      opacity: 0.6;
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
     }
   }
 </style>

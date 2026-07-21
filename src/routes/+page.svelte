@@ -14,6 +14,7 @@
   let trips: Trip[] = $state([]);
   let countries: CountryInfo[] = $state([]);
   let loading = $state(true);
+  let justCreatedTripId: string | null = $state(null);
   let dialogEl: HTMLDialogElement | undefined = $state();
   let name = $state('');
   let startDate = $state('');
@@ -146,9 +147,19 @@
 
   function submit(event: SubmitEvent) {
     event.preventDefault();
-    createTrip({ name, startDate, endDate, countries: Array.from(selectedCountries), transportMode });
+    const newTrip = createTrip({
+      name,
+      startDate,
+      endDate,
+      countries: Array.from(selectedCountries),
+      transportMode
+    });
     trips = listTrips();
     activeTab = 'all';
+    justCreatedTripId = newTrip.id;
+    setTimeout(() => {
+      justCreatedTripId = null;
+    }, 400);
     resetForm();
     dialogEl?.close();
   }
@@ -294,7 +305,7 @@
 {:else}
     <div class="mt-8 grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-5">
       {#each filteredTrips as trip (trip.id)}
-        <TripCard {trip} />
+        <TripCard {trip} stamping={trip.id === justCreatedTripId} />
       {/each}
     </div>
   {/if}
