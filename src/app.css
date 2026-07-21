@@ -63,6 +63,102 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+:root[data-theme='travel-journal'] {
+  --color-canvas: oklch(98% 0.003 60);
+  --color-canvas-dim: oklch(95.5% 0.004 60);
+  --color-ink: oklch(21% 0.025 40);
+  --color-ink-soft: oklch(42% 0.03 42);
+  --color-ink-band: oklch(24% 0.032 38);
+  --color-ink-band-soft: oklch(34% 0.03 40);
+  --color-card: oklch(97.5% 0.018 66);
+  --color-card-border: oklch(87% 0.035 55);
+  --color-accent: oklch(57% 0.17 35);
+  --color-accent-hover: oklch(51% 0.17 34);
+  --color-accent-active: oklch(46% 0.16 34);
+  --color-accent-soft: oklch(93% 0.045 40);
+  --color-accent-ink: oklch(98% 0.01 60);
+  --color-teal: oklch(53% 0.09 195);
+  --color-teal-hover: oklch(47% 0.09 195);
+  --color-teal-soft: oklch(92% 0.035 195);
+  --color-danger: oklch(48% 0.19 25);
+  --color-danger-hover: oklch(42% 0.19 25);
+  --color-danger-soft: oklch(93% 0.045 25);
+  --color-success: oklch(58% 0.13 150);
+  --color-success-soft: oklch(93% 0.04 150);
+}
+
+:root[data-theme='explorer-night'] {
+  --color-canvas: oklch(18% 0.02 260);
+  --color-canvas-dim: oklch(15% 0.02 260);
+  --color-ink: oklch(92% 0.01 90);
+  --color-ink-soft: oklch(70% 0.015 250);
+  --color-ink-band: oklch(12% 0.02 260);
+  --color-ink-band-soft: oklch(20% 0.02 258);
+  --color-card: oklch(24% 0.025 255);
+  --color-card-border: oklch(34% 0.03 255);
+  --color-accent: oklch(72% 0.15 80);
+  --color-accent-hover: oklch(66% 0.15 80);
+  --color-accent-active: oklch(61% 0.15 80);
+  --color-accent-soft: oklch(32% 0.06 80);
+  --color-accent-ink: oklch(97% 0.01 90);
+  --color-teal: oklch(65% 0.1 195);
+  --color-teal-hover: oklch(59% 0.1 195);
+  --color-teal-soft: oklch(28% 0.05 195);
+  --color-danger: oklch(65% 0.17 25);
+  --color-danger-hover: oklch(59% 0.17 25);
+  --color-danger-soft: oklch(30% 0.07 25);
+  --color-success: oklch(68% 0.13 150);
+  --color-success-soft: oklch(28% 0.06 150);
+}
+
+:root[data-theme='golden-sunset'] {
+  --color-canvas: oklch(96% 0.02 50);
+  --color-canvas-dim: oklch(93% 0.025 50);
+  --color-ink: oklch(24% 0.04 30);
+  --color-ink-soft: oklch(45% 0.05 35);
+  --color-ink-band: oklch(30% 0.06 30);
+  --color-ink-band-soft: oklch(40% 0.06 32);
+  --color-card: oklch(94% 0.05 45);
+  --color-card-border: oklch(84% 0.07 40);
+  --color-accent: oklch(60% 0.2 20);
+  --color-accent-hover: oklch(54% 0.2 19);
+  --color-accent-active: oklch(49% 0.19 19);
+  --color-accent-soft: oklch(91% 0.06 30);
+  --color-accent-ink: oklch(98% 0.01 50);
+  --color-teal: oklch(50% 0.09 195);
+  --color-teal-hover: oklch(44% 0.09 195);
+  --color-teal-soft: oklch(90% 0.04 195);
+  --color-danger: oklch(46% 0.19 25);
+  --color-danger-hover: oklch(40% 0.19 25);
+  --color-danger-soft: oklch(90% 0.05 25);
+  --color-success: oklch(56% 0.13 150);
+  --color-success-soft: oklch(90% 0.045 150);
+}
+
+:root[data-theme='polar-morning'] {
+  --color-canvas: oklch(97% 0.008 230);
+  --color-canvas-dim: oklch(94% 0.01 230);
+  --color-ink: oklch(25% 0.02 240);
+  --color-ink-soft: oklch(48% 0.02 235);
+  --color-ink-band: oklch(28% 0.03 235);
+  --color-ink-band-soft: oklch(38% 0.03 235);
+  --color-card: oklch(95% 0.015 220);
+  --color-card-border: oklch(85% 0.025 220);
+  --color-accent: oklch(55% 0.12 220);
+  --color-accent-hover: oklch(49% 0.12 219);
+  --color-accent-active: oklch(44% 0.11 219);
+  --color-accent-soft: oklch(92% 0.03 220);
+  --color-accent-ink: oklch(98% 0.008 220);
+  --color-teal: oklch(52% 0.09 195);
+  --color-teal-hover: oklch(46% 0.09 195);
+  --color-teal-soft: oklch(91% 0.03 195);
+  --color-danger: oklch(47% 0.18 25);
+  --color-danger-hover: oklch(41% 0.18 25);
+  --color-danger-soft: oklch(91% 0.045 25);
+  --color-success: oklch(57% 0.12 150);
+  --color-success-soft: oklch(91% 0.04 150);
+}
+
 @layer base {
   body {
     background-color: var(--color-canvas);

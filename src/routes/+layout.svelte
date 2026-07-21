@@ -14,7 +14,8 @@
     { href: '/', label: 'Trips' },
     { href: '/map', label: 'Map' },
     { href: '/packing-template', label: 'Packing' },
-    { href: '/stats', label: 'Stats' }
+    { href: '/stats', label: 'Stats' },
+    { href: '/settings', label: 'Settings' }
   ];
 
   let mobileNavOpen = $state(false);
