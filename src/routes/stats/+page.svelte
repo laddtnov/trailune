@@ -1,5 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { tweened } from 'svelte/motion';
+  import { cubicOut } from 'svelte/easing';
   import { listTrips } from '$lib/storage/storage';
   import { loadWorldCountries, type CountryInfo } from '$lib/countries';
   import { computeTripStats, type TripStats } from '$lib/tripStats';
@@ -15,10 +17,32 @@
   let newlyUnlockedIds: Set<string> = $state(new Set());
   let loading = $state(true);
 
+  const totalCountriesT = tweened(0, { duration: 600, easing: cubicOut });
+  const percentWorldT = tweened(0, { duration: 600, easing: cubicOut });
+  const totalContinentsT = tweened(0, { duration: 600, easing: cubicOut });
+  const totalTripsT = tweened(0, { duration: 600, easing: cubicOut });
+  const totalFlightsT = tweened(0, { duration: 600, easing: cubicOut });
+  const totalDaysT = tweened(0, { duration: 600, easing: cubicOut });
+  const longestTripDaysT = tweened(0, { duration: 600, easing: cubicOut });
+  const averageTripDaysT = tweened(0, { duration: 600, easing: cubicOut });
+
+  function prefersReducedMotion(): boolean {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
   onMount(async () => {
     trips = listTrips();
     countries = await loadWorldCountries();
     stats = computeTripStats(trips, countries);
+    const tweenOpts = prefersReducedMotion() ? { duration: 0 } : undefined;
+    totalCountriesT.set(stats.totalCountries, tweenOpts);
+    percentWorldT.set(stats.percentWorld, tweenOpts);
+    totalContinentsT.set(stats.totalContinents, tweenOpts);
+    totalTripsT.set(stats.totalTrips, tweenOpts);
+    totalFlightsT.set(stats.totalFlights, tweenOpts);
+    totalDaysT.set(stats.totalDays, tweenOpts);
+    if (stats.longestTrip) longestTripDaysT.set(stats.longestTrip.days, tweenOpts);
+    averageTripDaysT.set(stats.averageTripDays, tweenOpts);
 
     achievements = getAchievements(trips);
     const currentUnlockedIds = new Set(achievements.filter((a) => a.unlocked).map((a) => a.id));
@@ -65,36 +89,36 @@
   <div class="mt-8 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5">
     <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
       <p class="text-sm text-[var(--color-ink-soft)]">Countries visited</p>
-      <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">{stats.totalCountries}</p>
-      <p class="mt-0.5 text-sm text-[var(--color-ink-soft)]">{stats.percentWorld}% of the world</p>
+      <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">{Math.round($totalCountriesT)}</p>
+      <p class="mt-0.5 text-sm text-[var(--color-ink-soft)]">{Math.round($percentWorldT)}% of the world</p>
     </div>
     <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
       <p class="text-sm text-[var(--color-ink-soft)]">Continents visited</p>
-      <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">{stats.totalContinents}</p>
+      <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">{Math.round($totalContinentsT)}</p>
       <p class="mt-0.5 text-sm text-[var(--color-ink-soft)]">of 7</p>
     </div>
     <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
       <p class="text-sm text-[var(--color-ink-soft)]">Trips logged</p>
-      <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">{stats.totalTrips}</p>
+      <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">{Math.round($totalTripsT)}</p>
     </div>
     <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
       <p class="text-sm text-[var(--color-ink-soft)]">Flights taken</p>
-      <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">{stats.totalFlights}</p>
+      <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">{Math.round($totalFlightsT)}</p>
     </div>
     <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
       <p class="text-sm text-[var(--color-ink-soft)]">Total days travelled</p>
-      <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">{stats.totalDays}</p>
+      <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">{Math.round($totalDaysT)}</p>
     </div>
     <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
       <p class="text-sm text-[var(--color-ink-soft)]">Longest trip</p>
       {#if stats.longestTrip}
         <p class="mt-1 font-display text-xl font-bold text-[var(--color-accent)]">{stats.longestTrip.name}</p>
-        <p class="mt-0.5 text-sm text-[var(--color-ink-soft)]">{stats.longestTrip.days} days</p>
+        <p class="mt-0.5 text-sm text-[var(--color-ink-soft)]">{Math.round($longestTripDaysT)} days</p>
       {/if}
     </div>
     <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
       <p class="text-sm text-[var(--color-ink-soft)]">Average trip length</p>
-      <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">{stats.averageTripDays} days</p>
+      <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">{$averageTripDaysT.toFixed(1)} days</p>
     </div>
   </div>
 {/if}
