@@ -65,7 +65,9 @@
 
 @layer base {
   body {
-    background: var(--color-canvas);
+    background-color: var(--color-canvas);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='paper-noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper-noise)' opacity='0.035'/%3E%3C/svg%3E");
+    background-repeat: repeat;
     color: var(--color-ink);
     font-family: var(--font-sans);
     margin: 0;
