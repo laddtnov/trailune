@@ -28,6 +28,6 @@ export function setStoredTheme(id: string): void {
 }
 
 export function applyTheme(id: string): void {
-  document.documentElement.setAttribute('data-theme', id);
+  document.documentElement.dataset.theme = id;
   setStoredTheme(id);
 }

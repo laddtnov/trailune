@@ -10,8 +10,8 @@
 			(function () {
 				var validThemes = ['travel-journal', 'explorer-night', 'golden-sunset', 'polar-morning'];
 				var stored = localStorage.getItem('trailune:theme');
-				if (stored && validThemes.indexOf(stored) !== -1) {
-					document.documentElement.setAttribute('data-theme', stored);
+				if (stored && validThemes.includes(stored)) {
+					document.documentElement.dataset.theme = stored;
 				}
 			})();
 		</script>
