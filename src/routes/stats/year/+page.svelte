@@ -48,7 +48,7 @@
 
 {#if loading}
   <div class="mt-8 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5">
-    {#each { length: 6 } as _, i (i)}
+    {#each { length: 7 } as _, i (i)}
       <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
         <Skeleton height="0.875rem" width="60%" />
         <div class="mt-2">
