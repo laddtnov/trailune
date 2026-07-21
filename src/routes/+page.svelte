@@ -9,9 +9,11 @@
   import { getLastSeenLevelId, setLastSeenLevelId } from '$lib/storage/levelViewState';
   import type { Trip, TransportMode } from '$lib/types';
   import TripCard from '$lib/components/TripCard.svelte';
+  import Skeleton from '$lib/components/Skeleton.svelte';
 
   let trips: Trip[] = $state([]);
   let countries: CountryInfo[] = $state([]);
+  let loading = $state(true);
   let dialogEl: HTMLDialogElement | undefined = $state();
   let name = $state('');
   let startDate = $state('');
@@ -72,6 +74,7 @@
   onMount(async () => {
     trips = listTrips();
     countries = await loadWorldCountries();
+    loading = false;
 
     if (trips.length === 0) return;
 
@@ -201,46 +204,59 @@
   </button>
 </div>
 
-{#if trips.length > 0 && countries.length > 0}
-  <div class="mt-6 grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-3">
-    <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] px-4 py-3 shadow-[var(--shadow-card)]">
-      <p class="text-xs text-[var(--color-ink-soft)]">Visited</p>
-      <p class="font-display text-xl font-bold text-[var(--color-accent)]">{stats.totalCountries}</p>
-    </div>
-    <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] px-4 py-3 shadow-[var(--shadow-card)]">
-      <p class="text-xs text-[var(--color-ink-soft)]">World explored</p>
-      <p class="font-display text-xl font-bold text-[var(--color-accent)]">{stats.percentWorld}%</p>
-    </div>
-    <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] px-4 py-3 shadow-[var(--shadow-card)]">
-      <p class="text-xs text-[var(--color-ink-soft)]">Trips</p>
-      <p class="font-display text-xl font-bold text-[var(--color-accent)]">{stats.totalTrips}</p>
-    </div>
-    <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] px-4 py-3 shadow-[var(--shadow-card)]">
-      <p class="text-xs text-[var(--color-ink-soft)]">Travel days</p>
-      <p class="font-display text-xl font-bold text-[var(--color-accent)]">{stats.totalDays}</p>
-    </div>
-  </div>
-{/if}
-
-{#if trips.length > 0}
-  <div class="mt-6 flex flex-wrap gap-1.5">
-    {#each tabs as tab (tab.value)}
-      <button
-        type="button"
-        aria-pressed={activeTab === tab.value}
-        onclick={() => (activeTab = tab.value)}
-        class="rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors duration-150 ease-out {activeTab ===
-        tab.value
-          ? 'border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-accent-ink)]'
-          : 'border-[var(--color-card-border)] bg-[var(--color-card)] text-[var(--color-ink-soft)] hover:border-[var(--color-accent)]/50 hover:text-[var(--color-ink)]'}"
-      >
-        {tab.label}
-      </button>
+{#if loading}
+  <div class="mt-8 grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-5">
+    {#each { length: 3 } as _, i (i)}
+      <div class="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-card-border)] bg-[var(--color-card)]">
+        <Skeleton height="7rem" radius="0px" />
+        <div class="space-y-2 p-5">
+          <Skeleton height="1.25rem" width="70%" />
+          <Skeleton height="0.875rem" width="50%" />
+        </div>
+      </div>
     {/each}
   </div>
-{/if}
+{:else}
+  {#if trips.length > 0 && countries.length > 0}
+    <div class="mt-6 grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-3">
+      <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] px-4 py-3 shadow-[var(--shadow-card)]">
+        <p class="text-xs text-[var(--color-ink-soft)]">Visited</p>
+        <p class="font-display text-xl font-bold text-[var(--color-accent)]">{stats.totalCountries}</p>
+      </div>
+      <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] px-4 py-3 shadow-[var(--shadow-card)]">
+        <p class="text-xs text-[var(--color-ink-soft)]">World explored</p>
+        <p class="font-display text-xl font-bold text-[var(--color-accent)]">{stats.percentWorld}%</p>
+      </div>
+      <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] px-4 py-3 shadow-[var(--shadow-card)]">
+        <p class="text-xs text-[var(--color-ink-soft)]">Trips</p>
+        <p class="font-display text-xl font-bold text-[var(--color-accent)]">{stats.totalTrips}</p>
+      </div>
+      <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] px-4 py-3 shadow-[var(--shadow-card)]">
+        <p class="text-xs text-[var(--color-ink-soft)]">Travel days</p>
+        <p class="font-display text-xl font-bold text-[var(--color-accent)]">{stats.totalDays}</p>
+      </div>
+    </div>
+  {/if}
 
-{#if trips.length === 0}
+  {#if trips.length > 0}
+    <div class="mt-6 flex flex-wrap gap-1.5">
+      {#each tabs as tab (tab.value)}
+        <button
+          type="button"
+          aria-pressed={activeTab === tab.value}
+          onclick={() => (activeTab = tab.value)}
+          class="rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors duration-150 ease-out {activeTab ===
+          tab.value
+            ? 'border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-accent-ink)]'
+            : 'border-[var(--color-card-border)] bg-[var(--color-card)] text-[var(--color-ink-soft)] hover:border-[var(--color-accent)]/50 hover:text-[var(--color-ink)]'}"
+        >
+          {tab.label}
+        </button>
+      {/each}
+    </div>
+  {/if}
+
+  {#if trips.length === 0}
   <div
     class="mt-10 flex flex-col items-center rounded-[var(--radius-xl)] border border-dashed border-[var(--color-card-border)] bg-[var(--color-card)]/60 px-6 py-16 text-center"
   >
@@ -276,11 +292,12 @@
     No trips match this filter yet.
   </div>
 {:else}
-  <div class="mt-8 grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-5">
-    {#each filteredTrips as trip (trip.id)}
-      <TripCard {trip} />
-    {/each}
-  </div>
+    <div class="mt-8 grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-5">
+      {#each filteredTrips as trip (trip.id)}
+        <TripCard {trip} />
+      {/each}
+    </div>
+  {/if}
 {/if}
 
 <dialog

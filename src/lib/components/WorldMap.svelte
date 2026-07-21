@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import Skeleton from './Skeleton.svelte';
 
   let {
     visitedCodes,
@@ -15,6 +16,7 @@
 
   let svgContainer: HTMLDivElement | undefined = $state();
   let lastPointerType = 'mouse';
+  let loaded = $state(false);
 
   let revealIndex = 0;
 
@@ -35,6 +37,7 @@
     svgContainer.innerHTML = svgText;
     const svg = svgContainer.querySelector('svg');
     svg?.setAttribute('class', 'world-map-svg');
+    loaded = true;
     revealIndex = 0;
     svgContainer.querySelectorAll('path[id]').forEach((path) => {
       const code = path.id;
@@ -75,9 +78,18 @@
   });
 </script>
 
-<div class="world-map" bind:this={svgContainer}></div>
+{#if !loaded}
+  <div style="aspect-ratio: 2000 / 900;">
+    <Skeleton width="100%" height="100%" radius="var(--radius-xl)" />
+  </div>
+{/if}
+<div class="world-map" bind:this={svgContainer} class:hidden={!loaded}></div>
 
 <style>
+  .world-map.hidden {
+    display: none;
+  }
+
   .world-map :global(.world-map-svg) {
     width: 100%;
     height: auto;
