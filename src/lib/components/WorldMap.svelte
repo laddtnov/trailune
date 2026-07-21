@@ -1,5 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { tweened } from 'svelte/motion';
+  import { cubicOut } from 'svelte/easing';
+  import Skeleton from './Skeleton.svelte';
+  import { padBBox, type ViewBox } from '$lib/mapZoom';
 
   let {
     visitedCodes,
@@ -15,6 +19,15 @@
 
   let svgContainer: HTMLDivElement | undefined = $state();
   let lastPointerType = 'mouse';
+  let loaded = $state(false);
+  let svgEl: SVGSVGElement | undefined;
+  let originalViewBox: ViewBox = [0, 0, 2000, 900];
+
+  const viewBoxTween = tweened<ViewBox>([0, 0, 2000, 900], { duration: 500, easing: cubicOut });
+
+  function prefersReducedMotion(): boolean {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
 
   let revealIndex = 0;
 
@@ -35,6 +48,16 @@
     svgContainer.innerHTML = svgText;
     const svg = svgContainer.querySelector('svg');
     svg?.setAttribute('class', 'world-map-svg');
+    if (svg) {
+      svgEl = svg as unknown as SVGSVGElement;
+      const vb = svg.getAttribute('viewBox');
+      if (vb) {
+        const parts = vb.split(/\s+/).map(Number) as ViewBox;
+        originalViewBox = parts;
+        viewBoxTween.set(parts, { duration: 0 });
+      }
+    }
+    loaded = true;
     revealIndex = 0;
     svgContainer.querySelectorAll('path[id]').forEach((path) => {
       const code = path.id;
@@ -48,6 +71,8 @@
       path.addEventListener('click', () => {
         if (lastPointerType === 'touch' || lastPointerType === 'pen') return;
         oncountryclick?.(code);
+        const bbox = (path as unknown as SVGGraphicsElement).getBBox();
+        viewBoxTween.set(padBBox(bbox), prefersReducedMotion() ? { duration: 0 } : undefined);
       });
       path.addEventListener('pointerenter', (e) => {
         const pe = e as PointerEvent;
@@ -73,11 +98,34 @@
       applyRevealClass(path, code);
     });
   });
+
+  $effect(() => {
+    if (svgEl) {
+      svgEl.setAttribute('viewBox', $viewBoxTween.join(' '));
+    }
+  });
+
+  function handleOutsideClick(event: PointerEvent) {
+    const target = event.target as Element;
+    if (target.closest('path[id]') || target.closest('.country-popover')) return;
+    viewBoxTween.set(originalViewBox, prefersReducedMotion() ? { duration: 0 } : undefined);
+  }
 </script>
 
-<div class="world-map" bind:this={svgContainer}></div>
+<svelte:window onpointerdown={handleOutsideClick} />
+
+{#if !loaded}
+  <div style="aspect-ratio: 2000 / 900;">
+    <Skeleton width="100%" height="100%" radius="var(--radius-xl)" />
+  </div>
+{/if}
+<div class="world-map" bind:this={svgContainer} class:hidden={!loaded}></div>
 
 <style>
+  .world-map.hidden {
+    display: none;
+  }
+
   .world-map :global(.world-map-svg) {
     width: 100%;
     height: auto;

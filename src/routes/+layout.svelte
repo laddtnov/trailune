@@ -2,6 +2,8 @@
   import '../app.css';
   import { page } from '$app/state';
   import { pwaInfo } from 'virtual:pwa-info';
+  import { fade } from 'svelte/transition';
+  import { cubicOut } from 'svelte/easing';
   import FeedbackDialog from '$lib/components/FeedbackDialog.svelte';
 
   let { children } = $props();
@@ -108,7 +110,11 @@
 </header>
 
 <main class="mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-12">
-  {@render children()}
+  {#key page.url.pathname}
+    <div in:fade={{ duration: 200, easing: cubicOut }} out:fade={{ duration: 150, easing: cubicOut }}>
+      {@render children()}
+    </div>
+  {/key}
 </main>
 
 <footer class="border-t border-[var(--color-card-border)] bg-[var(--color-ink-band)] py-6 text-center text-sm text-[var(--color-accent-ink)]/70">
