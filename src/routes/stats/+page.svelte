@@ -121,6 +121,19 @@
       <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">{$averageTripDaysT.toFixed(1)} days</p>
     </div>
   </div>
+
+  <a
+    href="/stats/year"
+    class="mt-6 flex items-center justify-between rounded-[var(--radius-lg)] bg-[var(--color-card)] px-5 py-4 shadow-[var(--shadow-card)] transition-all duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)]"
+  >
+    <div>
+      <p class="font-display text-lg font-bold">Year in Review</p>
+      <p class="mt-0.5 text-sm text-[var(--color-ink-soft)]">See your travel recap, year by year.</p>
+    </div>
+    <svg aria-hidden="true" viewBox="0 0 24 24" class="size-5 shrink-0 text-[var(--color-accent)]" fill="none" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+  </a>
 {/if}
 
   {#if achievements.length > 0}
