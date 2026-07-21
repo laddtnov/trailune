@@ -15,7 +15,7 @@
       card: 'oklch(24% 0.025 255)',
       accent: 'oklch(72% 0.15 80)',
       band: 'oklch(12% 0.02 260)',
-      accentInk: 'oklch(18% 0.02 260)'
+      accentInk: 'oklch(97% 0.01 90)'
     },
     'golden-sunset': {
       canvas: 'oklch(96% 0.02 50)',
