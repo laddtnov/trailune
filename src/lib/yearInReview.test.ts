@@ -93,6 +93,24 @@ describe('computeYearInReview', () => {
     expect(result.mostActiveMonth).toEqual({ month: 0, days: 4 }); // January = month 0
   });
 
+  it('assigns a trip to its startDate year regardless of local timezone (UTC-parsed, not local-time getFullYear)', () => {
+    const trips = [makeTrip({ id: '1', startDate: '2025-01-01', endDate: '2025-01-01', countries: ['FR'] })];
+    const result = computeYearInReview(trips, 2025);
+    expect(result.totalTrips).toBe(1);
+    expect(getAvailableYears(trips)).toEqual([2025]);
+  });
+
+  it('does not attribute days from the following year to a year-spanning trip most active month', () => {
+    const trips = [
+      // Dec 28, 2025 - Jan 3, 2026: entire trip belongs to 2025 (never split), but only
+      // the December days (28,29,30,31 = 4 days) should count toward 2025's most active month
+      makeTrip({ id: '1', startDate: '2025-12-28', endDate: '2026-01-03' })
+    ];
+    const result = computeYearInReview(trips, 2025);
+    expect(result.totalTrips).toBe(1);
+    expect(result.mostActiveMonth).toEqual({ month: 11, days: 4 }); // December = month 11
+  });
+
   it('returns null for mostVisitedCountry, longestTrip, and mostActiveMonth when the year has no trips', () => {
     const result = computeYearInReview([], 2025);
     expect(result.mostVisitedCountry).toBeNull();

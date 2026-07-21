@@ -13,7 +13,7 @@ export interface YearInReview {
 }
 
 function tripYear(trip: Trip): number {
-  return new Date(trip.startDate).getFullYear();
+  return Number(trip.startDate.slice(0, 4));
 }
 
 export function getAvailableYears(trips: Trip[]): number[] {
@@ -21,13 +21,19 @@ export function getAvailableYears(trips: Trip[]): number[] {
   return [...years].sort((a, b) => b - a);
 }
 
-function computeMostActiveMonth(trips: Trip[]): { month: number; days: number } | null {
+function computeMostActiveMonth(trips: Trip[], year: number): { month: number; days: number } | null {
   const monthDays = new Array(12).fill(0);
   for (const trip of trips) {
     const start = new Date(trip.startDate);
     const end = new Date(trip.endDate);
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      monthDays[d.getMonth()] += 1;
+    for (
+      let d = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
+      d <= end;
+      d.setUTCDate(d.getUTCDate() + 1)
+    ) {
+      if (d.getUTCFullYear() === year) {
+        monthDays[d.getUTCMonth()] += 1;
+      }
     }
   }
   let bestMonth = -1;
@@ -82,7 +88,7 @@ export function computeYearInReview(trips: Trip[], year: number): YearInReview {
           { name: yearTrips[0].name, days: daysInTrip(yearTrips[0]) }
         );
 
-  const mostActiveMonth = computeMostActiveMonth(yearTrips);
+  const mostActiveMonth = computeMostActiveMonth(yearTrips, year);
 
   return {
     year,
