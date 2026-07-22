@@ -4,6 +4,7 @@
   import { pwaInfo } from 'virtual:pwa-info';
   import { fade } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';
+  import AmbientBackground from '$lib/components/AmbientBackground.svelte';
   import FeedbackDialog from '$lib/components/FeedbackDialog.svelte';
 
   let { children } = $props();
@@ -31,6 +32,8 @@
 <svelte:head>
   {@html webManifestLink}
 </svelte:head>
+
+<AmbientBackground />
 
 <header
   class="sticky top-0 z-40 border-b border-black/10 bg-[var(--color-ink-band)] text-[var(--color-accent-ink)]"
