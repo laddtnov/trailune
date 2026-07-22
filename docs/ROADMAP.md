@@ -57,9 +57,9 @@ The map should stop being a static "here's where you've been" page and become th
 
 ## 5. Ambient Design & Feel
 
-**Status: tiny details and dynamic themes ✅ shipped; ambient motion still open.**
+**Status: ✅ Fully shipped.**
 
-- **Ambient motion**: still open — very subtle moving gradients, cloud drift, tiny parallax — "the app should breathe," explicitly not distracting. Deferred as its own cycle when the dynamic-themes work was scoped, since it's an independent visual layer.
+- ✅ **Ambient motion**: two slowly-drifting, blurred gradient blobs (theme-colored via `var(--color-accent)`/`var(--color-teal)`) rendered app-wide behind all content — "the app breathes" via pure CSS `@keyframes`, no JS/scroll listeners, respecting `prefers-reduced-motion` through the existing global override.
 - ✅ **Dynamic themes**: four named presets — Travel Journal, Explorer Night, Golden Sunset, Polar Morning — selectable from a new `/settings` page, applied instantly via CSS custom-property overrides, persisted locally. No auto dark-mode detection — purely manual choice.
 - ✅ **Tiny details**: passport-stamp animation when a trip is added, soft paper texture in the background, gentle page transitions, animated counters (on `/stats` and `/stats/year`), smooth map zoom-to-country, skeleton loaders instead of spinners. The one item *not* built as originally framed is a **compass loading spinner** — superseded by skeleton loaders, which cover the same "blank while loading" gap more consistently across pages. Confetti was correctly never added.
 
@@ -114,6 +114,6 @@ A batch of concrete refinements and bigger visual concepts, gathered after livin
 
 1. ✅ **The Living Map** — shipped (mostly; scratch map and dream map still open).
 2. ✅ **Home Dashboard & Stats** — shipped, including Achievements, Year in Review, and the Rank/Level system addition.
-3. ✅ **Ambient Design & tiny details, Dynamic themes** — shipped. Ambient background motion is the one remaining piece of §5.
+3. ✅ **Ambient Design & Feel** — fully shipped (tiny details, dynamic themes, and ambient background motion).
 4. **Journal/Memories/Timeline** (§3), **Trip Experience polish** (§4), **§7 Polishing Ideas** — bigger individually, worth their own brainstorm sessions when picked up. Nothing in these sections has been started yet.
 5. **AI Travel Summary** (§6) — needs a backend-shape decision first; lowest priority until that's resolved.
