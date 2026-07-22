@@ -8,6 +8,7 @@
   import PackingChecklist from '$lib/components/PackingChecklist.svelte';
   import DoDontList from '$lib/components/DoDontList.svelte';
   import TipsList from '$lib/components/TipsList.svelte';
+  import StarRating from '$lib/components/StarRating.svelte';
 
   let tripId = $derived(page.params.id);
   let trip: Trip | undefined = $state();
@@ -17,6 +18,7 @@
 
   let note = $state('');
   let date = $state('');
+  let rating: number | undefined = $state();
   let fileInput: HTMLInputElement | undefined = $state();
   let formError: string | null = $state(null);
   let submitting = $state(false);
@@ -65,7 +67,7 @@
     }
     submitting = true;
     try {
-      await addJournalEntry(tripId, { date, note, photoFiles: files });
+      await addJournalEntry(tripId, { date, note, photoFiles: files, rating });
     } catch (err) {
       formError =
         'Could not save this entry with photos — your browser may be blocking local photo storage (common in private browsing). Try again without photos, or in a normal browser window.';
@@ -74,6 +76,7 @@
     }
     note = '';
     date = '';
+    rating = undefined;
     if (fileInput) fileInput.value = '';
     await loadEntries();
     submitting = false;
@@ -157,19 +160,19 @@
             {#each entries as entry (entry.id)}
               <a
                 href={`/trips/${tripId}/entry/${entry.id}`}
-                class="flex gap-4 rounded-[var(--radius-lg)] border border-[var(--color-card-border)] bg-[var(--color-card)] p-3 shadow-[var(--shadow-card)] transition-all duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)]"
+                class="flex overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-card-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)] transition-all duration-200 ease-[var(--ease-out-quart)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)]"
               >
                 {#if entry.photoIds[0] && thumbnails[entry.photoIds[0]]}
                   <img
                     src={thumbnails[entry.photoIds[0]]}
                     alt=""
-                    class="size-16 shrink-0 rounded-[var(--radius-md)] object-cover"
+                    class="w-28 shrink-0 object-cover sm:w-36"
                   />
                 {:else}
                   <div
-                    class="grid size-16 shrink-0 place-items-center rounded-[var(--radius-md)] bg-[var(--color-accent-soft)] text-[var(--color-accent)]"
+                    class="grid w-28 shrink-0 place-items-center bg-[var(--color-accent-soft)] text-[var(--color-accent)] sm:w-36"
                   >
-                    <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="1.75">
+                    <svg viewBox="0 0 24 24" class="size-8" fill="none" stroke="currentColor" stroke-width="1.75">
                       <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -179,11 +182,14 @@
                     </svg>
                   </div>
                 {/if}
-                <div class="min-w-0 py-0.5">
-                  <p class="font-mono text-xs uppercase tracking-wide text-[var(--color-ink-soft)]">
-                    {formatDate(entry.date)}
-                  </p>
-                  <p class="mt-1 line-clamp-2 text-sm text-[var(--color-ink)]">{entry.note}</p>
+                <div class="flex min-w-0 flex-1 flex-col justify-between gap-2 p-3.5">
+                  <div>
+                    <p class="font-mono text-xs uppercase tracking-wide text-[var(--color-ink-soft)]">
+                      {formatDate(entry.date)}
+                    </p>
+                    <p class="mt-1 line-clamp-2 text-sm text-[var(--color-ink)]">{entry.note}</p>
+                  </div>
+                  <StarRating value={entry.rating} readonly />
                 </div>
               </a>
             {/each}
@@ -225,6 +231,10 @@
               placeholder="What happened today?"
               class="w-full resize-y rounded-[var(--radius-md)] border border-[var(--color-card-border)] bg-[var(--color-canvas)] px-3.5 py-2.5 text-[var(--color-ink)] outline-none transition-shadow placeholder:text-[var(--color-ink-soft)]/60 focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-soft)]"
             ></textarea>
+          </label>
+          <label class="block">
+            <span class="mb-1.5 block text-sm font-medium text-[var(--color-ink-soft)]">Rating (optional)</span>
+            <StarRating bind:value={rating} />
           </label>
           {#if formError}
             <p class="rounded-[var(--radius-md)] bg-[var(--color-danger-soft)] px-3.5 py-2.5 text-sm text-[var(--color-danger)]">
