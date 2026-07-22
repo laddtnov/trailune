@@ -89,11 +89,11 @@ describe('deleteTripCascade', () => {
     expect(await getPhoto(tip.photoId!)).toBeUndefined();
   });
 
-  it('removes the trip pins', () => {
+  it('removes the trip pins', async () => {
     const trip = createTrip({ name: 'Ireland', startDate: '2026-06-01', endDate: '2026-06-10', countries: ['IE'] });
     savePin({ id: generateId(), tripId: trip.id, label: 'Cliffs of Moher', note: null, createdAt: new Date().toISOString() });
 
-    deleteTripCascade(trip.id);
+    await deleteTripCascade(trip.id);
 
     expect(listPins(trip.id)).toEqual([]);
   });
