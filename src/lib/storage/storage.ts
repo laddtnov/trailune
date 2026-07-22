@@ -5,10 +5,12 @@ import * as trips from './local';
 import * as checklist from './checklist';
 import * as photoStore from './photos';
 import * as tipsRepo from './tips';
+import * as pinsRepo from './pins';
 
 export * from './local';
 export * from './checklist';
 export * from './tips';
+export * from './pins';
 export { getPhoto, deletePhoto } from './photos';
 
 export function createTrip(input: {
@@ -57,6 +59,7 @@ export async function deleteTripCascade(tripId: string): Promise<void> {
   trips.deleteJournalEntriesForTrip(tripId);
   checklist.deletePackingItemsForTrip(tripId);
   checklist.deleteDoDontItemsForTrip(tripId);
+  pinsRepo.deletePinsForTrip(tripId);
 
   const tripTips = tipsRepo.listTips(tripId);
   for (const tip of tripTips) {
