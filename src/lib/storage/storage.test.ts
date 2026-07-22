@@ -5,7 +5,9 @@ import {
 	addJournalEntry,
 	deleteJournalEntryWithPhotos,
 	addTipEntry,
-	deleteTipEntryWithPhoto
+	deleteTipEntryWithPhoto,
+	savePin,
+	listPins
 } from './storage';
 import { savePackingItem, listPackingItems, saveDoDontItem, listDoDontItems } from './checklist';
 import { listJournalEntries } from './local';
@@ -85,6 +87,15 @@ describe('deleteTripCascade', () => {
 
     expect(listTips(trip.id)).toEqual([]);
     expect(await getPhoto(tip.photoId!)).toBeUndefined();
+  });
+
+  it('removes the trip pins', async () => {
+    const trip = createTrip({ name: 'Ireland', startDate: '2026-06-01', endDate: '2026-06-10', countries: ['IE'] });
+    savePin({ id: generateId(), tripId: trip.id, label: 'Cliffs of Moher', note: null, createdAt: new Date().toISOString() });
+
+    await deleteTripCascade(trip.id);
+
+    expect(listPins(trip.id)).toEqual([]);
   });
 });
 

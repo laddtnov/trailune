@@ -54,3 +54,11 @@ export interface TipEntry {
   photoId: string | null;
   createdAt: string;
 }
+
+export interface PinEntry {
+  id: string;
+  tripId: string;
+  label: string;
+  note: string | null;
+  createdAt: string;
+}
