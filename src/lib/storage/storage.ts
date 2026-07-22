@@ -71,7 +71,7 @@ export async function deleteTripCascade(tripId: string): Promise<void> {
 
 export async function addJournalEntry(
   tripId: string,
-  input: { date: string; note: string; photoFiles: File[] }
+  input: { date: string; note: string; photoFiles: File[]; rating?: number }
 ): Promise<JournalEntry> {
   const photoIds: string[] = [];
   for (const file of input.photoFiles) {
@@ -91,7 +91,8 @@ export async function addJournalEntry(
     tripId,
     date: input.date,
     note: input.note,
-    photoIds
+    photoIds,
+    rating: input.rating
   };
   trips.saveJournalEntry(entry);
   return entry;

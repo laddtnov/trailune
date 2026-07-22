@@ -129,6 +129,23 @@ describe('addJournalEntry', () => {
     const entry = await addJournalEntry(trip.id, { date: '2026-03-05', note: 'No photos today', photoFiles: [] });
     expect(entry.photoIds).toEqual([]);
   });
+
+  it('persists an optional rating', async () => {
+    const trip = createTrip({ name: 'Peru', startDate: '2026-07-10', endDate: '2026-07-20', countries: ['PE'] });
+    const entry = await addJournalEntry(trip.id, {
+      date: '2026-07-11',
+      note: 'Rated day',
+      photoFiles: [],
+      rating: 4
+    });
+    expect(entry.rating).toBe(4);
+  });
+
+  it('leaves rating undefined when not provided', async () => {
+    const trip = createTrip({ name: 'Peru', startDate: '2026-07-10', endDate: '2026-07-20', countries: ['PE'] });
+    const entry = await addJournalEntry(trip.id, { date: '2026-07-11', note: 'No rating', photoFiles: [] });
+    expect(entry.rating).toBeUndefined();
+  });
 });
 
 describe('addTipEntry', () => {

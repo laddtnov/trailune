@@ -39,7 +39,9 @@ The map should stop being a static "here's where you've been" page and become th
 
 ## 3. Journal, Memories & Timeline
 
-- **Journal reframed as a diary**: mood/rating stars, cover-style layout per entry, instead of a plain note list — visual treatment change, not a data model change.
+**Status: journal reframe ✅ shipped; journey timeline, photo gallery tabs, memory pins, and travel calendar still open.**
+
+- ✅ **Journal reframed as a diary**: an optional 1-5 star rating on each entry, settable on both the add-entry and edit forms, plus a postcard-split card layout (photo left, date/note/stars right) replacing the old thin list row — a visual treatment change, not a data model change beyond the optional rating field.
 - **Journey timeline**: a vertical, year-grouped timeline of trips (country, duration, season) — a different view over the same trip data, not new data.
 - **Photo gallery per trip**: gallery / map / journal / timeline tabs within a trip, reusing photos already attached to journal entries and tips.
 - **Memory pins**: pin specific *locations* within a trip (Cliffs of Moher, Shibuya Crossing), not just countries — this is a genuinely new data concept (a pin needs at least a label and could optionally have coordinates for a future in-country map), and the first idea here that meaningfully extends the data model rather than just re-presenting it.

@@ -5,6 +5,7 @@
   import { getJournalEntry, saveJournalEntry, deleteJournalEntryWithPhotos } from '$lib/storage/storage';
   import { getPhoto } from '$lib/storage/photos';
   import type { JournalEntry } from '$lib/types';
+  import StarRating from '$lib/components/StarRating.svelte';
 
   let tripId = $derived(page.params.id);
   let entryId = $derived(page.params.entryId);
@@ -12,6 +13,7 @@
   let photoUrls: string[] = $state([]);
   let note = $state('');
   let date = $state('');
+  let rating: number | undefined = $state();
   let saving = $state(false);
   let deleting = $state(false);
 
@@ -20,6 +22,7 @@
     if (entry) {
       note = entry.note;
       date = entry.date;
+      rating = entry.rating;
       const urls: string[] = [];
       for (const photoId of entry.photoIds) {
         const photo = await getPhoto(photoId);
@@ -33,7 +36,7 @@
     event.preventDefault();
     if (!entry) return;
     saving = true;
-    saveJournalEntry({ ...entry, note, date });
+    saveJournalEntry({ ...entry, note, date, rating });
     goto(`/trips/${tripId}`);
   }
 
@@ -90,6 +93,10 @@
         rows="5"
         class="w-full resize-y rounded-[var(--radius-md)] border border-[var(--color-card-border)] bg-[var(--color-canvas)] px-3.5 py-2.5 text-[var(--color-ink)] outline-none focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-soft)]"
       ></textarea>
+    </label>
+    <label class="block">
+      <span class="mb-1.5 block text-sm font-medium text-[var(--color-ink-soft)]">Rating (optional)</span>
+      <StarRating bind:value={rating} />
     </label>
     <div class="flex items-center justify-between">
       <button
