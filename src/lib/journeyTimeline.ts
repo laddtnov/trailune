@@ -39,6 +39,6 @@ export function groupTripsByYear(trips: Trip[]): TimelineYearGroup[] {
 
 export function countryCodeToFlag(code: string): string {
   if (code.length !== 2) return '';
-  const codePoints = [...code.toUpperCase()].map((char) => 0x1f1e6 + (char.charCodeAt(0) - 65));
+  const codePoints = [...code.toUpperCase()].map((char) => 0x1f1e6 + (char.codePointAt(0)! - 65));
   return String.fromCodePoint(...codePoints);
 }
