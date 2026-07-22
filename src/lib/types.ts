@@ -16,6 +16,7 @@ export interface JournalEntry {
   date: string;
   note: string;
   photoIds: string[];
+  rating?: number;
 }
 
 export interface Photo {
