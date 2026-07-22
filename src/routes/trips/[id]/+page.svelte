@@ -11,12 +11,13 @@
   import StarRating from '$lib/components/StarRating.svelte';
   import PhotoGallery from '$lib/components/PhotoGallery.svelte';
   import WorldMap from '$lib/components/WorldMap.svelte';
+  import PinsList from '$lib/components/PinsList.svelte';
 
   let tripId = $derived(page.params.id);
   let trip: Trip | undefined = $state();
   let entries: JournalEntry[] = $state([]);
   let thumbnails: Record<string, string> = $state({});
-  let activeTab: 'journal' | 'gallery' | 'map' | 'packing' | 'tips' | 'dodont' = $state('journal');
+  let activeTab: 'journal' | 'gallery' | 'map' | 'pins' | 'packing' | 'tips' | 'dodont' = $state('journal');
 
   let note = $state('');
   let date = $state('');
@@ -31,6 +32,7 @@
     { id: 'journal' as const, label: 'Journal' },
     { id: 'gallery' as const, label: 'Gallery' },
     { id: 'map' as const, label: 'Map' },
+    { id: 'pins' as const, label: 'Pins' },
     { id: 'packing' as const, label: 'Packing' },
     { id: 'tips' as const, label: 'Tips' },
     { id: 'dodont' as const, label: "Do's & Don'ts" }
@@ -258,6 +260,8 @@
       <PhotoGallery {tripId} />
     {:else if activeTab === 'map'}
       <WorldMap visitedCodes={new Set(trip.countries)} />
+    {:else if activeTab === 'pins'}
+      <PinsList {tripId} />
     {:else if activeTab === 'packing'}
       <PackingChecklist tripId={tripId} />
     {:else if activeTab === 'tips'}
