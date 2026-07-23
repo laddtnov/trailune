@@ -265,7 +265,7 @@
     {:else if activeTab === 'gallery'}
       <PhotoGallery {tripId} />
     {:else if activeTab === 'map'}
-      <WorldMap visitedCodes={new Set(trip.countries)} />
+      <WorldMap visitedCodes={new Set(trip.countries)} routeCodes={trip.countries} />
     {:else if activeTab === 'pins'}
       <PinsList {tripId} />
     {:else if activeTab === 'packing'}

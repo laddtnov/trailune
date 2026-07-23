@@ -1,18 +1,21 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import { tweened } from 'svelte/motion';
   import { cubicOut } from 'svelte/easing';
   import Skeleton from './Skeleton.svelte';
   import { padBBox, type ViewBox } from '$lib/mapZoom';
+  import { computeArcPath } from '$lib/flightRoute';
 
   let {
     visitedCodes,
     newlyVisitedCodes = new Set(),
+    routeCodes = [],
     oncountryclick,
     oncountryhover
   }: {
     visitedCodes: Set<string>;
     newlyVisitedCodes?: Set<string>;
+    routeCodes?: string[];
     oncountryclick?: (code: string) => void;
     oncountryhover?: (code: string | null, position: { x: number; y: number } | null) => void;
   } = $props();
@@ -59,6 +62,13 @@
     }
     loaded = true;
     revealIndex = 0;
+    if (svg) {
+      // Wait for Svelte to flush the `hidden` class removal before measuring
+      // path geometry — getBBox() reads zero-size boxes while the container
+      // (and thus the SVG) is still display:none.
+      await tick();
+      buildFlightRoute(svg as unknown as SVGSVGElement);
+    }
     svgContainer.querySelectorAll('path[id]').forEach((path) => {
       const code = path.id;
       path.addEventListener('pointerdown', (e) => {
@@ -104,6 +114,59 @@
       svgEl.setAttribute('viewBox', $viewBoxTween.join(' '));
     }
   });
+
+  function buildFlightRoute(svg: SVGSVGElement) {
+    if (routeCodes.length < 2) return;
+
+    const points: { x: number; y: number }[] = [];
+    for (const code of routeCodes) {
+      const path = svg.querySelector(`path[id="${code}"]`) as SVGGraphicsElement | null;
+      if (!path) continue;
+      const bbox = path.getBBox();
+      points.push({ x: bbox.x + bbox.width / 2, y: bbox.y + bbox.height / 2 });
+    }
+    if (points.length < 2) return;
+
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const group = document.createElementNS(svgNS, 'g');
+    group.setAttribute('class', 'flight-route');
+    svg.appendChild(group);
+
+    const reduced = prefersReducedMotion();
+    const legDuration = 800;
+    let cumulativeDelay = 0;
+
+    for (let i = 0; i < points.length - 1; i++) {
+      const legPath = document.createElementNS(svgNS, 'path') as SVGPathElement;
+      legPath.setAttribute('class', 'flight-leg');
+      legPath.setAttribute('d', computeArcPath(points[i], points[i + 1]));
+      group.appendChild(legPath);
+
+      const length = legPath.getTotalLength();
+      legPath.style.strokeDasharray = `${length}`;
+
+      if (reduced) {
+        legPath.style.strokeDashoffset = '0';
+      } else {
+        legPath.style.strokeDashoffset = `${length}`;
+        legPath.style.transition = `stroke-dashoffset ${legDuration}ms var(--ease-out-quart)`;
+        const delay = cumulativeDelay;
+        setTimeout(() => {
+          legPath.style.strokeDashoffset = '0';
+        }, delay);
+        cumulativeDelay += legDuration;
+      }
+    }
+
+    for (const point of points) {
+      const marker = document.createElementNS(svgNS, 'circle');
+      marker.setAttribute('class', 'flight-waypoint');
+      marker.setAttribute('cx', String(point.x));
+      marker.setAttribute('cy', String(point.y));
+      marker.setAttribute('r', '6');
+      group.appendChild(marker);
+    }
+  }
 
   function handleOutsideClick(event: PointerEvent) {
     const target = event.target as Element;
@@ -185,5 +248,20 @@
     .world-map :global(path.revealing) {
       animation: none;
     }
+  }
+
+  .world-map :global(.flight-leg) {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 3;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+
+  .world-map :global(.flight-waypoint) {
+    fill: var(--color-accent);
+    stroke: var(--color-canvas);
+    stroke-width: 1;
+    pointer-events: none;
   }
 </style>
