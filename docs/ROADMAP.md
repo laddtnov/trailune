@@ -51,10 +51,10 @@ The map should stop being a static "here's where you've been" page and become th
 
 ## 4. Trip Experience Polish
 
-**Status: packing cards + templates ✅ shipped; destination preview and animated flight route still open.**
+**Status: packing cards + templates and destination preview ✅ shipped; animated flight route still open.**
 
 - ✅ **Packing as cards, not checkboxes**: packing items render as ticket-style cards (category icon, label, a rotated "PACKED" stamp badge with a settle animation) instead of checkbox rows, plus **five named packing templates** — General (the former single shared template, untouched) plus Beach Holiday, Business Trip, Camping, and Winter, each of the latter four pre-seeded with curated starter items the first time it's opened. The `/packing-template` page gained a template-tab switcher, and the new-trip dialog gained a template picker (defaulting to General) that copies the chosen template's items into the trip.
-- **Destination preview**: before a trip, show typical weather/season, currency, and timezone for the destination country. This needs a small static reference dataset (country → currency/timezone is stable and can be bundled; typical-season weather is more of an approximation than live data) — doesn't need a live weather API to deliver most of the value.
+- ✅ **Destination preview**: a card per country in the trip hub (visible above the tabs, on every tab) showing currency, UTC offset, and a hemisphere-aware season + climate blurb computed from the trip's actual travel date — a Southern-hemisphere country correctly gets the opposite season from a Northern one on the same date. Backed by a bundled static reference table covering all 211 countries the app's world map supports; no live weather or exchange-rate API.
 - **Animated flight route**: opening a multi-leg trip shows an animated route line between the countries visited in order.
 
 **Feasibility**: packing cards and templates are pure UI + a small data model addition (named templates instead of one shared template). Destination preview is client-side if backed by a bundled static reference table; a live weather API would need the same "can't expose a secret key from the browser" treatment as the Resend integration.
