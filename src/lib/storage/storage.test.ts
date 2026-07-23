@@ -9,7 +9,7 @@ import {
 	savePin,
 	listPins
 } from './storage';
-import { savePackingItem, listPackingItems, saveDoDontItem, listDoDontItems } from './checklist';
+import { savePackingItem, listPackingItems, listTemplateItems, saveDoDontItem, listDoDontItems } from './checklist';
 import { listJournalEntries } from './local';
 import { listTips } from './tips';
 import { getPhoto } from './photos';
@@ -20,20 +20,64 @@ beforeEach(() => {
 });
 
 describe('createTrip', () => {
-  it('copies template packing items into new trip-scoped items', () => {
-    savePackingItem({ id: generateId(), tripId: null, category: 'Documents', label: 'Passport', checked: false });
+  it('defaults to copying the general template into new trip-scoped items', () => {
+    savePackingItem({
+      id: generateId(),
+      tripId: null,
+      templateId: 'general',
+      category: 'Documents',
+      label: 'Passport',
+      checked: false
+    });
     const trip = createTrip({ name: 'Japan', startDate: '2026-03-03', endDate: '2026-03-15', countries: ['JP'] });
     const tripItems = listPackingItems(trip.id);
     expect(tripItems).toHaveLength(1);
     expect(tripItems[0].label).toBe('Passport');
     expect(tripItems[0].tripId).toBe(trip.id);
+    expect(tripItems[0].templateId).toBeNull();
     expect(tripItems[0].checked).toBe(false);
   });
 
-  it('never mutates the shared template', () => {
-    savePackingItem({ id: generateId(), tripId: null, category: 'Documents', label: 'Passport', checked: false });
+  it('copies the explicitly chosen template instead of general', () => {
+    savePackingItem({
+      id: generateId(),
+      tripId: null,
+      templateId: 'general',
+      category: 'Documents',
+      label: 'Passport',
+      checked: false
+    });
+    savePackingItem({
+      id: generateId(),
+      tripId: null,
+      templateId: 'beach',
+      category: 'Clothing',
+      label: 'Swimsuit',
+      checked: false
+    });
+    const trip = createTrip({
+      name: 'Bali',
+      startDate: '2026-07-10',
+      endDate: '2026-07-20',
+      countries: ['ID'],
+      packingTemplateId: 'beach'
+    });
+    const tripItems = listPackingItems(trip.id);
+    expect(tripItems).toHaveLength(1);
+    expect(tripItems[0].label).toBe('Swimsuit');
+  });
+
+  it('never mutates the source template', () => {
+    savePackingItem({
+      id: generateId(),
+      tripId: null,
+      templateId: 'general',
+      category: 'Documents',
+      label: 'Passport',
+      checked: false
+    });
     createTrip({ name: 'Peru', startDate: '2026-07-10', endDate: '2026-07-20', countries: ['PE'] });
-    expect(listPackingItems(null)).toHaveLength(1);
+    expect(listTemplateItems('general')).toHaveLength(1);
   });
 
   it('defaults transportMode to flight when not provided', () => {
