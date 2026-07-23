@@ -39,15 +39,15 @@ The map should stop being a static "here's where you've been" page and become th
 
 ## 3. Journal, Memories & Timeline
 
-**Status: journal reframe, journey timeline, photo gallery/trip map, and memory pins ✅ shipped; travel calendar is the last item still open.**
+**Status: ✅ Fully shipped.**
 
 - ✅ **Journal reframed as a diary**: an optional 1-5 star rating on each entry, settable on both the add-entry and edit forms, plus a postcard-split card layout (photo left, date/note/stars right) replacing the old thin list row — a visual treatment change, not a data model change beyond the optional rating field.
 - ✅ **Journey timeline**: a new `/timeline` page — trips grouped by year (most recent first), each entry showing country flags/names, a season badge, and duration, in a responsive layout (alternating centered spine on desktop, single rail on mobile) — a different view over the same trip data, no new data model.
 - ✅ **Photo gallery per trip**: two new trip hub tabs — Gallery (a grid aggregating every photo from that trip's journal entries and tips, with a lightbox viewer) and Map (a non-interactive highlight of just that trip's countries, reusing the existing `WorldMap` component). A per-trip Timeline tab was scoped out of this cycle as a separate future idea.
 - ✅ **Memory pins**: a new `PinEntry` data concept (label + optional note, scoped to a trip) and a new Pins tab in the trip hub — the first idea in §3 that genuinely extends the data model rather than just re-presenting existing data. Coordinates and photo attachment were explicitly deferred; no map integration in this cycle.
-- **Travel calendar**: a yearly heatmap-style view of which days were "travel days," derived from trip date ranges.
+- ✅ **Travel calendar**: a new `/calendar` page — a GitHub-style yearly heatmap (7×53 grid) of "travel days," each day colored by which trip it belongs to (colors assigned deterministically by chronological trip order, stable across years), with a hover tooltip, a per-year legend, and prev/next year navigation. Purely derived from existing trip date ranges, no new data model.
 
-**Feasibility**: mostly client-side re-presentation of existing data. Memory pins is the one item that needs a small new schema addition (something like a `PinEntry` similar in shape to `TipEntry`).
+**Feasibility**: mostly client-side re-presentation of existing data. Memory pins was the one item that needed a small new schema addition (something like a `PinEntry` similar in shape to `TipEntry`).
 
 ## 4. Trip Experience Polish
 
