@@ -9,5 +9,5 @@
 </p>
 
 <div class="mt-8">
-  <PackingChecklist tripId={null} />
+  <PackingChecklist context={{ type: 'template', templateId: 'general' }} />
 </div>

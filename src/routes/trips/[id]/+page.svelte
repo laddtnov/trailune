@@ -263,7 +263,7 @@
     {:else if activeTab === 'pins'}
       <PinsList {tripId} />
     {:else if activeTab === 'packing'}
-      <PackingChecklist tripId={tripId} />
+      <PackingChecklist context={{ type: 'trip', tripId }} />
     {:else if activeTab === 'tips'}
       <TipsList {tripId} />
     {:else if activeTab === 'dodont'}
