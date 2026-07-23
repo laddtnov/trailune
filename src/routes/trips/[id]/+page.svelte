@@ -3,6 +3,8 @@
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
   import { getTrip, listJournalEntries, addJournalEntry, deleteTripCascade } from '$lib/storage/storage';
+  import { loadWorldCountries, type CountryInfo } from '$lib/countries';
+  import DestinationPreview from '$lib/components/DestinationPreview.svelte';
   import { getPhoto } from '$lib/storage/photos';
   import type { Trip, JournalEntry } from '$lib/types';
   import PackingChecklist from '$lib/components/PackingChecklist.svelte';
@@ -15,6 +17,7 @@
 
   let tripId = $derived(page.params.id);
   let trip: Trip | undefined = $state();
+  let countries: CountryInfo[] = $state([]);
   let entries: JournalEntry[] = $state([]);
   let thumbnails: Record<string, string> = $state({});
   let activeTab: 'journal' | 'gallery' | 'map' | 'pins' | 'packing' | 'tips' | 'dodont' = $state('journal');
@@ -59,6 +62,7 @@
 
   onMount(async () => {
     trip = getTrip(tripId);
+    countries = await loadWorldCountries();
     await loadEntries();
   });
 
@@ -132,6 +136,8 @@
       Delete trip
     </button>
   </header>
+
+  <DestinationPreview {trip} {countries} />
 
   <nav class="mt-6 flex gap-1 border-b border-[var(--color-card-border)]">
     {#each tabs as tab (tab.id)}
