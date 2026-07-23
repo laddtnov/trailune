@@ -5,7 +5,7 @@ export function computeArcPath(
 ): string {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
-  const distance = Math.sqrt(dx * dx + dy * dy);
+  const distance = Math.hypot(dx, dy);
 
   if (distance === 0) {
     return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
