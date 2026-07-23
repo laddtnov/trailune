@@ -5,7 +5,7 @@ describe('COUNTRY_REFERENCE', () => {
   const entries = Object.entries(COUNTRY_REFERENCE);
 
   it('has an entry for every country code the world map supports', () => {
-    expect(entries.length).toBe(211);
+    expect(entries).toHaveLength(211);
   });
 
   it('every entry has a valid 3-letter uppercase currency code', () => {
