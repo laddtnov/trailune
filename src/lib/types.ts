@@ -28,9 +28,12 @@ export interface Photo {
 
 export type PackingCategory = 'Documents' | 'Electronics' | 'Clothing' | 'Toiletries' | 'Other';
 
+export type PackingTemplateId = 'general' | 'beach' | 'business' | 'camping' | 'winter';
+
 export interface PackingItem {
   id: string;
   tripId: string | null;
+  templateId: PackingTemplateId | null;
   category: PackingCategory;
   label: string;
   checked: boolean;

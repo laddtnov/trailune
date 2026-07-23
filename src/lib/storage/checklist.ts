@@ -1,4 +1,4 @@
-import type { PackingItem, DoDontItem } from '$lib/types';
+import type { PackingItem, DoDontItem, PackingTemplateId } from '$lib/types';
 
 const PACKING_KEY = 'trailune:packingItems';
 const DODONT_KEY = 'trailune:doDontItems';
@@ -12,8 +12,14 @@ function writeAll<T>(key: string, items: T[]): void {
   localStorage.setItem(key, JSON.stringify(items));
 }
 
-export function listPackingItems(tripId: string | null): PackingItem[] {
+export function listPackingItems(tripId: string): PackingItem[] {
   return readAll<PackingItem>(PACKING_KEY).filter((i) => i.tripId === tripId);
+}
+
+export function listTemplateItems(templateId: PackingTemplateId): PackingItem[] {
+  return readAll<PackingItem>(PACKING_KEY).filter(
+    (i) => i.tripId === null && (i.templateId ?? 'general') === templateId
+  );
 }
 
 export function savePackingItem(item: PackingItem): void {

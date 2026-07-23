@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   listPackingItems,
+  listTemplateItems,
   savePackingItem,
   deletePackingItem,
   deletePackingItemsForTrip,
@@ -16,34 +17,71 @@ beforeEach(() => {
 });
 
 describe('packing items repository', () => {
-  const templateItem: PackingItem = { id: 'p1', tripId: null, category: 'Documents', label: 'Passport', checked: false };
-  const tripItem: PackingItem = { id: 'p2', tripId: 't1', category: 'Electronics', label: 'Charger', checked: false };
+  const generalItem: PackingItem = {
+    id: 'p1',
+    tripId: null,
+    templateId: 'general',
+    category: 'Documents',
+    label: 'Passport',
+    checked: false
+  };
+  const beachItem: PackingItem = {
+    id: 'p2',
+    tripId: null,
+    templateId: 'beach',
+    category: 'Clothing',
+    label: 'Swimsuit',
+    checked: false
+  };
+  const tripItem: PackingItem = {
+    id: 'p3',
+    tripId: 't1',
+    templateId: null,
+    category: 'Electronics',
+    label: 'Charger',
+    checked: false
+  };
 
-  it('separates template items (tripId null) from trip-scoped items', () => {
-    savePackingItem(templateItem);
+  it('separates template items by templateId and trip-scoped items by tripId', () => {
+    savePackingItem(generalItem);
+    savePackingItem(beachItem);
     savePackingItem(tripItem);
-    expect(listPackingItems(null)).toEqual([templateItem]);
+    expect(listTemplateItems('general')).toEqual([generalItem]);
+    expect(listTemplateItems('beach')).toEqual([beachItem]);
     expect(listPackingItems('t1')).toEqual([tripItem]);
   });
 
+  it('treats a legacy item with no templateId field as general', () => {
+    const legacyItem = {
+      id: 'p4',
+      tripId: null,
+      category: 'Documents',
+      label: 'Old passport',
+      checked: false
+    } as PackingItem;
+    savePackingItem(legacyItem);
+    expect(listTemplateItems('general')).toEqual([legacyItem]);
+    expect(listTemplateItems('beach')).toEqual([]);
+  });
+
   it('updates an item in place', () => {
-    savePackingItem(templateItem);
-    savePackingItem({ ...templateItem, checked: true });
-    expect(listPackingItems(null)).toEqual([{ ...templateItem, checked: true }]);
+    savePackingItem(generalItem);
+    savePackingItem({ ...generalItem, checked: true });
+    expect(listTemplateItems('general')).toEqual([{ ...generalItem, checked: true }]);
   });
 
   it('deletes a single item', () => {
-    savePackingItem(templateItem);
+    savePackingItem(generalItem);
     deletePackingItem('p1');
-    expect(listPackingItems(null)).toEqual([]);
+    expect(listTemplateItems('general')).toEqual([]);
   });
 
-  it('deletes all items for a trip without touching the template', () => {
-    savePackingItem(templateItem);
+  it('deletes all items for a trip without touching templates', () => {
+    savePackingItem(generalItem);
     savePackingItem(tripItem);
     deletePackingItemsForTrip('t1');
     expect(listPackingItems('t1')).toEqual([]);
-    expect(listPackingItems(null)).toEqual([templateItem]);
+    expect(listTemplateItems('general')).toEqual([generalItem]);
   });
 });
 
