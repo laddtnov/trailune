@@ -15,6 +15,7 @@
     { href: '/', label: 'Trips' },
     { href: '/map', label: 'Map' },
     { href: '/timeline', label: 'Timeline' },
+    { href: '/calendar', label: 'Calendar' },
     { href: '/packing-template', label: 'Packing' },
     { href: '/stats', label: 'Stats' },
     { href: '/settings', label: 'Settings' }
