@@ -1,6 +1,6 @@
 import { generateId } from '$lib/utils/id';
 import { createThumbnail } from '$lib/utils/image';
-import type { Trip, JournalEntry, TransportMode, TipEntry, TipCategory } from '$lib/types';
+import type { Trip, JournalEntry, TransportMode, TipEntry, TipCategory, PackingTemplateId } from '$lib/types';
 import * as trips from './local';
 import * as checklist from './checklist';
 import * as photoStore from './photos';
@@ -19,6 +19,7 @@ export function createTrip(input: {
   endDate: string;
   countries: string[];
   transportMode?: TransportMode;
+  packingTemplateId?: PackingTemplateId;
 }): Trip {
   const trip: Trip = {
     id: generateId(),
@@ -31,9 +32,9 @@ export function createTrip(input: {
   };
   trips.saveTrip(trip);
 
-  const templateItems = checklist.listPackingItems(null);
+  const templateItems = checklist.listTemplateItems(input.packingTemplateId ?? 'general');
   for (const item of templateItems) {
-    checklist.savePackingItem({ ...item, id: generateId(), tripId: trip.id, checked: false });
+    checklist.savePackingItem({ ...item, id: generateId(), tripId: trip.id, templateId: null, checked: false });
   }
 
   return trip;

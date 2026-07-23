@@ -7,7 +7,8 @@
   import { computeTripStats } from '$lib/tripStats';
   import { getLevelProgress, LEVELS, type Level } from '$lib/levels';
   import { getLastSeenLevelId, setLastSeenLevelId } from '$lib/storage/levelViewState';
-  import type { Trip, TransportMode } from '$lib/types';
+  import type { Trip, TransportMode, PackingTemplateId } from '$lib/types';
+  import { PACKING_TEMPLATES } from '$lib/packingTemplates';
   import TripCard from '$lib/components/TripCard.svelte';
   import Skeleton from '$lib/components/Skeleton.svelte';
 
@@ -22,6 +23,7 @@
   let selectedCountries: Set<string> = $state(new Set());
   let countryFilter = $state('');
   let transportMode: TransportMode = $state('flight');
+  let packingTemplateId: PackingTemplateId = $state('general');
 
   const MODE_LABELS: Record<TransportMode, string> = {
     flight: 'Flight',
@@ -143,6 +145,7 @@
     selectedCountries = new Set();
     countryFilter = '';
     transportMode = 'flight';
+    packingTemplateId = 'general';
   }
 
   function submit(event: SubmitEvent) {
@@ -152,7 +155,8 @@
       startDate,
       endDate,
       countries: Array.from(selectedCountries),
-      transportMode
+      transportMode,
+      packingTemplateId
     });
     trips = listTrips();
     activeTab = 'all';
@@ -451,6 +455,18 @@
             <p class="px-1 py-2 text-sm text-[var(--color-ink-soft)]">No countries match "{countryFilter}".</p>
           {/each}
         </div>
+      </fieldset>
+
+      <fieldset>
+        <legend class="mb-1.5 text-sm font-medium text-[var(--color-ink-soft)]">Packing template</legend>
+        <select
+          bind:value={packingTemplateId}
+          class="w-full rounded-[var(--radius-md)] border border-[var(--color-card-border)] bg-[var(--color-canvas)] px-3.5 py-2 text-sm text-[var(--color-ink)] outline-none focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent-soft)]"
+        >
+          {#each PACKING_TEMPLATES as template (template.id)}
+            <option value={template.id}>{template.label}</option>
+          {/each}
+        </select>
       </fieldset>
     </div>
 
