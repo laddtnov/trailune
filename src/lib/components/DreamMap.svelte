@@ -27,11 +27,19 @@
   }
 
   function syncClasses() {
+    // Read these props unconditionally (even if we bail out below) so the
+    // reactive $effect that calls this function always tracks them as
+    // dependencies. Without this, the effect's first runs happen before the
+    // SVG paths exist, take the early return below, and never establish
+    // visitedCodes/wishlistCodes as dependencies — so later updates (e.g.
+    // saving a wishlist entry) never recolor the map.
+    const visited = visitedCodes;
+    const wishlisted = wishlistCodes;
     if (!svgContainer) return;
     svgContainer.querySelectorAll('path[id]').forEach((path) => {
       const code = path.id;
-      path.classList.toggle('visited', visitedCodes.has(code));
-      path.classList.toggle('wishlisted', wishlistCodes.has(code));
+      path.classList.toggle('visited', visited.has(code));
+      path.classList.toggle('wishlisted', wishlisted.has(code));
     });
   }
 
