@@ -147,15 +147,54 @@
         </p>
         <h2 class="mt-0.5 truncate font-display text-lg font-bold">{selectedName}</h2>
         {#if tripsForSelected.length > 0}
-          <ul class="mt-2 space-y-1">
+          <ul class="mt-2 space-y-2">
             {#each tripsForSelected as trip (trip.id)}
-              <li>
+              <li class="flex flex-wrap items-center justify-between gap-2">
                 <a
                   href={`/trips/${trip.id}`}
                   class="text-sm font-medium text-[var(--color-accent)] underline decoration-[var(--color-accent)]/30 underline-offset-2 hover:decoration-[var(--color-accent)]"
                 >
                   {trip.name}
                 </a>
+                <div class="flex items-center gap-1">
+                  <a
+                    href={`/trips/${trip.id}?tab=journal`}
+                    aria-label={`Open ${trip.name}'s journal`}
+                    class="grid size-7 place-items-center rounded-full text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--color-accent-soft)] hover:text-[var(--color-accent)]"
+                  >
+                    <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="1.75">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 6c-1.8-1.2-4.5-1.5-7-1v13c2.5-.5 5.2-.2 7 1 1.8-1.2 4.5-1.5 7-1V5c-2.5-.5-5.2-.2-7 1Z"
+                      />
+                    </svg>
+                  </a>
+                  <a
+                    href={`/trips/${trip.id}?tab=gallery`}
+                    aria-label={`Open ${trip.name}'s gallery`}
+                    class="grid size-7 place-items-center rounded-full text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--color-accent-soft)] hover:text-[var(--color-accent)]"
+                  >
+                    <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="1.75">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 6h16v12H4zM4 16l4.5-4.5a2 2 0 0 1 2.83 0L16 16m-2-2 1.5-1.5a2 2 0 0 1 2.83 0L20 14"
+                      />
+                      <circle cx="8.5" cy="9.5" r="1.5" />
+                    </svg>
+                  </a>
+                  <a
+                    href={`/trips/${trip.id}?tab=packing`}
+                    aria-label={`Open ${trip.name}'s packing list`}
+                    class="grid size-7 place-items-center rounded-full text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--color-accent-soft)] hover:text-[var(--color-accent)]"
+                  >
+                    <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="1.75">
+                      <rect x="4" y="8" width="16" height="12" rx="2" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+                    </svg>
+                  </a>
+                </div>
               </li>
             {/each}
           </ul>

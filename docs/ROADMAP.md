@@ -16,7 +16,7 @@ The map should stop being a static "here's where you've been" page and become th
 
 - ✅ **Country animation on trip creation**: adding a trip with Japan → the country outline glows, the fill spreads in, the "visited countries" counter ticks up. Shipped as the reveal-pulse animation on newly-visited countries.
 - ✅ **Hover effect**: hovering (or tapping, on touch) a visited country shows a small popover — visit count, total days there, last trip date.
-- **Click-to-open side panel** *(partially shipped)*: clicking a country opens a popover with its stats and a link into that country's trips — not yet the fuller panel with quick links into photos/journal/packing directly.
+- ✅ **Click-to-open side panel**: clicking a country opens a panel listing its trips, each with quick-link icons (Journal, Gallery, Packing) that jump directly into that trip's matching tab — powered by the trip hub reading an optional `?tab=` query param on load. A country with multiple trips gets independent quick-links per trip row.
 - **Scratch map**: not built — the current reveal is a fill/glow animation, not a "scratching a physical map" texture effect.
 - ✅ **Explorer progress bar**: the bare count was replaced with an animated progress bar on `/map`.
 - ✅ **Zoom-to-country on click**: not originally listed here, but shipped as part of the Ambient Delight Details cycle (§5) — clicking a country smoothly zooms the map to it, resetting on an outside click.
