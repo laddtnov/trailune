@@ -14,6 +14,7 @@
   const navItems = [
     { href: '/', label: 'Trips' },
     { href: '/map', label: 'Map' },
+    { href: '/dream-map', label: 'Dream Map' },
     { href: '/timeline', label: 'Timeline' },
     { href: '/calendar', label: 'Calendar' },
     { href: '/packing-template', label: 'Packing' },

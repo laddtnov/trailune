@@ -10,7 +10,7 @@ Trailune's edge isn't any single feature — it's that **everything is derived f
 
 ## 1. The Living Map (core differentiator — do this first)
 
-**Status: ✅ Mostly shipped.**
+**Status: ✅ Shipped.**
 
 The map should stop being a static "here's where you've been" page and become the app's centerpiece — the visual proof that the derived-data thesis works.
 
@@ -20,7 +20,7 @@ The map should stop being a static "here's where you've been" page and become th
 - ✅ **Scratch map**: unvisited countries render with a permanent foil/coating texture (diagonal hatch pattern); adding a trip peels that coating away via a jagged scratch-style reveal instead of a uniform fade/glow.
 - ✅ **Explorer progress bar**: the bare count was replaced with an animated progress bar on `/map`.
 - ✅ **Zoom-to-country on click**: not originally listed here, but shipped as part of the Ambient Delight Details cycle (§5) — clicking a country smoothly zooms the map to it, resetting on an outside click.
-- **Dream map**: not built.
+- ✅ **Dream map**: a separate `/dream-map` page for not-yet-visited countries — click one to rate it 1-5 stars and add a short note, rendered in a distinct wishlist color on its own map plus a sorted list below. A country auto-drops from the wishlist the moment a trip covers it, without losing the underlying rating/note if that trip is later removed.
 
 **Feasibility**: entirely client-side. All of it operates on data already in `localStorage` (trips → countries). No backend needed.
 
