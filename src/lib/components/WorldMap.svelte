@@ -5,6 +5,7 @@
   import Skeleton from './Skeleton.svelte';
   import { padBBox, type ViewBox } from '$lib/mapZoom';
   import { computeArcPath } from '$lib/flightRoute';
+  import { SCRATCH_CLIP_KEYFRAMES } from '$lib/scratchReveal';
 
   let {
     visitedCodes,
@@ -39,9 +40,67 @@
     const delay = revealIndex * 80;
     revealIndex += 1;
     setTimeout(() => {
-      path.classList.add('revealing');
-      setTimeout(() => path.classList.remove('revealing'), 600);
+      path.classList.add('visited');
+      path.classList.remove('unvisited-coating');
+      if (prefersReducedMotion()) return;
+      spawnScratchOverlay(path as SVGPathElement);
     }, delay);
+  }
+
+  function spawnScratchOverlay(path: SVGPathElement) {
+    const overlay = path.cloneNode(false) as SVGPathElement;
+    overlay.removeAttribute('id');
+    overlay.classList.remove('visited');
+    overlay.classList.add('scratch-overlay');
+    overlay.style.fill = 'url(#scratch-coating)';
+    overlay.style.clipPath = SCRATCH_CLIP_KEYFRAMES[0];
+    path.insertAdjacentElement('afterend', overlay);
+
+    const totalDuration = 600;
+    const stepDuration = totalDuration / (SCRATCH_CLIP_KEYFRAMES.length - 1);
+    let step = 1;
+
+    const interval = setInterval(() => {
+      overlay.style.clipPath = SCRATCH_CLIP_KEYFRAMES[step];
+      step += 1;
+      if (step >= SCRATCH_CLIP_KEYFRAMES.length) {
+        clearInterval(interval);
+        overlay.remove();
+      }
+    }, stepDuration);
+  }
+
+  const svgNS = 'http://www.w3.org/2000/svg';
+
+  function injectScratchPattern(svg: SVGSVGElement) {
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+      defs = document.createElementNS(svgNS, 'defs');
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    const pattern = document.createElementNS(svgNS, 'pattern');
+    pattern.setAttribute('id', 'scratch-coating');
+    pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+    pattern.setAttribute('width', '8');
+    pattern.setAttribute('height', '8');
+    pattern.setAttribute('patternTransform', 'rotate(45)');
+
+    const rect = document.createElementNS(svgNS, 'rect');
+    rect.setAttribute('width', '8');
+    rect.setAttribute('height', '8');
+    rect.setAttribute('fill', 'var(--color-ink-band-soft)');
+    pattern.appendChild(rect);
+
+    const line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('x1', '0');
+    line.setAttribute('y1', '0');
+    line.setAttribute('x2', '0');
+    line.setAttribute('y2', '8');
+    line.setAttribute('stroke', 'var(--color-ink-band)');
+    line.setAttribute('stroke-width', '2');
+    pattern.appendChild(line);
+
+    defs.appendChild(pattern);
   }
 
   onMount(async () => {
@@ -52,6 +111,7 @@
     const svg = svgContainer.querySelector('svg');
     svg?.setAttribute('class', 'world-map-svg');
     if (svg) {
+      injectScratchPattern(svg as unknown as SVGSVGElement);
       svgEl = svg as unknown as SVGSVGElement;
       const vb = svg.getAttribute('viewBox');
       if (vb) {
@@ -95,6 +155,7 @@
         oncountryhover?.(null, null);
       });
       path.classList.toggle('visited', visitedCodes.has(code));
+      path.classList.toggle('unvisited-coating', !visitedCodes.has(code) && !newlyVisitedCodes.has(code));
       applyRevealClass(path, code);
     });
   });
@@ -105,6 +166,7 @@
     svgContainer.querySelectorAll('path[id]').forEach((path) => {
       const code = path.id;
       path.classList.toggle('visited', visitedCodes.has(code));
+      path.classList.toggle('unvisited-coating', !visitedCodes.has(code) && !newlyVisitedCodes.has(code));
       applyRevealClass(path, code);
     });
   });
@@ -127,7 +189,6 @@
     }
     if (points.length < 2) return;
 
-    const svgNS = 'http://www.w3.org/2000/svg';
     const group = document.createElementNS(svgNS, 'g');
     group.setAttribute('class', 'flight-route');
     svg.appendChild(group);
@@ -218,23 +279,13 @@
     transform: scale(1.02);
   }
 
-  .world-map :global(path.revealing) {
-    animation: reveal-pulse 0.6s var(--ease-out-quart);
+  .world-map :global(path.unvisited-coating) {
+    fill: url(#scratch-coating);
   }
 
-  @keyframes reveal-pulse {
-    0% {
-      transform: scale(1);
-      filter: drop-shadow(0 0 0 transparent);
-    }
-    50% {
-      transform: scale(1.08);
-      filter: drop-shadow(0 0 10px color-mix(in oklch, var(--color-accent) 70%, transparent));
-    }
-    100% {
-      transform: scale(1);
-      filter: drop-shadow(0 0 6px color-mix(in oklch, var(--color-accent) 55%, transparent));
-    }
+  .world-map :global(path.scratch-overlay) {
+    pointer-events: none;
+    transition: clip-path 0.1s linear;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -245,8 +296,8 @@
     .world-map :global(path.visited:hover) {
       transform: none;
     }
-    .world-map :global(path.revealing) {
-      animation: none;
+    .world-map :global(path.scratch-overlay) {
+      transition: none;
     }
   }
 
