@@ -60,9 +60,15 @@
     thumbnails = nextThumbnails;
   }
 
+  const validTabs = ['journal', 'gallery', 'map', 'pins', 'packing', 'tips', 'dodont'] as const;
+
   onMount(async () => {
     trip = getTrip(tripId);
     countries = await loadWorldCountries();
+    const requestedTab = page.url.searchParams.get('tab');
+    if (requestedTab && (validTabs as readonly string[]).includes(requestedTab)) {
+      activeTab = requestedTab as (typeof validTabs)[number];
+    }
     await loadEntries();
   });
 
