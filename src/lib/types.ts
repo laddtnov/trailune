@@ -65,3 +65,11 @@ export interface PinEntry {
   note: string | null;
   createdAt: string;
 }
+
+export interface WishlistEntry {
+  id: string;
+  countryCode: string;
+  rating: number;
+  note: string;
+  createdAt: string;
+}
