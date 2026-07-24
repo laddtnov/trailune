@@ -88,7 +88,7 @@
     const rect = document.createElementNS(svgNS, 'rect');
     rect.setAttribute('width', '8');
     rect.setAttribute('height', '8');
-    rect.setAttribute('fill', 'var(--color-ink-band-soft)');
+    rect.style.fill = 'var(--color-ink-band-soft)';
     pattern.appendChild(rect);
 
     const line = document.createElementNS(svgNS, 'line');
@@ -96,8 +96,8 @@
     line.setAttribute('y1', '0');
     line.setAttribute('x2', '0');
     line.setAttribute('y2', '8');
-    line.setAttribute('stroke', 'var(--color-ink-band)');
-    line.setAttribute('stroke-width', '2');
+    line.style.stroke = 'var(--color-ink-band)';
+    line.style.strokeWidth = '2';
     pattern.appendChild(line);
 
     defs.appendChild(pattern);
