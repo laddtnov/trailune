@@ -3,7 +3,9 @@ import type { Trip } from '$lib/types';
 export interface CountryStats {
   visitCount: number;
   totalDays: number;
-  lastVisitDate: string;
+  longestStayDays: number;
+  firstVisitYear: number;
+  lastVisitYear: number;
 }
 
 export function daysInTrip(trip: Trip): number {
@@ -17,8 +19,10 @@ export function getCountryStats(code: string, trips: Trip[]): CountryStats | nul
   if (matching.length === 0) return null;
 
   const totalDays = matching.reduce((sum, trip) => sum + daysInTrip(trip), 0);
-  const lastVisitTimestamp = Math.max(...matching.map((trip) => new Date(trip.endDate).getTime()));
-  const lastVisitDate = new Date(lastVisitTimestamp).toISOString().slice(0, 10);
+  const longestStayDays = Math.max(...matching.map((trip) => daysInTrip(trip)));
+  const visitYears = matching.map((trip) => Number(trip.startDate.slice(0, 4)));
+  const firstVisitYear = Math.min(...visitYears);
+  const lastVisitYear = Math.max(...visitYears);
 
-  return { visitCount: matching.length, totalDays, lastVisitDate };
+  return { visitCount: matching.length, totalDays, longestStayDays, firstVisitYear, lastVisitYear };
 }

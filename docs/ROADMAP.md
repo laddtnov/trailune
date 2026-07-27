@@ -85,9 +85,7 @@ A batch of concrete refinements and bigger visual concepts, gathered after livin
 - ✅ **Average trip length**: rounded to a whole number with a clear label — `9 days avg.` instead of `8.7 days`.
 - ✅ **Longest trip**: recomposed into one non-contradictory sentence — the exact day count leads (`11-day trip`), with the trip's own name shown as a caption below, instead of stacking the name above a separate day count that could clash with it (e.g. a trip literally named "Two Weeks in Chile" that actually ran 11 days).
 
-**Richer country popover** (extends the Living Map's existing hover/tap popover — `CountryPopover.svelte`, already computing visit count/days/last-visit via `countryStats.ts`):
-- Go further than the current "Visited · N trips · N days · Last visit [date]" line: add a small progress-style visual, **longest stay** at that country, **first visit year** and **latest visit year**, and a "View history →" affordance leading into the country's trip list (the existing click-to-open side panel already has this data — this would surface more of it directly in the popover itself, closing the gap between "quick glance" and "full panel").
-- All of this is already computable from existing trip data; no schema changes, just extending `getCountryStats`'s return shape and the popover's markup.
+- ✅ **Richer country popover**: the popover's main line now reads "Visited · N trips · N days · Longest stay N days", with a second line showing "Visited in {year}" (single-year) or "First visited {year} · Last visited {year}" (multi-year) — replacing the old month-precision "Last visit [date]". The existing "View trips →" button already covered the "View history" idea, so no new affordance was needed there. No "progress-style visual" was added — the roadmap's own wording was vague on what it would represent.
 
 **Visual connections on the map** (the biggest visual idea here):
 - **Travel path arcs**: instead of isolated highlighted countries, draw animated lines connecting countries in the order they were visited (derived from trip `startDate` ordering) — "every trip becomes part of your travel story," the map gradually filling with route lines.
