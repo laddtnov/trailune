@@ -112,13 +112,17 @@
     <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
       <p class="text-sm text-[var(--color-ink-soft)]">Longest trip</p>
       {#if stats.longestTrip}
-        <p class="mt-1 font-display text-xl font-bold text-[var(--color-accent)]">{stats.longestTrip.name}</p>
-        <p class="mt-0.5 text-sm text-[var(--color-ink-soft)]">{Math.round($longestTripDaysT)} days</p>
+        <p class="mt-1 font-display text-xl font-bold text-[var(--color-accent)]">
+          {Math.round($longestTripDaysT)}-day trip
+        </p>
+        <p class="mt-0.5 text-sm text-[var(--color-ink-soft)]">{stats.longestTrip.name}</p>
       {/if}
     </div>
     <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
       <p class="text-sm text-[var(--color-ink-soft)]">Average trip length</p>
-      <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">{$averageTripDaysT.toFixed(1)} days</p>
+      <p class="mt-1 font-display text-3xl font-bold text-[var(--color-accent)]">
+        {Math.round($averageTripDaysT)} days avg.
+      </p>
     </div>
   </div>
 

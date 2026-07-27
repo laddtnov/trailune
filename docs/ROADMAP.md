@@ -77,11 +77,13 @@ The map should stop being a static "here's where you've been" page and become th
 
 ## 7. Polishing Ideas (from a user feedback pass, 2026-07-17)
 
+**Status: 🚧 In progress.**
+
 A batch of concrete refinements and bigger visual concepts, gathered after living with the shipped Living Map, stats, achievements, and rank system for a while. Grouped from smallest to largest.
 
 **Small copy/formatting fixes** (no new data, no new logic — just presentation):
-- **Average trip length**: `8.7 days` reads awkwardly. Round to a whole number and label it clearly — `9 days avg.` or `8 days (avg.)`.
-- **Longest trip**: `two weeks to Chile` next to `10 days` is self-contradictory (10 days isn't two weeks). Pick one representation and use it consistently — e.g. `10-day trip to Chile`, dropping the "two weeks" approximation entirely.
+- ✅ **Average trip length**: rounded to a whole number with a clear label — `9 days avg.` instead of `8.7 days`.
+- ✅ **Longest trip**: recomposed into one non-contradictory sentence — the exact day count leads (`11-day trip`), with the trip's own name shown as a caption below, instead of stacking the name above a separate day count that could clash with it (e.g. a trip literally named "Two Weeks in Chile" that actually ran 11 days).
 
 **Richer country popover** (extends the Living Map's existing hover/tap popover — `CountryPopover.svelte`, already computing visit count/days/last-visit via `countryStats.ts`):
 - Go further than the current "Visited · N trips · N days · Last visit [date]" line: add a small progress-style visual, **longest stay** at that country, **first visit year** and **latest visit year**, and a "View history →" affordance leading into the country's trip list (the existing click-to-open side panel already has this data — this would surface more of it directly in the popover itself, closing the gap between "quick glance" and "full panel").
@@ -116,8 +118,10 @@ A batch of concrete refinements and bigger visual concepts, gathered after livin
 
 ## Suggested order
 
-1. ✅ **The Living Map** — shipped (mostly; scratch map and dream map still open).
+1. ✅ **The Living Map** — fully shipped, including scratch map and dream map.
 2. ✅ **Home Dashboard & Stats** — shipped, including Achievements, Year in Review, and the Rank/Level system addition.
-3. ✅ **Ambient Design & Feel** — fully shipped (tiny details, dynamic themes, and ambient background motion).
-4. **Journal/Memories/Timeline** (§3), **Trip Experience polish** (§4), **§7 Polishing Ideas** — bigger individually, worth their own brainstorm sessions when picked up. Nothing in these sections has been started yet.
-5. **AI Travel Summary** (§6) — needs a backend-shape decision first; lowest priority until that's resolved.
+3. ✅ **Journal, Memories & Timeline** (§3) — fully shipped.
+4. ✅ **Trip Experience Polish** (§4) — fully shipped.
+5. ✅ **Ambient Design & Feel** — fully shipped (tiny details, dynamic themes, and ambient background motion).
+6. **§7 Polishing Ideas** — in progress; small copy/formatting fixes done, remaining sub-ideas (richer country popover, map visual upgrades, rank personality, memory timeline, trip hero images, journey waypoints, trip hub expansion, "on this day" memories, globe mode) not yet started.
+7. **AI Travel Summary** (§6) — needs a backend-shape decision first; lowest priority until that's resolved.
