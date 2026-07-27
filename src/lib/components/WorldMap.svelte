@@ -194,7 +194,9 @@
     svg.appendChild(group);
 
     const reduced = prefersReducedMotion();
-    const legDuration = 800;
+    const legCount = points.length - 1;
+    const totalRouteBudgetMs = 3000;
+    const legDuration = Math.min(800, Math.max(80, totalRouteBudgetMs / legCount));
     let cumulativeDelay = 0;
 
     for (let i = 0; i < points.length - 1; i++) {
