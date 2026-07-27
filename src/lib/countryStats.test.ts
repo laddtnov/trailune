@@ -74,6 +74,14 @@ describe('getCountryStats', () => {
     expect(stats?.lastVisitYear).toBe(2027);
   });
 
+  it('picks the shared duration as longestStayDays when two trips tie', () => {
+    const trips = [
+      makeTrip({ id: 't1', countries: ['FR'], startDate: '2026-01-01', endDate: '2026-01-05' }),
+      makeTrip({ id: 't2', countries: ['FR'], startDate: '2026-06-01', endDate: '2026-06-05' })
+    ];
+    expect(getCountryStats('FR', trips)?.longestStayDays).toBe(5);
+  });
+
   it('ignores trips that do not include the requested country', () => {
     const trips = [
       makeTrip({ id: 't1', countries: ['FR'] }),

@@ -20,7 +20,7 @@ export function getCountryStats(code: string, trips: Trip[]): CountryStats | nul
 
   const totalDays = matching.reduce((sum, trip) => sum + daysInTrip(trip), 0);
   const longestStayDays = Math.max(...matching.map((trip) => daysInTrip(trip)));
-  const visitYears = matching.map((trip) => new Date(trip.startDate).getFullYear());
+  const visitYears = matching.map((trip) => Number(trip.startDate.slice(0, 4)));
   const firstVisitYear = Math.min(...visitYears);
   const lastVisitYear = Math.max(...visitYears);
 
