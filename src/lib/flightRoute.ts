@@ -1,3 +1,5 @@
+import type { Trip } from '$lib/types';
+
 export function computeArcPath(
   from: { x: number; y: number },
   to: { x: number; y: number },
@@ -24,4 +26,20 @@ export function computeArcPath(
   const controlY = midY + perpY * offset;
 
   return `M ${from.x} ${from.y} Q ${controlX} ${controlY} ${to.x} ${to.y}`;
+}
+
+export function computeGlobalRouteCodes(trips: Trip[]): string[] {
+  const sorted = [...trips].sort(
+    (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+  );
+  const seen = new Set<string>();
+  const codes: string[] = [];
+  for (const trip of sorted) {
+    for (const code of trip.countries) {
+      if (seen.has(code)) continue;
+      seen.add(code);
+      codes.push(code);
+    }
+  }
+  return codes;
 }

@@ -8,6 +8,7 @@
   import { loadWorldCountries, type CountryInfo } from '$lib/countries';
   import { getCountryStats, type CountryStats } from '$lib/countryStats';
   import { getLastSeenVisitedCodes, setLastSeenVisitedCodes } from '$lib/storage/mapViewState';
+  import { computeGlobalRouteCodes } from '$lib/flightRoute';
   import type { Trip } from '$lib/types';
 
   let trips: Trip[] = $state([]);
@@ -20,6 +21,7 @@
   let hoverPosition: { x: number; y: number } | null = $state(null);
 
   let visitedCodes = $derived(new Set(trips.flatMap((t) => t.countries)));
+  let globalRouteCodes = $derived(computeGlobalRouteCodes(trips));
   let tripsForSelected = $derived(
     selectedCode ? trips.filter((t) => t.countries.includes(selectedCode as string)) : []
   );
@@ -125,7 +127,13 @@
 </div>
 
 <div class="relative mt-8 overflow-hidden rounded-[var(--radius-xl)] bg-[var(--color-ink-band)] p-4 shadow-[var(--shadow-pop)] sm:p-8">
-  <WorldMap {visitedCodes} {newlyVisitedCodes} oncountryclick={handleClick} oncountryhover={handleHover} />
+  <WorldMap
+    {visitedCodes}
+    {newlyVisitedCodes}
+    routeCodes={globalRouteCodes}
+    oncountryclick={handleClick}
+    oncountryhover={handleHover}
+  />
 
   {#if hoveredCode && hoveredStats && hoverPosition}
     <CountryPopover
