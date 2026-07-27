@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { computeArcPath } from './flightRoute';
+import { computeArcPath, computeGlobalRouteCodes } from './flightRoute';
+import type { Trip } from '$lib/types';
 
 function parseQuadratic(d: string) {
   const match = d.match(
@@ -40,5 +41,60 @@ describe('computeArcPath', () => {
   it('falls back to a degenerate straight path when from and to coincide', () => {
     const d = computeArcPath({ x: 5, y: 5 }, { x: 5, y: 5 });
     expect(d).toBe('M 5 5 L 5 5');
+  });
+});
+
+function makeTrip(overrides: Partial<Trip>): Trip {
+  return {
+    id: 't1',
+    name: 'Trip',
+    startDate: '2026-01-01',
+    endDate: '2026-01-05',
+    countries: [],
+    transportMode: 'flight',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    ...overrides
+  };
+}
+
+describe('computeGlobalRouteCodes', () => {
+  it('orders countries by trip startDate regardless of input array order', () => {
+    const trips = [
+      makeTrip({ id: 't2', startDate: '2026-06-01', countries: ['DE'] }),
+      makeTrip({ id: 't1', startDate: '2026-01-01', countries: ['JP'] })
+    ];
+    expect(computeGlobalRouteCodes(trips)).toEqual(['JP', 'DE']);
+  });
+
+  it('keeps a trip\'s own countries in that trip\'s stored order', () => {
+    const trips = [makeTrip({ id: 't1', startDate: '2026-01-01', countries: ['FR', 'DE', 'IT'] })];
+    expect(computeGlobalRouteCodes(trips)).toEqual(['FR', 'DE', 'IT']);
+  });
+
+  it('keeps only the first occurrence of a country revisited on a later trip', () => {
+    const trips = [
+      makeTrip({ id: 't1', startDate: '2026-01-01', countries: ['JP'] }),
+      makeTrip({ id: 't2', startDate: '2026-06-01', countries: ['DE'] }),
+      makeTrip({ id: 't3', startDate: '2026-09-01', countries: ['JP'] })
+    ];
+    expect(computeGlobalRouteCodes(trips)).toEqual(['JP', 'DE']);
+  });
+
+  it('returns a list shorter than 2 when the trip history covers only one country total', () => {
+    const trips = [
+      makeTrip({ id: 't1', startDate: '2026-01-01', countries: ['JP'] }),
+      makeTrip({ id: 't2', startDate: '2026-06-01', countries: ['JP'] })
+    ];
+    expect(computeGlobalRouteCodes(trips).length).toBeLessThan(2);
+  });
+
+  it('does not mutate the input trips array', () => {
+    const trips = [
+      makeTrip({ id: 't2', startDate: '2026-06-01', countries: ['DE'] }),
+      makeTrip({ id: 't1', startDate: '2026-01-01', countries: ['JP'] })
+    ];
+    const originalOrder = trips.map((t) => t.id);
+    computeGlobalRouteCodes(trips);
+    expect(trips.map((t) => t.id)).toEqual(originalOrder);
   });
 });
