@@ -14,10 +14,6 @@
     y: number;
     onviewtrips?: () => void;
   } = $props();
-
-  function formatLastVisit(dateStr: string): string {
-    return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
-  }
 </script>
 
 <div
@@ -30,7 +26,15 @@
   <p class="mt-1 text-sm text-[var(--color-ink-soft)]">
     {stats.visitCount}
     {stats.visitCount === 1 ? 'trip' : 'trips'} &middot; {stats.totalDays}
-    {stats.totalDays === 1 ? 'day' : 'days'} &middot; Last visit {formatLastVisit(stats.lastVisitDate)}
+    {stats.totalDays === 1 ? 'day' : 'days'} &middot; Longest stay {stats.longestStayDays}
+    {stats.longestStayDays === 1 ? 'day' : 'days'}
+  </p>
+  <p class="mt-0.5 text-sm text-[var(--color-ink-soft)]">
+    {#if stats.firstVisitYear === stats.lastVisitYear}
+      Visited in {stats.firstVisitYear}
+    {:else}
+      First visited {stats.firstVisitYear} &middot; Last visited {stats.lastVisitYear}
+    {/if}
   </p>
   {#if onviewtrips}
     <button
