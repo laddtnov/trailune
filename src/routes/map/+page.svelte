@@ -9,6 +9,7 @@
   import { getCountryStats, type CountryStats } from '$lib/countryStats';
   import { getLastSeenVisitedCodes, setLastSeenVisitedCodes } from '$lib/storage/mapViewState';
   import { computeGlobalRouteCodes } from '$lib/flightRoute';
+  import { computeVisitCounts } from '$lib/visitIntensity';
   import type { Trip } from '$lib/types';
 
   let trips: Trip[] = $state([]);
@@ -22,6 +23,7 @@
 
   let visitedCodes = $derived(new Set(trips.flatMap((t) => t.countries)));
   let globalRouteCodes = $derived(computeGlobalRouteCodes(trips));
+  let visitCounts = $derived(computeVisitCounts(trips));
   let tripsForSelected = $derived(
     selectedCode ? trips.filter((t) => t.countries.includes(selectedCode as string)) : []
   );
@@ -131,6 +133,7 @@
     {visitedCodes}
     {newlyVisitedCodes}
     routeCodes={globalRouteCodes}
+    {visitCounts}
     oncountryclick={handleClick}
     oncountryhover={handleHover}
   />
