@@ -14,7 +14,7 @@
   let trips: Trip[] = $state([]);
   let countries: CountryInfo[] = $state([]);
   let stats: TripStats | null = $state(null);
-  let levelProgress = $derived(stats ? getLevelProgress(stats.totalCountries) : null);
+  let levelProgress = $derived.by(() => (stats ? getLevelProgress(stats.totalCountries) : null));
   let achievements: Achievement[] = $state([]);
   let newlyUnlockedIds: Set<string> = $state(new Set());
   let loading = $state(true);
@@ -61,6 +61,12 @@
 </div>
 
 {#if loading}
+  <div class="mt-6 rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
+    <Skeleton height="1.25rem" width="50%" />
+    <div class="mt-2">
+      <Skeleton height="0.875rem" width="70%" />
+    </div>
+  </div>
   <div class="mt-8 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5">
     {#each { length: 7 } as _, i (i)}
       <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
@@ -91,7 +97,7 @@
   {#if levelProgress}
     <div class="mt-6 rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
       <h2 class="font-display text-xl font-bold">
-        {levelProgress.level.emoji} {levelProgress.level.name}
+        <span aria-hidden="true">{levelProgress.level.emoji}</span> {levelProgress.level.name}
       </h2>
       <p class="mt-1 text-sm text-[var(--color-ink-soft)]">{levelProgress.level.subtitle}</p>
       {#if levelProgress.nextLevel}
