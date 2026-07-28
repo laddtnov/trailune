@@ -6,17 +6,20 @@
   import { padBBox, type ViewBox } from '$lib/mapZoom';
   import { computeArcPath } from '$lib/flightRoute';
   import { SCRATCH_CLIP_KEYFRAMES } from '$lib/scratchReveal';
+  import { getIntensityTier } from '$lib/visitIntensity';
 
   let {
     visitedCodes,
     newlyVisitedCodes = new Set(),
     routeCodes = [],
+    visitCounts = new Map(),
     oncountryclick,
     oncountryhover
   }: {
     visitedCodes: Set<string>;
     newlyVisitedCodes?: Set<string>;
     routeCodes?: string[];
+    visitCounts?: Map<string, number>;
     oncountryclick?: (code: string) => void;
     oncountryhover?: (code: string | null, position: { x: number; y: number } | null) => void;
   } = $props();
@@ -50,7 +53,7 @@
   function spawnScratchOverlay(path: SVGPathElement) {
     const overlay = path.cloneNode(false) as SVGPathElement;
     overlay.removeAttribute('id');
-    overlay.classList.remove('visited');
+    overlay.classList.remove('visited', 'intensity-1', 'intensity-2', 'intensity-3');
     overlay.classList.add('scratch-overlay');
     overlay.style.fill = 'url(#scratch-coating)';
     overlay.style.clipPath = SCRATCH_CLIP_KEYFRAMES[0];
@@ -68,6 +71,13 @@
         overlay.remove();
       }
     }, stepDuration);
+  }
+
+  function applyIntensityClass(path: Element, code: string) {
+    const tier = getIntensityTier(visitCounts.get(code) ?? 0);
+    path.classList.toggle('intensity-1', tier === 1);
+    path.classList.toggle('intensity-2', tier === 2);
+    path.classList.toggle('intensity-3', tier === 3);
   }
 
   const svgNS = 'http://www.w3.org/2000/svg';
@@ -156,6 +166,7 @@
       });
       path.classList.toggle('visited', visitedCodes.has(code));
       path.classList.toggle('unvisited-coating', !visitedCodes.has(code) && !newlyVisitedCodes.has(code));
+      applyIntensityClass(path, code);
       applyRevealClass(path, code);
     });
   });
@@ -167,6 +178,7 @@
       const code = path.id;
       path.classList.toggle('visited', visitedCodes.has(code));
       path.classList.toggle('unvisited-coating', !visitedCodes.has(code) && !newlyVisitedCodes.has(code));
+      applyIntensityClass(path, code);
       applyRevealClass(path, code);
     });
   });
@@ -275,6 +287,19 @@
   .world-map :global(path.visited) {
     fill: var(--color-accent);
     filter: drop-shadow(0 0 6px color-mix(in oklch, var(--color-accent) 55%, transparent));
+  }
+  /* Tier 3 (5+ visits) is intentionally left with no rule here — it's
+     identical to the base .visited styling above. Keep this block, and
+     the :hover rule below, ordered AFTER .visited so their equal-specificity
+     compound selectors win the cascade tie-break; reordering silently
+     breaks hover fill on tiers 1-2. */
+  .world-map :global(path.visited.intensity-1) {
+    fill: color-mix(in oklch, var(--color-accent) 45%, var(--color-ink-band-soft));
+    filter: drop-shadow(0 0 4px color-mix(in oklch, var(--color-accent) 30%, transparent));
+  }
+  .world-map :global(path.visited.intensity-2) {
+    fill: color-mix(in oklch, var(--color-accent) 70%, var(--color-ink-band-soft));
+    filter: drop-shadow(0 0 5px color-mix(in oklch, var(--color-accent) 45%, transparent));
   }
   .world-map :global(path.visited:hover) {
     fill: var(--color-accent-hover);

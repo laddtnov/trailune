@@ -89,7 +89,7 @@ A batch of concrete refinements and bigger visual concepts, gathered after livin
 
 **Visual connections on the map** (the biggest visual idea here):
 - ✅ **Travel path arcs**: on `/map`, animated arcs connect every visited country in first-visit order across the user's entire trip history, reusing the per-trip Animated Flight Route's rendering machinery (`WorldMap.svelte`'s `routeCodes` prop) unchanged — a country revisited on a later trip doesn't get a duplicate leg back to it. The shared animation timing was recomputed to a fixed total-time budget rather than a flat per-leg duration, so the draw time stays bounded regardless of how many countries are in the route.
-- **Visit-intensity heatmap**: countries visited multiple times render with increasingly saturated color (visited once = light, twice = medium, 5+ = deep) instead of a flat "visited" color — still a pure CSS/derived-data change to `WorldMap.svelte`'s existing visited-state styling, using visit counts already available via `countryStats.ts`. Not yet built.
+- ✅ **Visit-intensity heatmap**: on `/map`, a country's fill saturates in 3 tiers based on visit count (1 visit = light, 2-4 = medium, 5+ = deep, matching today's existing "visited" look exactly). The trip hub's own Map tab is unaffected, since it only ever shows one trip's countries at a time.
 
 **Lean into the rank system's personality** (extends the shipped rank/level feature):
 - Where the app currently shows a raw number ("Countries visited: 3"), consider surfacing the tier framing instead — "🎒 Traveler · 3 countries visited · 2 until Adventurer" — in more places than just the home hero (e.g. the `/stats` page), so the leveling framing feels consistent app-wide rather than home-page-only.
