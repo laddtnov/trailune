@@ -6,6 +6,7 @@
   import { loadWorldCountries, type CountryInfo } from '$lib/countries';
   import { computeTripStats, type TripStats } from '$lib/tripStats';
   import { getAchievements, type Achievement } from '$lib/achievements';
+  import { getLevelProgress } from '$lib/levels';
   import { getLastSeenUnlockedIds, setLastSeenUnlockedIds } from '$lib/storage/achievementViewState';
   import type { Trip } from '$lib/types';
   import Skeleton from '$lib/components/Skeleton.svelte';
@@ -13,6 +14,7 @@
   let trips: Trip[] = $state([]);
   let countries: CountryInfo[] = $state([]);
   let stats: TripStats | null = $state(null);
+  let levelProgress = $derived.by(() => (stats ? getLevelProgress(stats.totalCountries) : null));
   let achievements: Achievement[] = $state([]);
   let newlyUnlockedIds: Set<string> = $state(new Set());
   let loading = $state(true);
@@ -59,6 +61,12 @@
 </div>
 
 {#if loading}
+  <div class="mt-6 rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
+    <Skeleton height="1.25rem" width="50%" />
+    <div class="mt-2">
+      <Skeleton height="0.875rem" width="70%" />
+    </div>
+  </div>
   <div class="mt-8 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5">
     {#each { length: 7 } as _, i (i)}
       <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
@@ -86,6 +94,23 @@
     </a>
   </div>
 {:else if stats}
+  {#if levelProgress}
+    <div class="mt-6 rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
+      <h2 class="font-display text-xl font-bold">
+        <span aria-hidden="true">{levelProgress.level.emoji}</span> {levelProgress.level.name}
+      </h2>
+      <p class="mt-1 text-sm text-[var(--color-ink-soft)]">{levelProgress.level.subtitle}</p>
+      {#if levelProgress.nextLevel}
+        <p class="mt-2 text-sm text-[var(--color-ink-soft)]">
+          {levelProgress.countriesToNext} countr{levelProgress.countriesToNext === 1 ? 'y' : 'ies'} until {levelProgress.nextLevel.name}
+        </p>
+      {:else}
+        <p class="mt-2 text-sm text-[var(--color-ink-soft)]">
+          You've reached the top tier — there's nowhere further to go.
+        </p>
+      {/if}
+    </div>
+  {/if}
   <div class="mt-8 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5">
     <div class="rounded-[var(--radius-lg)] bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)]">
       <p class="text-sm text-[var(--color-ink-soft)]">Countries visited</p>
