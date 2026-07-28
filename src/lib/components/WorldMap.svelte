@@ -53,7 +53,7 @@
   function spawnScratchOverlay(path: SVGPathElement) {
     const overlay = path.cloneNode(false) as SVGPathElement;
     overlay.removeAttribute('id');
-    overlay.classList.remove('visited');
+    overlay.classList.remove('visited', 'intensity-1', 'intensity-2', 'intensity-3');
     overlay.classList.add('scratch-overlay');
     overlay.style.fill = 'url(#scratch-coating)';
     overlay.style.clipPath = SCRATCH_CLIP_KEYFRAMES[0];
@@ -288,6 +288,11 @@
     fill: var(--color-accent);
     filter: drop-shadow(0 0 6px color-mix(in oklch, var(--color-accent) 55%, transparent));
   }
+  /* Tier 3 (5+ visits) is intentionally left with no rule here — it's
+     identical to the base .visited styling above. Keep this block, and
+     the :hover rule below, ordered AFTER .visited so their equal-specificity
+     compound selectors win the cascade tie-break; reordering silently
+     breaks hover fill on tiers 1-2. */
   .world-map :global(path.visited.intensity-1) {
     fill: color-mix(in oklch, var(--color-accent) 45%, var(--color-ink-band-soft));
     filter: drop-shadow(0 0 4px color-mix(in oklch, var(--color-accent) 30%, transparent));
