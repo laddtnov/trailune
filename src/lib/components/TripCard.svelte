@@ -9,9 +9,13 @@
   let destroyed = false;
 
   onMount(async () => {
-    const hero = await getTripHeroPhoto(trip.id);
-    if (destroyed || !hero) return;
-    heroPhotoUrl = URL.createObjectURL(hero.thumbnailBlob);
+    try {
+      const hero = await getTripHeroPhoto(trip.id);
+      if (destroyed || !hero) return;
+      heroPhotoUrl = URL.createObjectURL(hero.thumbnailBlob);
+    } catch {
+      // Keep the gradient fallback if the photo lookup fails (e.g. IndexedDB unavailable).
+    }
   });
 
   onDestroy(() => {
@@ -50,7 +54,7 @@
     style={heroPhotoUrl ? `background-image: url('${heroPhotoUrl}')` : undefined}
   >
     {#if heroPhotoUrl}
-      <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent"></div>
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/25 to-black/30"></div>
     {/if}
     {#if mode.icon === 'plane'}
       <svg
@@ -138,6 +142,7 @@
 <style>
   .mode-icon {
     transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.6));
   }
 
   :global(.group:hover) .mode-icon.plane {
