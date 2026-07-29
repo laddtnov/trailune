@@ -37,6 +37,10 @@ export function groupTripsByYear(trips: Trip[]): TimelineYearGroup[] {
   }));
 }
 
+export function uniqueCountriesInYear(group: TimelineYearGroup): string[] {
+  return [...new Set(group.trips.flatMap((trip) => trip.countries))];
+}
+
 export function countryCodeToFlag(code: string): string {
   if (code.length !== 2) return '';
   const codePoints = [...code.toUpperCase()].map((char) => 0x1f1e6 + (char.codePointAt(0)! - 65));

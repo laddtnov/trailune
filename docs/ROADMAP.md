@@ -93,8 +93,7 @@ A batch of concrete refinements and bigger visual concepts, gathered after livin
 
 - ✅ **Lean into the rank system's personality** (extends the shipped rank/level feature): `/stats` now shows the same tier framing as the home hero — emoji, tier name, subtitle, and "N countries until {next tier}" (or a top-tier message for Trailblazer) — reusing `getLevelProgress()`/`LEVELS` unmodified. Scoped to `/stats` only this cycle; other pages can get it later if desired.
 
-**Memory timeline** (extends the existing "Journey timeline" idea in §3, made concrete):
-- A year-grouped vertical timeline: `2024 → 🇩🇪 Germany, 7 days`, `2025 → 🇨🇱 Chile, 10 days`, `2026 → 🇦🇺 Australia, 8 days`, with a longer-term view collapsing to just the year list (2019–2026) when zoomed out. Pure re-presentation of existing trip data, grouped by year.
+- ✅ **Memory timeline** (extends the existing "Journey timeline" idea in §3, made concrete): the year-grouped vertical timeline itself was already shipped in §3. This cycle added the missing "zoomed out" half — a manual "Compact view" toggle on `/timeline` showing one row per year (year + that year's unique country flags/count, deduped), with click-to-jump back to full view scrolled to that year.
 
 **Trip card hero treatment** ("the single biggest UX improvement," per this feedback pass):
 - Replace the current gradient-background trip cards with a real hero image per trip — either a user-uploaded cover photo (fits the existing IndexedDB photo-storage pattern directly, no new infrastructure) or a stock photo pulled from an image API (Unsplash, etc. — this would need a new backend concern, since API keys can't be called from the browser, similar to the feedback form's Resend function).
