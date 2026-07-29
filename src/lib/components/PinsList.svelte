@@ -20,12 +20,13 @@
   function add(event: SubmitEvent) {
     event.preventDefault();
     if (!label.trim()) return;
+    const nextOrder = pins.length === 0 ? 0 : Math.max(...pins.map((p) => p.order)) + 1;
     savePin({
       id: generateId(),
       tripId,
       label: label.trim(),
       note: note.trim() ? note.trim() : null,
-      order: pins.length,
+      order: nextOrder,
       createdAt: new Date().toISOString()
     });
     label = '';
@@ -33,8 +34,10 @@
     load();
   }
 
-  function handleDragStart(pin: PinEntry) {
+  function handleDragStart(event: DragEvent, pin: PinEntry) {
     draggedId = pin.id;
+    event.dataTransfer?.setData('text/plain', pin.id);
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
   }
 
   function handleDragOver(event: DragEvent, targetPin: PinEntry) {
@@ -43,13 +46,24 @@
     const fromIndex = pins.findIndex((p) => p.id === draggedId);
     const toIndex = pins.findIndex((p) => p.id === targetPin.id);
     if (fromIndex === -1 || toIndex === -1) return;
+
+    // Gate the move on which half of the target row the pointer is over, so
+    // repeated dragover events (fired continuously while hovering) settle
+    // into a stable position instead of oscillating on unequal row heights.
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const isAfter = event.clientY > rect.top + rect.height / 2;
+    const rawInsertIndex = isAfter ? toIndex + 1 : toIndex;
+    const insertIndex = fromIndex < rawInsertIndex ? rawInsertIndex - 1 : rawInsertIndex;
+    if (insertIndex === fromIndex) return;
+
     const reordered = [...pins];
     const [moved] = reordered.splice(fromIndex, 1);
-    reordered.splice(toIndex, 0, moved);
+    reordered.splice(insertIndex, 0, moved);
     pins = reordered;
   }
 
-  function handleDrop() {
+  function handleDrop(event: DragEvent) {
+    event.preventDefault();
     reorderPins(tripId, pins.map((p) => p.id));
     load();
   }
@@ -82,7 +96,7 @@
       {#each pins as pin (pin.id)}
         <li
           draggable="true"
-          ondragstart={() => handleDragStart(pin)}
+          ondragstart={(e) => handleDragStart(e, pin)}
           ondragover={(e) => handleDragOver(e, pin)}
           ondrop={handleDrop}
           ondragend={handleDragEnd}
