@@ -135,7 +135,7 @@ describe('deleteTripCascade', () => {
 
   it('removes the trip pins', async () => {
     const trip = createTrip({ name: 'Ireland', startDate: '2026-06-01', endDate: '2026-06-10', countries: ['IE'] });
-    savePin({ id: generateId(), tripId: trip.id, label: 'Cliffs of Moher', note: null, createdAt: new Date().toISOString() });
+    savePin({ id: generateId(), tripId: trip.id, label: 'Cliffs of Moher', note: null, order: 0, createdAt: new Date().toISOString() });
 
     await deleteTripCascade(trip.id);
 

@@ -63,6 +63,7 @@ export interface PinEntry {
   tripId: string;
   label: string;
   note: string | null;
+  order: number;
   createdAt: string;
 }
 
