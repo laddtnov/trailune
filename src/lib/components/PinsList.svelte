@@ -1,12 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { listPins, savePin, deletePin } from '$lib/storage/storage';
+  import { listPins, savePin, deletePin, reorderPins } from '$lib/storage/storage';
   import { generateId } from '$lib/utils/id';
   import type { PinEntry } from '$lib/types';
 
   let { tripId }: { tripId: string } = $props();
 
   let pins: PinEntry[] = $state([]);
+  let draggedId: string | null = $state(null);
   let label = $state('');
   let note = $state('');
 
@@ -32,6 +33,31 @@
     load();
   }
 
+  function handleDragStart(pin: PinEntry) {
+    draggedId = pin.id;
+  }
+
+  function handleDragOver(event: DragEvent, targetPin: PinEntry) {
+    event.preventDefault();
+    if (!draggedId || draggedId === targetPin.id) return;
+    const fromIndex = pins.findIndex((p) => p.id === draggedId);
+    const toIndex = pins.findIndex((p) => p.id === targetPin.id);
+    if (fromIndex === -1 || toIndex === -1) return;
+    const reordered = [...pins];
+    const [moved] = reordered.splice(fromIndex, 1);
+    reordered.splice(toIndex, 0, moved);
+    pins = reordered;
+  }
+
+  function handleDrop() {
+    reorderPins(tripId, pins.map((p) => p.id));
+    load();
+  }
+
+  function handleDragEnd() {
+    draggedId = null;
+  }
+
   function remove(pin: PinEntry) {
     deletePin(pin.id);
     load();
@@ -55,13 +81,33 @@
     <ul class="space-y-3">
       {#each pins as pin (pin.id)}
         <li
-          class="group flex items-start justify-between gap-3 rounded-[var(--radius-lg)] border border-[var(--color-card-border)] bg-[var(--color-card)] p-4 shadow-[var(--shadow-card)]"
+          draggable="true"
+          ondragstart={() => handleDragStart(pin)}
+          ondragover={(e) => handleDragOver(e, pin)}
+          ondrop={handleDrop}
+          ondragend={handleDragEnd}
+          class="group flex items-start justify-between gap-3 rounded-[var(--radius-lg)] border border-[var(--color-card-border)] bg-[var(--color-card)] p-4 shadow-[var(--shadow-card)] {draggedId === pin.id ? 'opacity-50' : ''}"
         >
-          <div class="min-w-0">
-            <p class="font-display text-base font-bold text-[var(--color-ink)]">{pin.label}</p>
-            {#if pin.note}
-              <p class="mt-1 text-sm text-[var(--color-ink-soft)]">{pin.note}</p>
-            {/if}
+          <div class="flex min-w-0 items-start gap-2">
+            <svg
+              class="mt-1 size-4 shrink-0 cursor-grab text-[var(--color-ink-soft)]"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <circle cx="9" cy="6" r="1.5" />
+              <circle cx="15" cy="6" r="1.5" />
+              <circle cx="9" cy="12" r="1.5" />
+              <circle cx="15" cy="12" r="1.5" />
+              <circle cx="9" cy="18" r="1.5" />
+              <circle cx="15" cy="18" r="1.5" />
+            </svg>
+            <div class="min-w-0">
+              <p class="font-display text-base font-bold text-[var(--color-ink)]">{pin.label}</p>
+              {#if pin.note}
+                <p class="mt-1 text-sm text-[var(--color-ink-soft)]">{pin.note}</p>
+              {/if}
+            </div>
           </div>
           <button
             type="button"
