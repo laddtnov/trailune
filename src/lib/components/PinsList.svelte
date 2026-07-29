@@ -11,7 +11,7 @@
   let note = $state('');
 
   function load() {
-    pins = listPins(tripId);
+    pins = listPins(tripId).sort((a, b) => a.order - b.order);
   }
 
   onMount(load);
@@ -24,6 +24,7 @@
       tripId,
       label: label.trim(),
       note: note.trim() ? note.trim() : null,
+      order: pins.length,
       createdAt: new Date().toISOString()
     });
     label = '';
@@ -38,6 +39,12 @@
 </script>
 
 <section class="space-y-6">
+  {#if pins.length >= 2}
+    <p class="font-mono text-sm text-[var(--color-ink-soft)]">
+      {pins.map((p) => p.label).join(' → ')}
+    </p>
+  {/if}
+
   {#if pins.length === 0}
     <div
       class="rounded-[var(--radius-lg)] border border-dashed border-[var(--color-card-border)] bg-[var(--color-card)]/60 px-6 py-10 text-center"
