@@ -106,15 +106,16 @@
 {:else}
   <div class="mt-8 space-y-2">
     {#each yearGroups as group (group.year)}
+      {@const countries = uniqueCountriesInYear(group)}
       <button
         class="flex w-full items-center justify-between rounded-[var(--radius-lg)] bg-[var(--color-card)] p-4 text-left shadow-[var(--shadow-card)] transition hover:bg-[var(--color-card-hover)]"
         onclick={() => jumpToYear(group.year)}
       >
         <span class="font-display text-lg font-bold">{group.year}</span>
         <span class="text-sm text-[var(--color-ink-soft)]">
-          {uniqueCountriesInYear(group).map(countryCodeToFlag).join('')}
-          {uniqueCountriesInYear(group).length}
-          {uniqueCountriesInYear(group).length === 1 ? 'country' : 'countries'}
+          {countries.map(countryCodeToFlag).join('')}
+          {countries.length}
+          {countries.length === 1 ? 'country' : 'countries'}
         </span>
       </button>
     {/each}
