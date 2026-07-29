@@ -9,6 +9,11 @@ export interface GalleryPhoto {
   caption: string;
 }
 
+export interface HeroPhoto {
+  photoId: string;
+  thumbnailBlob: Blob;
+}
+
 const TIP_CATEGORY_LABELS: Record<TipCategory, string> = {
   currency: 'Currency',
   avoid: 'Avoid',
@@ -53,4 +58,14 @@ export async function collectTripPhotos(tripId: string): Promise<GalleryPhoto[]>
   }
 
   return photos;
+}
+
+export async function getTripHeroPhoto(tripId: string): Promise<HeroPhoto | undefined> {
+  const entries = listJournalEntries(tripId).sort((a, b) => a.date.localeCompare(b.date));
+  for (const entry of entries) {
+    if (entry.photoIds.length === 0) continue;
+    const photo = await getPhoto(entry.photoIds[0]);
+    if (photo) return { photoId: entry.photoIds[0], thumbnailBlob: photo.thumbnailBlob };
+  }
+  return undefined;
 }
