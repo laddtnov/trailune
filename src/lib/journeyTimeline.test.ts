@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getSeasonLabel, groupTripsByYear, countryCodeToFlag } from './journeyTimeline';
+import { getSeasonLabel, groupTripsByYear, countryCodeToFlag, uniqueCountriesInYear } from './journeyTimeline';
 import type { Trip } from './types';
 
 function makeTrip(overrides: Partial<Trip>): Trip {
@@ -85,5 +85,22 @@ describe('countryCodeToFlag', () => {
 
   it('returns an empty string for a code that is not 2 letters', () => {
     expect(countryCodeToFlag('XYZ')).toBe('');
+  });
+});
+
+describe('uniqueCountriesInYear', () => {
+  it('dedupes a country visited on two separate trips in the same year', () => {
+    const group = {
+      year: 2025,
+      trips: [
+        makeTrip({ id: '1', startDate: '2025-01-01', countries: ['JP'] }),
+        makeTrip({ id: '2', startDate: '2025-06-01', countries: ['JP', 'FR'] })
+      ]
+    };
+    expect(uniqueCountriesInYear(group)).toEqual(['JP', 'FR']);
+  });
+
+  it('returns an empty array for a year group with no trips', () => {
+    expect(uniqueCountriesInYear({ year: 2025, trips: [] })).toEqual([]);
   });
 });
