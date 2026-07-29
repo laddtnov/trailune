@@ -38,8 +38,11 @@
 
   function jumpToYear(year: number) {
     view = 'full';
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     requestAnimationFrame(() => {
-      document.getElementById(`year-${year}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document
+        .getElementById(`year-${year}`)
+        ?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
     });
   }
 </script>
@@ -79,7 +82,7 @@
 {:else if view === 'full'}
   <div class="mt-8">
     {#each yearGroups as group (group.year)}
-      <h2 id="year-{group.year}" class="mt-10 text-left font-display text-2xl font-bold first:mt-0 sm:text-center">{group.year}</h2>
+      <h2 id="year-{group.year}" class="mt-10 scroll-mt-24 text-left font-display text-2xl font-bold first:mt-0 sm:text-center">{group.year}</h2>
       <div class="timeline-year mt-5">
         <div class="timeline-rail"></div>
         {#each group.trips as trip, i (trip.id)}
@@ -106,16 +109,16 @@
 {:else}
   <div class="mt-8 space-y-2">
     {#each yearGroups as group (group.year)}
-      {@const countries = uniqueCountriesInYear(group)}
+      {@const yearCountries = uniqueCountriesInYear(group)}
       <button
         class="flex w-full items-center justify-between rounded-[var(--radius-lg)] bg-[var(--color-card)] p-4 text-left shadow-[var(--shadow-card)] transition hover:bg-[var(--color-card-hover)]"
         onclick={() => jumpToYear(group.year)}
       >
         <span class="font-display text-lg font-bold">{group.year}</span>
         <span class="text-sm text-[var(--color-ink-soft)]">
-          {countries.map(countryCodeToFlag).join('')}
-          {countries.length}
-          {countries.length === 1 ? 'country' : 'countries'}
+          {yearCountries.map(countryCodeToFlag).join('')}
+          {yearCountries.length}
+          {yearCountries.length === 1 ? 'country' : 'countries'}
         </span>
       </button>
     {/each}
