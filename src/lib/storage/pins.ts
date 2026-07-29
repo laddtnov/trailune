@@ -12,7 +12,9 @@ function writeAll(items: PinEntry[]): void {
 }
 
 export function listPins(tripId: string): PinEntry[] {
-  return readAll().filter((p) => p.tripId === tripId);
+  return readAll()
+    .filter((p) => p.tripId === tripId)
+    .map((p, i) => ({ order: i, ...p }));
 }
 
 export function savePin(pin: PinEntry): void {
@@ -29,4 +31,14 @@ export function deletePin(id: string): void {
 
 export function deletePinsForTrip(tripId: string): void {
   writeAll(readAll().filter((p) => p.tripId !== tripId));
+}
+
+export function reorderPins(tripId: string, orderedIds: string[]): void {
+  const items = readAll();
+  for (const item of items) {
+    if (item.tripId !== tripId) continue;
+    const newOrder = orderedIds.indexOf(item.id);
+    if (newOrder !== -1) item.order = newOrder;
+  }
+  writeAll(items);
 }
