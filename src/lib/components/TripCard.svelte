@@ -1,7 +1,27 @@
 <script lang="ts">
+  import { onMount, onDestroy } from 'svelte';
   import type { Trip, TransportMode } from '$lib/types';
+  import { getTripHeroPhoto } from '$lib/tripPhotos';
 
   let { trip, stamping = false }: { trip: Trip; stamping?: boolean } = $props();
+
+  let heroPhotoUrl: string | undefined = $state(undefined);
+  let destroyed = false;
+
+  onMount(async () => {
+    try {
+      const hero = await getTripHeroPhoto(trip.id);
+      if (destroyed || !hero) return;
+      heroPhotoUrl = URL.createObjectURL(hero.thumbnailBlob);
+    } catch {
+      // Keep the gradient fallback if the photo lookup fails (e.g. IndexedDB unavailable).
+    }
+  });
+
+  onDestroy(() => {
+    destroyed = true;
+    if (heroPhotoUrl) URL.revokeObjectURL(heroPhotoUrl);
+  });
 
   function formatDate(iso: string): string {
     const d = new Date(`${iso}T00:00:00`);
@@ -30,8 +50,12 @@
   class="group block overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-card-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)] transition-all duration-300 ease-[var(--ease-out-quart)] hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)] {stamping ? 'stamping' : ''}"
 >
   <div
-    class="relative flex h-28 items-end overflow-hidden bg-gradient-to-br p-4 {mode.gradient}"
+    class="relative flex h-28 items-end overflow-hidden bg-gradient-to-br bg-cover bg-center p-4 {mode.gradient}"
+    style={heroPhotoUrl ? `background-image: url('${heroPhotoUrl}')` : undefined}
   >
+    {#if heroPhotoUrl}
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/25 to-black/30"></div>
+    {/if}
     {#if mode.icon === 'plane'}
       <svg
         class="mode-icon plane pointer-events-none absolute right-1 top-2 size-11 text-white/85"
@@ -118,6 +142,7 @@
 <style>
   .mode-icon {
     transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.6));
   }
 
   :global(.group:hover) .mode-icon.plane {
