@@ -104,8 +104,7 @@ A batch of concrete refinements and bigger visual concepts, gathered after livin
 **"On this day" memories**:
 - Surface a past trip on its anniversary — "One year ago today: 🇯🇵 Kyoto — you visited Fushimi Inari Shrine." Needs date-matching logic comparing today's date against past journal-entry/memory-pin dates, resurfaced on the home page or in a notification-style prompt. Depends on memory pins (§3) existing first, since a plain journal note doesn't currently carry a discrete "location visited" concept.
 
-**Globe mode** (long-term, aspirational):
-- An alternative 3D globe view of the map (via a library like Three.js or Cesium) that users can spin, as a premium-feeling alternative to the flat SVG map. Meaningfully larger scope than anything else in this list — a new rendering technology, not a CSS/data change — and should only be considered once the flat map's remaining ideas (path arcs, heatmap) are exhausted.
+- ✅ **Globe mode**: a new `/globe` route with an interactive 3D globe (Three.js + `three-globe`) showing visited vs. unvisited countries, derived from the same trip data as the flat map. MVP scope: binary visited/unvisited coloring (reads the current theme's accent color), drag-to-rotate and scroll/pinch-zoom only — no popover, path arcs, or heatmap tiers on the globe this cycle (those remain flat-map-only). Bundled a Natural Earth 110m country-boundary GeoJSON dataset (`static/world-countries.geojson`), joined by ISO alpha-2 code with a manual override for the dataset's invalid France/Norway codes.
 
 ## Suggested order
 
@@ -114,5 +113,5 @@ A batch of concrete refinements and bigger visual concepts, gathered after livin
 3. ✅ **Journal, Memories & Timeline** (§3) — fully shipped.
 4. ✅ **Trip Experience Polish** (§4) — fully shipped.
 5. ✅ **Ambient Design & Feel** — fully shipped (tiny details, dynamic themes, and ambient background motion).
-6. **§7 Polishing Ideas** — in progress; small copy/formatting fixes done, remaining sub-ideas (richer country popover, map visual upgrades, rank personality, memory timeline, trip hero images, journey waypoints, trip hub expansion, "on this day" memories, globe mode) not yet started.
+6. **§7 Polishing Ideas** — in progress; most sub-ideas shipped (memory timeline, trip hero images, journey waypoints, trip hub expansion, globe mode). Remaining: richer country popover, map visual upgrades, rank personality, "on this day" memories.
 7. **AI Travel Summary** (§6) — needs a backend-shape decision first; lowest priority until that's resolved.

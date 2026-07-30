@@ -17,6 +17,7 @@
     { href: '/dream-map', label: 'Dream Map' },
     { href: '/timeline', label: 'Timeline' },
     { href: '/calendar', label: 'Calendar' },
+    { href: '/globe', label: 'Globe' },
     { href: '/packing-template', label: 'Packing' },
     { href: '/stats', label: 'Stats' },
     { href: '/settings', label: 'Settings' }
