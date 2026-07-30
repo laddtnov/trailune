@@ -28,6 +28,7 @@
       canvas.height = 1;
       const ctx = canvas.getContext('2d');
       if (!ctx) return fallback;
+      ctx.fillStyle = fallback;
       ctx.fillStyle = cssColor;
       ctx.fillRect(0, 0, 1, 1);
       const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
