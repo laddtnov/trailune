@@ -10,6 +10,7 @@
   let animationFrameId: number | undefined;
   let renderer: THREENS.WebGLRenderer | undefined;
   let controls: TrackballControlsType | undefined;
+  let destroyed = false;
 
   onMount(async () => {
     if (!container) return;
@@ -22,12 +23,16 @@
       import('three-globe')
     ]);
 
+    if (destroyed) return;
+
     const visitedColor = getComputedStyle(document.documentElement)
       .getPropertyValue('--color-accent')
       .trim() || '#e08e45';
     const neutralColor = '#2a2a2a';
 
     const features = await loadGlobeCountries();
+
+    if (destroyed) return;
 
     const globe = new ThreeGlobe()
       .polygonsData(features)
@@ -67,6 +72,7 @@
   });
 
   onDestroy(() => {
+    destroyed = true;
     if (animationFrameId !== undefined) cancelAnimationFrame(animationFrameId);
     controls?.dispose();
     renderer?.dispose();
