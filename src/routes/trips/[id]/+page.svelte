@@ -145,22 +145,24 @@
 
   <DestinationPreview {trip} {countries} />
 
-  <nav class="mt-6 flex flex-nowrap gap-1 overflow-x-auto border-b border-[var(--color-card-border)]">
-    {#each tabs as tab (tab.id)}
-      <button
-        type="button"
-        onclick={() => (activeTab = tab.id)}
-        class="relative shrink-0 px-4 py-2.5 text-sm font-medium transition-colors {activeTab === tab.id
-          ? 'text-[var(--color-ink)]'
-          : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]'}"
-      >
-        {tab.label}
-        {#if activeTab === tab.id}
-          <span class="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-[var(--color-accent)]"></span>
-        {/if}
-      </button>
-    {/each}
-  </nav>
+  <div class="mt-6 border-b border-[var(--color-card-border)]">
+    <nav class="flex flex-nowrap gap-1 overflow-x-auto pb-px">
+      {#each tabs as tab (tab.id)}
+        <button
+          type="button"
+          onclick={() => (activeTab = tab.id)}
+          class="relative shrink-0 px-4 py-2.5 text-sm font-medium transition-colors {activeTab === tab.id
+            ? 'text-[var(--color-ink)]'
+            : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]'}"
+        >
+          {tab.label}
+          {#if activeTab === tab.id}
+            <span class="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-[var(--color-accent)]"></span>
+          {/if}
+        </button>
+      {/each}
+    </nav>
+  </div>
 
   <div class="mt-6">
     {#if activeTab === 'journal'}

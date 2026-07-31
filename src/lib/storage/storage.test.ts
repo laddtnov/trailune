@@ -141,7 +141,6 @@ describe('deleteTripCascade', () => {
 
     expect(listPins(trip.id)).toEqual([]);
   });
-
 });
 
 describe('deleteJournalEntryWithPhotos', () => {

@@ -39,10 +39,9 @@ This is a **v1, local-only build**. There's no backend and no account system —
 
 ## Features
 
-- **Trips** — create a trip with a name, a date range, the countries visited, and a transport mode (flight, train, road, boat, other). Filter your trip list by mode. Trip cards show a real photo header once a trip has one (the first journal photo, chronologically), falling back to a mode-colored gradient otherwise. Delete a trip and everything under it — journal entries, packing items, photos, do's & don'ts, tips, pins, and its note — is cleaned up with it.
+- **Trips** — create a trip with a name, a date range, the countries visited, and a transport mode (flight, train, road, boat, other). Filter your trip list by mode. Trip cards show a real photo header once a trip has one (the first journal photo, chronologically), falling back to a mode-colored gradient otherwise. Delete a trip and everything under it — journal entries, packing items, photos, do's & don'ts, tips, and pins — is cleaned up with it.
 - **Journal, reframed as a diary** — dated entries with a note, one or more photos, and an optional 1-5 star rating, shown in a postcard-style layout (photo left, date/note/stars right). Edit or delete any entry later; full-size photos on the entry page, thumbnails in the list.
 - **Journey waypoints** — the trip hub's Pins tab holds an *ordered* list of places (drag-and-drop to reorder), with a route-chain summary above the list once a trip has 2+ pins (`Dublin → Doha → Sydney`). Every pin is a waypoint; an optional note travels with each one.
-- **Trip notes** — a single free-form scratchpad per trip, auto-saving ~500ms after you stop typing (plus an instant save on blur), for anything that doesn't fit the dated journal or categorized tips.
 - **Photo gallery per trip** — a dedicated Gallery tab aggregating every photo from a trip's journal entries and tips into one grid, with a lightbox viewer.
 - **Destination preview** — a card in the trip hub (shown on every tab) with each visited country's currency, UTC offset, and a hemisphere-aware season/climate blurb computed from the trip's actual travel dates — backed by a bundled static reference table covering all 211 countries the map supports, no live API.
 - **Packing checklist, as cards** — ticket-style cards (category icon, label, a rotated "PACKED" stamp) instead of checkbox rows, with five named templates (General, Beach Holiday, Business Trip, Camping, Winter). New trips pick a template on creation, which copies that template's items into the trip's own checklist — editing one trip's checklist never touches the shared template or any other trip.
@@ -65,9 +64,9 @@ This is a **v1, local-only build**. There's no backend and no account system —
 Trailune runs almost entirely client-side — no accounts, and the only server call is the feedback form:
 
 - **[SvelteKit](https://svelte.dev/docs/kit)** (Svelte 5 runes, TypeScript) for the app shell and routing, built via `adapter-static` with an SPA fallback so the whole app can be installed and run offline.
-- **`localStorage`** for structured data (trips, journal entries, packing items, do's/don'ts, tips, pins, notes, wishlist entries) via small repository modules with a shared read/write pattern.
+- **`localStorage`** for structured data (trips, journal entries, packing items, do's/don'ts, tips, pins, wishlist entries) via small repository modules with a shared read/write pattern.
 - **`IndexedDB`** (via [`idb`](https://github.com/jakearchibald/idb)) for photo blobs, since binary data doesn't belong in `localStorage`.
-- A single **storage facade** (`src/lib/storage/storage.ts`) composes the repositories and owns the app's cross-cutting rules: copying a packing template onto a new trip, and cascading deletes (trip → journal entries → packing items → do's/don'ts → tips → pins → note → photos) so nothing is ever orphaned.
+- A single **storage facade** (`src/lib/storage/storage.ts`) composes the repositories and owns the app's cross-cutting rules: copying a packing template onto a new trip, and cascading deletes (trip → journal entries → packing items → do's/don'ts → tips → pins → photos) so nothing is ever orphaned.
 - The **world map** is a static, bundled SVG with countries as `<path>` elements keyed by ISO code — highlighting a country is a CSS class toggle, with no map/geo service involved. Flight-route and travel-path-arc waypoint positions are derived at render time from that same SVG's geometry — no separate coordinate dataset. Per-country stats and site-wide trip stats (`src/lib/countryStats.ts`, `src/lib/tripStats.ts`, `src/lib/yearInReview.ts`, `src/lib/travelCalendar.ts`) are pure functions over the existing trip list — nothing is stored twice.
 - **PWA support** via `@vite-pwa/sveltekit` — a generated manifest, a service worker precaching the app shell, and an offline-capable SPA fallback.
 - **Feedback** posts to a standalone Vercel serverless function (`api/feedback.ts`) that sends an email via [Resend](https://resend.com) — kept entirely outside SvelteKit's routing since the rest of the app has no server runtime under `adapter-static`.
@@ -83,7 +82,7 @@ Trailune runs almost entirely client-side — no accounts, and the only server c
 | `/calendar` | Travel calendar — a yearly heatmap of travel days, colored per trip |
 | `/stats` | Full stats breakdown plus Achievements and the rank/tier banner |
 | `/stats/year` | Year in Review — a year picker and an annual recap of that year's trips |
-| `/trips/[id]` | Trip hub — Journal / Gallery / Map / Pins / Packing / Tips / Do's & Don'ts / Notes tabs |
+| `/trips/[id]` | Trip hub — Journal / Gallery / Map / Pins / Packing / Tips / Do's & Don'ts tabs |
 | `/trips/[id]/entry/[entryId]` | View, edit, or delete a single journal entry |
 | `/packing-template` | Edit any of the five reusable packing templates |
 | `/settings` | Choose one of four color themes |
@@ -98,7 +97,6 @@ PackingItem   { id, tripId | null, templateId | null, category, label, checked }
 DoDontItem    { id, tripId, type: 'do' | 'dont', text, checked }
 TipEntry      { id, tripId, category, note, photoId: string | null, createdAt }
 PinEntry      { id, tripId, label, note: string | null, order, createdAt }        // ordered waypoint
-TripNote      { tripId, text, updatedAt }                                        // one per trip
 WishlistEntry { id, countryCode, rating, note, createdAt }
 ```
 
@@ -128,10 +126,10 @@ Trailune deploys to [Vercel](https://vercel.com) via GitHub Actions: every push 
 ```
 src/
   lib/
-    storage/       # localStorage repositories (trips, tips, checklist, pins, notes, wishlist,
+    storage/       # localStorage repositories (trips, tips, checklist, pins, wishlist,
                     # map/level/achievement view state), IndexedDB photo store, storage facade
     components/    # WorldMap, CountryPopover, TripCard, PackingChecklist, DoDontList, TipsList,
-                    # PinsList, TripNotes, PhotoGallery, DestinationPreview, DreamMap,
+                    # PinsList, PhotoGallery, DestinationPreview, DreamMap,
                     # CalendarHeatmap, StarRating, AmbientBackground, FeedbackDialog, Skeleton
     utils/         # id generation, thumbnail generation
     countries.ts   # parses the world map SVG into a { code, name } list
@@ -165,6 +163,8 @@ Intentionally out of scope for this build — see [`docs/ROADMAP.md`](docs/ROADM
 - **AI Travel Summary** — a natural-language recap generated after a trip ends; needs a backend-shape decision first (an LLM API key can't be called from the browser).
 - **Expenses, Documents, and live Weather** trip-hub tabs — each is a genuinely new feature (budget tracking, file attachments, a live weather API) deserving its own design cycle.
 - A full backend and real database, enabling multi-device sync and accounts.
+
+A trip hub **Notes** tab (a free-form auto-saving scratchpad per trip) shipped briefly and was removed on 2026-07-31 — it duplicated the journal entry's note field closely enough not to earn its own tab. See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the full history.
 
 ## Credits
 

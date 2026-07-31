@@ -34,7 +34,12 @@
   }
 
   onMount(() => {
-    localStorage.removeItem('trailune:notes');
+    try {
+      // One-time purge of the removed Notes feature's saved data (removed 2026-07-31).
+      localStorage.removeItem('trailune:notes');
+    } catch {
+      // storage unavailable (blocked cookies, strict tracking protection, etc.) — safe to skip
+    }
   });
 </script>
 
