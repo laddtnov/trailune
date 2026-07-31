@@ -14,14 +14,13 @@
   import PhotoGallery from '$lib/components/PhotoGallery.svelte';
   import WorldMap from '$lib/components/WorldMap.svelte';
   import PinsList from '$lib/components/PinsList.svelte';
-  import TripNotes from '$lib/components/TripNotes.svelte';
 
   let tripId = $derived(page.params.id);
   let trip: Trip | undefined = $state();
   let countries: CountryInfo[] = $state([]);
   let entries: JournalEntry[] = $state([]);
   let thumbnails: Record<string, string> = $state({});
-  let activeTab: 'journal' | 'gallery' | 'map' | 'pins' | 'packing' | 'tips' | 'dodont' | 'notes' = $state('journal');
+  let activeTab: 'journal' | 'gallery' | 'map' | 'pins' | 'packing' | 'tips' | 'dodont' = $state('journal');
 
   let note = $state('');
   let date = $state('');
@@ -39,8 +38,7 @@
     { id: 'pins' as const, label: 'Pins' },
     { id: 'packing' as const, label: 'Packing' },
     { id: 'tips' as const, label: 'Tips' },
-    { id: 'dodont' as const, label: "Do's & Don'ts" },
-    { id: 'notes' as const, label: 'Notes' }
+    { id: 'dodont' as const, label: "Do's & Don'ts" }
   ];
 
   function formatDate(iso: string): string {
@@ -62,7 +60,7 @@
     thumbnails = nextThumbnails;
   }
 
-  const validTabs = ['journal', 'gallery', 'map', 'pins', 'packing', 'tips', 'dodont', 'notes'] as const;
+  const validTabs = ['journal', 'gallery', 'map', 'pins', 'packing', 'tips', 'dodont'] as const;
 
   onMount(async () => {
     trip = getTrip(tripId);
@@ -282,8 +280,6 @@
       <TipsList {tripId} />
     {:else if activeTab === 'dodont'}
       <DoDontList {tripId} />
-    {:else if activeTab === 'notes'}
-      <TripNotes {tripId} />
     {/if}
   </div>
 {:else}

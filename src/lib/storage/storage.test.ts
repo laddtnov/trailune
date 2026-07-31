@@ -7,9 +7,7 @@ import {
 	addTipEntry,
 	deleteTipEntryWithPhoto,
 	savePin,
-	listPins,
-	saveNote,
-	getNote
+	listPins
 } from './storage';
 import { savePackingItem, listPackingItems, listTemplateItems, saveDoDontItem, listDoDontItems } from './checklist';
 import { listJournalEntries } from './local';
@@ -144,14 +142,6 @@ describe('deleteTripCascade', () => {
     expect(listPins(trip.id)).toEqual([]);
   });
 
-  it('removes the trip note', async () => {
-    const trip = createTrip({ name: 'Norway', startDate: '2026-08-01', endDate: '2026-08-08', countries: ['NO'] });
-    saveNote(trip.id, 'Ferry booking #4471');
-
-    await deleteTripCascade(trip.id);
-
-    expect(getNote(trip.id)).toBeUndefined();
-  });
 });
 
 describe('deleteJournalEntryWithPhotos', () => {

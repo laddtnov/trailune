@@ -4,6 +4,7 @@
   import { pwaInfo } from 'virtual:pwa-info';
   import { fade } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';
+  import { onMount } from 'svelte';
   import AmbientBackground from '$lib/components/AmbientBackground.svelte';
   import FeedbackDialog from '$lib/components/FeedbackDialog.svelte';
 
@@ -31,6 +32,10 @@
     if (href === '/') return page.url.pathname === '/';
     return page.url.pathname.startsWith(href);
   }
+
+  onMount(() => {
+    localStorage.removeItem('trailune:notes');
+  });
 </script>
 
 <svelte:head>

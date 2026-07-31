@@ -6,13 +6,11 @@ import * as checklist from './checklist';
 import * as photoStore from './photos';
 import * as tipsRepo from './tips';
 import * as pinsRepo from './pins';
-import * as notesRepo from './notes';
 
 export * from './local';
 export * from './checklist';
 export * from './tips';
 export * from './pins';
-export * from './notes';
 export { getPhoto, deletePhoto } from './photos';
 
 export function createTrip(input: {
@@ -63,7 +61,6 @@ export async function deleteTripCascade(tripId: string): Promise<void> {
   checklist.deletePackingItemsForTrip(tripId);
   checklist.deleteDoDontItemsForTrip(tripId);
   pinsRepo.deletePinsForTrip(tripId);
-  notesRepo.deleteNoteForTrip(tripId);
 
   const tripTips = tipsRepo.listTips(tripId);
   for (const tip of tripTips) {
