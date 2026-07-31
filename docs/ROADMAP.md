@@ -113,5 +113,5 @@ A batch of concrete refinements and bigger visual concepts, gathered after livin
 3. ✅ **Journal, Memories & Timeline** (§3) — fully shipped.
 4. ✅ **Trip Experience Polish** (§4) — fully shipped.
 5. ✅ **Ambient Design & Feel** — fully shipped (tiny details, dynamic themes, and ambient background motion).
-6. **§7 Polishing Ideas** — in progress; most sub-ideas shipped (memory timeline, trip hero images, journey waypoints, trip hub expansion, globe mode). Remaining: richer country popover, map visual upgrades, rank personality, "on this day" memories.
+6. **§7 Polishing Ideas** — nearly done; only "on this day" memories remains unstarted.
 7. **AI Travel Summary** (§6) — needs a backend-shape decision first; lowest priority until that's resolved.
