@@ -4,6 +4,7 @@
   import { pwaInfo } from 'virtual:pwa-info';
   import { fade } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';
+  import { onMount } from 'svelte';
   import AmbientBackground from '$lib/components/AmbientBackground.svelte';
   import FeedbackDialog from '$lib/components/FeedbackDialog.svelte';
 
@@ -31,6 +32,15 @@
     if (href === '/') return page.url.pathname === '/';
     return page.url.pathname.startsWith(href);
   }
+
+  onMount(() => {
+    try {
+      // One-time purge of the removed Notes feature's saved data (removed 2026-07-31).
+      localStorage.removeItem('trailune:notes');
+    } catch {
+      // storage unavailable (blocked cookies, strict tracking protection, etc.) — safe to skip
+    }
+  });
 </script>
 
 <svelte:head>

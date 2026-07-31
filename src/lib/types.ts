@@ -67,12 +67,6 @@ export interface PinEntry {
   createdAt: string;
 }
 
-export interface TripNote {
-  tripId: string;
-  text: string;
-  updatedAt: string;
-}
-
 export interface WishlistEntry {
   id: string;
   countryCode: string;
