@@ -145,12 +145,12 @@
 
   <DestinationPreview {trip} {countries} />
 
-  <nav class="mt-6 flex gap-1 border-b border-[var(--color-card-border)]">
+  <nav class="mt-6 flex flex-nowrap gap-1 overflow-x-auto border-b border-[var(--color-card-border)]">
     {#each tabs as tab (tab.id)}
       <button
         type="button"
         onclick={() => (activeTab = tab.id)}
-        class="relative px-4 py-2.5 text-sm font-medium transition-colors {activeTab === tab.id
+        class="relative shrink-0 px-4 py-2.5 text-sm font-medium transition-colors {activeTab === tab.id
           ? 'text-[var(--color-ink)]'
           : 'text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]'}"
       >
