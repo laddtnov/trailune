@@ -106,6 +106,65 @@ A batch of concrete refinements and bigger visual concepts, gathered after livin
 
 - ✅ **Globe mode**: a new `/globe` route with an interactive 3D globe (Three.js + `three-globe`) showing visited vs. unvisited countries, derived from the same trip data as the flat map. MVP scope: binary visited/unvisited coloring (reads the current theme's accent color), drag-to-rotate and scroll/pinch-zoom only — no popover, path arcs, or heatmap tiers on the globe this cycle (those remain flat-map-only). Bundled a Natural Earth 110m country-boundary GeoJSON dataset (`static/world-countries.geojson`), joined by ISO alpha-2 code with a manual override for the dataset's invalid France/Norway codes.
 
+## 8. Backend & Accounts (planned — not started)
+
+**Status: 📋 Planned.** This is the largest architectural change on this roadmap. Today Trailune is 100% local-first: every byte of user data lives in the browser (`localStorage` + IndexedDB), and the only server code in the repo is `api/feedback.ts` (a single Vercel Function that forwards the feedback form to Resend). Adding accounts introduces server-side state, a database, and an auth provider for the first time.
+
+### 8.1 Profile page (the visible surface)
+
+A new `/profile` route, added to the main nav alongside Settings:
+
+- **Signed out**: the page shows the value proposition (your trips, on every device) plus two buttons — **Sign up** and **Sign in**.
+- **Signed in**: the page shows the account (email, avatar/initial, member-since date) and a **Sign out** button.
+- Auth state drives the whole page — one component, two states, no separate signed-in/signed-out routes.
+
+This is the piece the user actually sees, but it is the *last* thing to build, not the first: the buttons are meaningless until there is something behind them.
+
+### 8.2 The decision that has to come first: what does an account actually do?
+
+Accounts are not a feature on their own. Before any of this gets brainstormed, one question has to be answered, because it changes the scope by an order of magnitude:
+
+- **(a) Auth only — accounts, but data stays local.** Sign in gives you an identity and nothing else; trips still live in this browser only. Cheap to build, but close to pointless from the user's side — "I signed in and my trips didn't follow me" is a worse experience than no account at all.
+- **(b) Auth + cloud sync (the real goal).** Signing in on a new device restores your trips, journal, photos, pins, tips, packing lists, and wishlist. This is what users mean when they ask for an account. It is also a genuine backend project: database, schema, sync logic, conflict resolution, and photo storage.
+
+Assume (b) is the target and (a) is a stepping stone at most. Building (a) and stopping there would be shipping the login screen without the product behind it.
+
+### 8.3 What has to be built for (b)
+
+**Auth provider**: needs a real decision, not a default. Options worth weighing: Supabase Auth, Clerk, Auth.js/Lucia self-hosted, or a Vercel-native option. Criteria: free tier that survives a hobby project, email/password + at least one social provider, works with SvelteKit + `adapter-static` (note: the app currently prerenders every route — a session-aware `/profile` may force a rendering-mode change, the same class of constraint the Globe Mode work ran into with SSR).
+
+**Database**: the local data model is already well-defined and maps cleanly to relational tables. Current storage inventory that would need server-side equivalents:
+
+| Local key / store | Contents |
+|---|---|
+| `trailune:trips` | Trip records |
+| `trailune:journalEntries` | Journal entries (with `photoIds`) |
+| `trailune:pins` | Memory pins / journey waypoints |
+| `trailune:tips` | Tip entries (some with `photoId`) |
+| `trailune:packingItems` | Packing checklist items |
+| `trailune:doDontItems` | Do's & Don'ts items |
+| `trailune:wishlist` | Dream Map wishlist countries |
+| `trailune:theme` | Selected theme (arguably device-local, not account-level) |
+| `trailune:*-last-seen` (x3) | UI "what's new" markers — device-local, should NOT sync |
+| `trailune-photos` (IndexedDB) | Photo blobs + thumbnails |
+
+Every record already carries an `id` and most carry a `tripId`, so a `user_id` column plus the existing shapes is close to the whole schema. The `*-last-seen` keys and probably `theme` deliberately stay device-local.
+
+**Photo storage** is the expensive part and deserves its own decision. Photos are currently full-size blobs in IndexedDB with generated thumbnails. Syncing them means object storage (Vercel Blob, Supabase Storage, S3/R2) and real, ongoing, per-user cost that scales with usage — unlike everything else on this roadmap, which is free to run. Options include syncing thumbnails only, capping per-account storage, or deferring photo sync to a later phase than text data.
+
+**Sync strategy**: local-first apps do not get to ignore conflicts. Minimum viable approach is last-write-wins per record using an `updatedAt` timestamp, which is honest about its limitations (edit the same trip on two devices offline, one edit loses). Anything better (per-field merge, CRDTs) is a much larger project. Offline behaviour must be preserved — the app is a PWA and currently works fully offline; sync should be additive, never a hard dependency for using the app.
+
+**Migration for existing users**: everyone using Trailune today has local data and no account. On first sign-in, their existing local data should be uploaded and adopted into the new account rather than silently replaced by an empty server state. This is the single easiest place in this whole section to destroy a user's data, and needs to be designed deliberately, not discovered during implementation.
+
+### 8.4 Suggested phasing
+
+1. Decide (a) vs (b), the auth provider, and the photo-storage approach — three decisions, before any code.
+2. Auth + `/profile` page with sign up / sign in / sign out working against the chosen provider. No sync yet.
+3. Server schema + sync for text data (trips, entries, pins, tips, checklists, wishlist), including the first-sign-in migration of existing local data.
+4. Photo sync, if the cost model holds up.
+
+Phase 2 is the user-visible ask in 8.1 and is genuinely small once the provider is chosen. Phases 3 and 4 are where the actual work lives.
+
 ## Suggested order
 
 1. ✅ **The Living Map** — fully shipped, including scratch map and dream map.
@@ -114,4 +173,5 @@ A batch of concrete refinements and bigger visual concepts, gathered after livin
 4. ✅ **Trip Experience Polish** (§4) — fully shipped.
 5. ✅ **Ambient Design & Feel** — fully shipped (tiny details, dynamic themes, and ambient background motion).
 6. **§7 Polishing Ideas** — nearly done; only "on this day" memories remains unstarted.
-7. **AI Travel Summary** (§6) — needs a backend-shape decision first; lowest priority until that's resolved.
+7. **Backend & Accounts** (§8) — planned, not started. The biggest remaining project by far, and the one that unblocks §6: once a backend exists, the AI Travel Summary's "we'd need a server for the API key" problem solves itself.
+8. **AI Travel Summary** (§6) — needs a backend-shape decision first; lowest priority until that's resolved (or until §8 lands and resolves it).
