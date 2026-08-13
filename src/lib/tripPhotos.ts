@@ -24,7 +24,7 @@ const TIP_CATEGORY_LABELS: Record<TipCategory, string> = {
 function formatEntryDate(iso: string): string {
   const d = new Date(`${iso}T00:00:00`);
   if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
 export async function collectTripPhotos(tripId: string): Promise<GalleryPhoto[]> {
