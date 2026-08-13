@@ -13,9 +13,9 @@
 
 [🌐 Live demo](https://trailune.laddtnov.xyz/)
 
-Trailune is a personal travel tracker: log trips with photo journal entries, an ordered list of waypoints per trip, packing checklists, and local tips, then watch a living world map, a year-grouped timeline, a travel calendar, and your stats fill in automatically as you go. It installs as a PWA and works offline.
+Trailune is a personal travel tracker. You log trips with photo journal entries, waypoints, packing lists and local tips. The world map, timeline, calendar and stats then fill themselves in from that data. It installs as a PWA and works offline.
 
-This is a **v1, local-only build**. There's no backend and no account system — everything runs entirely in your browser. All structured data lives in `localStorage`; photos live in `IndexedDB`. The one exception is the footer feedback form, which calls a small standalone serverless function to send an email — sending email needs a server-side secret that can't live in browser code, so it's the one place this app talks to a server. A full backend (and the multi-device sync it would enable) is a deliberate v2 addition, not a missing piece of v1.
+One thing to know up front: there's no backend and no accounts. Everything runs in your browser, with structured data in `localStorage` and photos in `IndexedDB`. The single exception is the footer feedback form, which posts to a small serverless function, because sending email needs a secret that can't sit in browser code. Multi-device sync would need a real backend, and that's planned for v2 rather than missing from v1.
 
 ## Screenshots
 
@@ -39,53 +39,75 @@ This is a **v1, local-only build**. There's no backend and no account system —
 
 ## Features
 
-- **Trips** — create a trip with a name, a date range, the countries visited, and a transport mode (flight, train, road, boat, other). Filter your trip list by mode. Trip cards show a real photo header once a trip has one (the first journal photo, chronologically), falling back to a mode-colored gradient otherwise. Delete a trip and everything under it — journal entries, packing items, photos, do's & don'ts, tips, and pins — is cleaned up with it.
-- **Journal, reframed as a diary** — dated entries with a note, one or more photos, and an optional 1-5 star rating, shown in a postcard-style layout (photo left, date/note/stars right). Edit or delete any entry later; full-size photos on the entry page, thumbnails in the list.
-- **Journey waypoints** — the trip hub's Pins tab holds an *ordered* list of places (drag-and-drop to reorder), with a route-chain summary above the list once a trip has 2+ pins (`Dublin → Doha → Sydney`). Every pin is a waypoint; an optional note travels with each one.
-- **Photo gallery per trip** — a dedicated Gallery tab aggregating every photo from a trip's journal entries and tips into one grid, with a lightbox viewer.
-- **Destination preview** — a card in the trip hub (shown on every tab) with each visited country's currency, UTC offset, and a hemisphere-aware season/climate blurb computed from the trip's actual travel dates — backed by a bundled static reference table covering all 211 countries the map supports, no live API.
-- **Packing checklist, as cards** — ticket-style cards (category icon, label, a rotated "PACKED" stamp) instead of checkbox rows, with five named templates (General, Beach Holiday, Business Trip, Camping, Winter). New trips pick a template on creation, which copies that template's items into the trip's own checklist — editing one trip's checklist never touches the shared template or any other trip.
-- **Do's & Don'ts** — a simple two-column checklist per trip for reminders and warnings you want on hand while traveling.
-- **Tips** — local notes per trip, tagged by category (currency, places to avoid, transit, sightseeing), with an optional photo attached to each.
-- **The Living Map** — a clickable SVG world map that highlights every country you've visited, *derived* from your trips' data so it can never drift out of sync. Visited countries play a one-time reveal animation with a scratch-style peel-away texture; hovering or tapping shows a rich stats popover (visit count, total days, longest stay, first/last visited year); clicking zooms smoothly into that country. Across your whole history, animated **travel path arcs** connect every country you've visited in first-visit order, and a **visit-intensity heatmap** deepens a country's fill the more times you've been there. A trip's own Map tab additionally draws an **animated flight route** between that trip's countries in visited order.
-- **Dream Map** — a `/dream-map` page for rating and noting not-yet-visited countries (1-5 stars + a note), shown on their own wishlist map plus a sorted list.
-- **Journey timeline** — a `/timeline` page grouping every trip by year (most recent first), with country flags, a season badge, and duration per entry, plus a "Compact view" toggle that collapses to a one-line-per-year summary (flags + country count) with click-to-jump back into the full view.
-- **Travel calendar** — a `/calendar` page: a GitHub-style yearly heatmap of "travel days," each day colored by which trip it belongs to, with a hover tooltip, a per-year legend, and prev/next year navigation.
-- **Home dashboard & stats** — the home page greets you with a time-of-day-aware summary, a quick stats strip, and a rank/level progress bar (Beginner → Trailblazer, derived from your country count, with a level-up reveal animation) once you've logged a trip. A dedicated `/stats` page breaks it down further — countries and continents visited, trips logged, flights taken, total days travelled, longest trip, average trip length — and repeats the same rank/tier framing ("N countries until Traveler") shown on the home hero.
-- **Achievements** — milestone badges (Explorer, Continental Traveller, Photographer, Globetrotter) on `/stats`, unlocked automatically as your trip history grows, with a one-time reveal animation.
-- **Year in Review** — a `/stats/year` page with a year picker and an annual recap: countries visited, trips taken, flights taken, days abroad, most-visited country, longest trip, and most active month.
-- **Dynamic themes** — four selectable color themes (Travel Journal, Explorer Night, Golden Sunset, Polar Morning) on `/settings`. Switching themes re-colors the whole app instantly and persists across sessions.
-- **Ambient delight details** — two slowly-drifting theme-colored gradient blobs behind all content, skeleton loading placeholders, a one-time passport-stamp animation on trip creation, a subtle paper-grain background texture, gentle page transitions, and animated stat counters — all respecting `prefers-reduced-motion`.
-- **Installable & offline** — Trailune is a PWA: install it to your home screen or desktop, and it keeps working without a connection once it's been loaded.
-- **Feedback** — a footer link opens a quick feedback form that emails your message straight to the developer.
+**Trips.** A trip has a name, a date range, the countries you visited, and a transport mode (flight, train, road, boat, other). You can filter the list by mode. Once a trip has a journal photo, its card uses the earliest one as a header image; otherwise it falls back to a mode-colored gradient. Deleting a trip takes everything under it with it, including journal entries, packing items, photos, do's and don'ts, tips and pins.
+
+**Journal, as a diary.** Dated entries with a note, photos, and an optional 1-5 star rating, laid out like a postcard: photo on the left, date and note and stars on the right. Entries are editable and deletable. Thumbnails in the list, full-size on the entry page.
+
+**Journey waypoints.** The Pins tab holds an ordered list of places you can drag to reorder. Once a trip has two or more pins, a route chain appears above the list (`Dublin → Doha → Sydney`). Every pin doubles as a waypoint and can carry a note.
+
+**Photo gallery.** A Gallery tab per trip that pulls every photo from that trip's journal entries and tips into one grid, with a lightbox.
+
+**Destination preview.** A card in the trip hub showing each visited country's currency, UTC offset, and a season and climate blurb worked out from your actual travel dates and the hemisphere. It's backed by a bundled reference table covering all 211 countries the map knows about, so no API call.
+
+**Packing checklist.** Ticket-style cards with a category icon, a label and a rotated "PACKED" stamp, rather than plain checkbox rows. Five named templates ship with it: General, Beach Holiday, Business Trip, Camping, Winter. Picking one at trip creation copies its items into that trip, so editing a trip's list never touches the template or any other trip.
+
+**Do's and Don'ts.** A two-column checklist per trip for the reminders and warnings you want to hand while you're there.
+
+**Tips.** Local notes per trip, tagged by category (currency, places to avoid, transit, sightseeing), each with an optional photo.
+
+**The Living Map.** A clickable SVG world map that highlights everywhere you've been. It's derived from trip data, so it can't fall out of sync. Newly visited countries play a one-time reveal with a scratch-card peel texture. Hover or tap a country for its stats (visit count, total days, longest stay, first and last year), click to zoom into it. Across your whole history, animated arcs connect countries in first-visit order, and a heatmap deepens a country's fill the more times you've been. A trip's own Map tab draws a flight route between just that trip's countries.
+
+**Globe mode.** A `/globe` route with a 3D globe you can spin and zoom (Three.js and `three-globe`). Visited countries take the current theme's accent color. It uses a bundled Natural Earth boundary dataset, so it works offline like everything else.
+
+**Dream Map.** A `/dream-map` page for countries you haven't reached yet. Rate them 1-5, add a note, and they show up on their own wishlist map and a sorted list.
+
+**Journey timeline.** `/timeline` groups trips by year, newest first, with flags, a season badge and duration. There's a Compact view toggle that collapses each year to one line, and clicking a year jumps back into the full view at that point.
+
+**Travel calendar.** `/calendar` is a GitHub-style yearly heatmap of travel days, each day colored by the trip it belongs to, with tooltips, a per-year legend and year navigation.
+
+**Home dashboard and stats.** The home page opens with a greeting that knows the time of day, a stats strip and a rank progress bar (Beginner through Trailblazer, based on country count, with a level-up animation). `/stats` goes deeper: countries and continents, trips, flights, total days travelled, longest trip, average length, plus the same rank framing ("N countries until Traveler").
+
+**Achievements.** Milestone badges on `/stats` (Explorer, Continental Traveller, Photographer, Globetrotter) that unlock as your history grows, each with a one-time reveal.
+
+**Year in Review.** `/stats/year` has a year picker and an annual recap: countries, trips, flights, days abroad, most-visited country, longest trip, busiest month.
+
+**Themes.** Four color themes on `/settings`: Travel Journal, Explorer Night, Golden Sunset, Polar Morning. Switching recolors everything instantly and sticks between sessions.
+
+**Ambient details.** Two slow theme-colored gradient blobs behind the content, skeleton loaders, a passport-stamp animation when you create a trip, a paper-grain texture, page transitions, animated stat counters. All of it respects `prefers-reduced-motion`.
+
+**Installable and offline.** It's a PWA. Install it to your home screen or desktop and it keeps working without a connection once loaded.
+
+**Feedback.** A footer link opens a form that emails your message to me.
 
 ## How it's built
 
-Trailune runs almost entirely client-side — no accounts, and the only server call is the feedback form:
+Almost everything is client-side. The feedback form is the only server call.
 
-- **[SvelteKit](https://svelte.dev/docs/kit)** (Svelte 5 runes, TypeScript) for the app shell and routing, built via `adapter-static` with an SPA fallback so the whole app can be installed and run offline.
-- **`localStorage`** for structured data (trips, journal entries, packing items, do's/don'ts, tips, pins, wishlist entries) via small repository modules with a shared read/write pattern.
-- **`IndexedDB`** (via [`idb`](https://github.com/jakearchibald/idb)) for photo blobs, since binary data doesn't belong in `localStorage`.
-- A single **storage facade** (`src/lib/storage/storage.ts`) composes the repositories and owns the app's cross-cutting rules: copying a packing template onto a new trip, and cascading deletes (trip → journal entries → packing items → do's/don'ts → tips → pins → photos) so nothing is ever orphaned.
-- The **world map** is a static, bundled SVG with countries as `<path>` elements keyed by ISO code — highlighting a country is a CSS class toggle, with no map/geo service involved. Flight-route and travel-path-arc waypoint positions are derived at render time from that same SVG's geometry — no separate coordinate dataset. Per-country stats and site-wide trip stats (`src/lib/countryStats.ts`, `src/lib/tripStats.ts`, `src/lib/yearInReview.ts`, `src/lib/travelCalendar.ts`) are pure functions over the existing trip list — nothing is stored twice.
-- **PWA support** via `@vite-pwa/sveltekit` — a generated manifest, a service worker precaching the app shell, and an offline-capable SPA fallback.
-- **Feedback** posts to a standalone Vercel serverless function (`api/feedback.ts`) that sends an email via [Resend](https://resend.com) — kept entirely outside SvelteKit's routing since the rest of the app has no server runtime under `adapter-static`.
+- **[SvelteKit](https://svelte.dev/docs/kit)** (Svelte 5 runes, TypeScript) for the shell and routing, built with `adapter-static` plus an SPA fallback so the whole thing installs and runs offline.
+- **`localStorage`** for structured data (trips, journal entries, packing items, do's and don'ts, tips, pins, wishlist) through small repository modules that share a read/write pattern.
+- **`IndexedDB`** via [`idb`](https://github.com/jakearchibald/idb) for photo blobs, because binary data has no business in `localStorage`.
+- A **storage facade** (`src/lib/storage/storage.ts`) composes those repositories and owns the rules that cut across them: copying a packing template onto a new trip, and cascading deletes (trip, then journal entries, packing items, do's and don'ts, tips, pins, photos) so nothing gets orphaned.
+- The **world map** is a bundled SVG with each country a `<path>` keyed by ISO code, so highlighting one is a CSS class toggle with no geo service in the loop. Flight-route and arc positions come from that same SVG's geometry at render time, so there's no second coordinate dataset to keep in sync. Per-country and site-wide stats (`countryStats.ts`, `tripStats.ts`, `yearInReview.ts`, `travelCalendar.ts`) are pure functions over the trip list, so nothing is stored twice.
+- The **globe** uses `three` and `three-globe` with a bundled Natural Earth GeoJSON, joined to trip data by ISO alpha-2 code. Its Three.js bundle loads on demand and is deliberately left out of the service worker precache, so people who never open `/globe` don't pay for it.
+- **PWA support** via `@vite-pwa/sveltekit`: generated manifest, a service worker precaching the shell, and the offline SPA fallback.
+- **Feedback** posts to a standalone Vercel function (`api/feedback.ts`) that sends mail through [Resend](https://resend.com). It lives outside SvelteKit's routing because the rest of the app has no server runtime under `adapter-static`.
 
 ## Routes
 
 | Route | Purpose |
 |---|---|
-| `/` | Trips list — hero + quick stats strip + rank progress bar, filter by transport mode, create a new trip here |
-| `/map` | The Living Map — reveal/scratch animations, travel path arcs, visit-intensity heatmap, hover/tap stats popover, zoom-to-country on click |
-| `/dream-map` | Wishlist countries — rate and note places you haven't visited yet |
-| `/timeline` | Journey timeline — trips grouped by year, with a Compact view toggle |
-| `/calendar` | Travel calendar — a yearly heatmap of travel days, colored per trip |
-| `/stats` | Full stats breakdown plus Achievements and the rank/tier banner |
-| `/stats/year` | Year in Review — a year picker and an annual recap of that year's trips |
-| `/trips/[id]` | Trip hub — Journal / Gallery / Map / Pins / Packing / Tips / Do's & Don'ts tabs |
-| `/trips/[id]/entry/[entryId]` | View, edit, or delete a single journal entry |
-| `/packing-template` | Edit any of the five reusable packing templates |
-| `/settings` | Choose one of four color themes |
+| `/` | Trips list, with hero, quick stats, rank progress, mode filter, and trip creation |
+| `/map` | The Living Map: reveal animations, path arcs, visit heatmap, stats popover, zoom to country |
+| `/globe` | 3D globe of visited countries, drag to spin and scroll to zoom |
+| `/dream-map` | Wishlist countries you haven't visited yet |
+| `/timeline` | Trips grouped by year, with a Compact view toggle |
+| `/calendar` | Yearly heatmap of travel days, colored per trip |
+| `/stats` | Full stats breakdown, Achievements, rank banner |
+| `/stats/year` | Year in Review, with a year picker |
+| `/trips/[id]` | Trip hub: Journal, Gallery, Map, Pins, Packing, Tips, Do's & Don'ts |
+| `/trips/[id]/entry/[entryId]` | View, edit or delete a single journal entry |
+| `/packing-template` | Edit the five reusable packing templates |
+| `/settings` | Pick a color theme |
 
 ## Data model
 
@@ -107,11 +129,11 @@ npm install
 npm run dev
 ```
 
-Open the printed `localhost` URL in your browser.
+Open the `localhost` URL it prints.
 
 ## Testing
 
-The storage layer (repositories, the storage facade, and pure utility functions) has a full Vitest suite. UI behavior is verified manually, since this is a small solo v1 project.
+The storage layer (repositories, the facade, pure utility functions) has a full Vitest suite. UI behavior I check by hand, since this is a small solo project.
 
 ```sh
 npm run test
@@ -119,7 +141,7 @@ npm run test
 
 ## Deploying
 
-Trailune deploys to [Vercel](https://vercel.com) via GitHub Actions: every push to `main` builds and promotes to production, and every pull request gets its own preview deployment. See [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
+Trailune deploys to [Vercel](https://vercel.com) through GitHub Actions. Every push to `main` builds and promotes to production; every pull request gets a preview deployment. See [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
 
 ## Project structure
 
@@ -128,14 +150,15 @@ src/
   lib/
     storage/       # localStorage repositories (trips, tips, checklist, pins, wishlist,
                     # map/level/achievement view state), IndexedDB photo store, storage facade
-    components/    # WorldMap, CountryPopover, TripCard, PackingChecklist, DoDontList, TipsList,
-                    # PinsList, PhotoGallery, DestinationPreview, DreamMap,
+    components/    # WorldMap, Globe, CountryPopover, TripCard, PackingChecklist, DoDontList,
+                    # TipsList, PinsList, PhotoGallery, DestinationPreview, DreamMap,
                     # CalendarHeatmap, StarRating, AmbientBackground, FeedbackDialog, Skeleton
     utils/         # id generation, thumbnail generation
     countries.ts   # parses the world map SVG into a { code, name } list
     continents.ts  # country-code -> continent lookup, covers every code in world-map.svg
     countryReference.ts, destinationPreview.ts  # static country data + season/climate logic
     flightRoute.ts, scratchReveal.ts, visitIntensity.ts  # map animation/rendering helpers
+    globeCountries.ts  # loads and normalizes the globe's GeoJSON country data
     countryStats.ts, tripStats.ts, yearInReview.ts, travelCalendar.ts, journeyTimeline.ts
                     # pure derived-metric functions consumed by /map, /, /stats, /stats/year,
                     # /calendar, and /timeline
@@ -148,7 +171,8 @@ src/
 api/
   feedback.ts      # standalone Vercel serverless function backing the feedback form
 static/
-  world-map.svg    # bundled world map asset
+  world-map.svg          # bundled flat world map
+  world-countries.geojson # bundled Natural Earth boundaries, used by the globe
 docs/
   ROADMAP.md         # future-ideas backlog for the app's differentiator vision
   superpowers/       # design specs + implementation plans, one pair per feature
@@ -156,17 +180,17 @@ docs/
 
 ## Deferred to v2
 
-Intentionally out of scope for this build — see [`docs/ROADMAP.md`](docs/ROADMAP.md) for the fuller idea backlog, including everything shipped so far:
+Out of scope on purpose. [`docs/ROADMAP.md`](docs/ROADMAP.md) has the fuller backlog, including everything already shipped.
 
-- **"On this day" memories** — surfacing a past trip on its anniversary; needs date-matching logic over journal entries/pins.
-- **Globe mode** — an alternative 3D globe view of the map (Three.js/Cesium or similar), a meaningfully larger scope than anything else here.
-- **AI Travel Summary** — a natural-language recap generated after a trip ends; needs a backend-shape decision first (an LLM API key can't be called from the browser).
-- **Expenses, Documents, and live Weather** trip-hub tabs — each is a genuinely new feature (budget tracking, file attachments, a live weather API) deserving its own design cycle.
-- A full backend and real database, enabling multi-device sync and accounts.
+- **"On this day" memories.** Surfacing a past trip on its anniversary. Needs date-matching over journal entries and pins.
+- **AI Travel Summary.** A written recap after a trip ends. Blocked on a backend decision, since an LLM API key can't be called from the browser.
+- **Expenses, Documents and live Weather tabs.** Budget tracking, file attachments and a weather API are three separate features wearing one bullet point. Each needs its own design pass.
+- **A backend, accounts and multi-device sync.** Planned as §8 of the roadmap, and the thing that would unblock the AI summary.
 
-A trip hub **Notes** tab (a free-form auto-saving scratchpad per trip) shipped briefly and was removed on 2026-07-31 — it duplicated the journal entry's note field closely enough not to earn its own tab. See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the full history.
+A **Notes** tab (a free-form scratchpad per trip) shipped briefly and came out again on 2026-07-31. It overlapped the journal entry's note field too closely to justify its own tab. The roadmap has the full history.
 
 ## Credits
 
-- World map SVG adapted from [tomi5/visited-countries-map](https://github.com/tomi5/visited-countries-map) (MIT), itself sourced from [Simplemaps.com](https://simplemaps.com/).
-- Full design spec and implementation plan live in [`docs/superpowers/`](docs/superpowers/).
+- Flat world map SVG adapted from [tomi5/visited-countries-map](https://github.com/tomi5/visited-countries-map) (MIT), itself from [Simplemaps.com](https://simplemaps.com/).
+- Globe country boundaries from [Natural Earth](https://www.naturalearthdata.com/) (public domain), 110m admin-0 dataset.
+- Design specs and implementation plans live in [`docs/superpowers/`](docs/superpowers/).
