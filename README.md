@@ -7,11 +7,12 @@
   <img alt="CSS3" src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" />
   <img alt="Vitest" src="https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white" />
   <img alt="Vercel" src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" />
+  <a href="https://ko-fi.com/laddtnov"><img alt="Support on Ko-fi" src="https://img.shields.io/badge/Ko--fi-Support-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white" /></a>
 </p>
 
 **Track every journey.**
 
-[🌐 Live demo](https://trailune.laddtnov.xyz/)
+[🌐 Live demo](https://trailune.laddtnov.xyz/) · [☕ Support on Ko-fi](https://ko-fi.com/laddtnov)
 
 Trailune is a personal travel tracker. You log trips with photo journal entries, waypoints, packing lists and local tips. The world map, timeline, calendar and stats then fill themselves in from that data. It installs as a PWA and works offline.
 
