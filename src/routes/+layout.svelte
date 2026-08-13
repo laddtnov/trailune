@@ -136,13 +136,31 @@
 </main>
 
 <footer class="border-t border-[var(--color-card-border)] bg-[var(--color-ink-band)] py-6 text-center text-sm text-[var(--color-accent-ink)]/70">
-  <button
-    type="button"
-    onclick={() => feedbackDialog?.open()}
-    class="underline decoration-[var(--color-accent-ink)]/40 underline-offset-4 transition-colors hover:text-[var(--color-accent-ink)]"
-  >
-    Feedback
-  </button>
+  <div class="flex items-center justify-center gap-4">
+    <button
+      type="button"
+      onclick={() => feedbackDialog?.open()}
+      class="underline decoration-[var(--color-accent-ink)]/40 underline-offset-4 transition-colors hover:text-[var(--color-accent-ink)]"
+    >
+      Feedback
+    </button>
+
+    <span aria-hidden="true" class="text-[var(--color-accent-ink)]/30">&middot;</span>
+
+    <a
+      href="https://ko-fi.com/laddtnov"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-1.5 text-[var(--color-accent-ink)]/70 underline decoration-[var(--color-accent-ink)]/40 underline-offset-4 transition-colors hover:text-[var(--color-accent-ink)]"
+    >
+      <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17" />
+        <path stroke-linecap="round" d="M8 3v2M12 3v2" />
+      </svg>
+      Support
+    </a>
+  </div>
 </footer>
 
 <FeedbackDialog bind:this={feedbackDialog} />
